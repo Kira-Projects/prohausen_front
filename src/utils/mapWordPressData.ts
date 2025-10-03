@@ -258,13 +258,13 @@ export function mapWordPressProperty(
     }
   }
 
-  // Descripción más robusta
-  // Usar el contenido completo como descripción
-  let description = excerpt;
+  // Usar el contenido completo con HTML para la descripción
+  // Esto permite que se muestre con formato en el frontend
+  let description = content; // Mantener el HTML del contenido completo
+  
+  // Si no hay contenido, usar el excerpt
   if (!description || description.length < 50) {
-    // Usar el contenido completo sin truncar
-    const cleanContent = stripHtml(content);
-    description = cleanContent;
+    description = excerpt;
   }
 
   // Formatear precio para mostrar (agregar puntos como separadores de miles)

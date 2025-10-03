@@ -7,181 +7,17 @@ import { Property } from "@/types/property";
 import { getProperties } from "@/services/wordpress";
 import { mapWordPressProperties } from "@/utils/mapWordPressData";
 
-// Datos de ejemplo como fallback
-const mockProperties: Property[] = [
-  {
-    id: 1,
-    title: "Parcelas Bajo El Azul, Pupuya, Matanzas",
-    location: "X4QC+3G Navidad, Chile",
-    description: "Exclusivas parcelas de agrado ubicadas en un privilegiado sector de…",
-    price: "1.690",
-    area: "5700",
-    type: "Parcela" as const,
-    operation: "Venta" as const,
-    region: "O'Higgins",
-    comuna: "Navidad",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 2,
-    title: "Parcelas Punta Pupuya, Matanzas",
-    location: "24F9+26 Navidad, Chile",
-    description: "Condominio Punta Pupuya es un proyecto inmobiliario ubicado en primera…",
-    price: "13.900",
-    area: "5000",
-    type: "Parcela" as const,
-    operation: "Venta" as const,
-    region: "O'Higgins",
-    comuna: "Navidad",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 3,
-    title: "Dpto Manquehue Norte",
-    location: "Av. Manquehue Nte. 2475, Vitacura",
-    description: "Exclusivo y amplio departamento ubicado en un privilegiado sector de…",
-    price: "16.900",
-    bedrooms: 4,
-    bathrooms: 4,
-    area: "220",
-    type: "Departamento" as const,
-    operation: "Venta" as const,
-    region: "Metropolitana",
-    comuna: "Vitacura",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 4,
-    title: "Dpto I Proyecto Pocuro",
-    location: "Av. Pocuro 2191, Providencia",
-    description: "Exclusivos departamentos nuevos en venta, ubicados en calle Pocuro, comuna…",
-    price: "12.190",
-    bedrooms: 3,
-    bathrooms: 3,
-    area: "121",
-    type: "Departamento" as const,
-    operation: "Venta" as const,
-    region: "Metropolitana",
-    comuna: "Providencia",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 5,
-    title: "Parcela Huilo Huilo",
-    location: "43CG+QV Puerto Fuy, Panguipulli, Chile",
-    description: "Preciosa parcela en venta en un exclusivo condominio al interior…",
-    price: "1.400",
-    area: "5000",
-    type: "Parcela" as const,
-    operation: "Venta" as const,
-    region: "Los Lagos",
-    comuna: "Panguipulli",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 6,
-    title: "Parcelas San Isidro",
-    location: "Pueblo de Indios, Quillota, Valparaíso, Chile",
-    description: "Exclusivas parcelas de agrado, ubicadas en un privilegiado sector Quillota,…",
-    price: "4.590",
-    area: "5000",
-    type: "Parcela" as const,
-    operation: "Venta" as const,
-    region: "Valparaíso",
-    comuna: "Quillota",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 7,
-    title: "Departamento Halimeda",
-    location: "Halimeda, Viña del Mar, Valparaíso, Chile",
-    description: "Amplio departamento ubicado en un privilegiado sector de Viña del…",
-    price: "5.790",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: "85",
-    type: "Departamento" as const,
-    operation: "Venta" as const,
-    region: "Valparaíso",
-    comuna: "Viña del Mar",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 8,
-    title: "Casa 1 Norte",
-    location: "1 Nte., Viña del Mar, Valparaíso, Chile",
-    description: "Amplia propiedad ubicada en un privilegiado sector de la comuna…",
-    price: "14.890",
-    bedrooms: 5,
-    bathrooms: 4,
-    area: "973",
-    type: "Casa" as const,
-    operation: "Venta" as const,
-    region: "Valparaíso",
-    comuna: "Viña del Mar",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 9,
-    title: "Dpto Hernando de Aguirre",
-    location: "Hernando de Aguirre 1191, Providencia",
-    description: "Precioso departamento en venta, ubicado a solo una cuadra de…",
-    price: "8.499",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: "95",
-    type: "Departamento" as const,
-    operation: "Venta" as const,
-    region: "Metropolitana",
-    comuna: "Providencia",
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 10,
-    title: "PentHouse Málaga",
-    location: "Las Condes",
-    description: "Exclusivo Penthouse con vista panorámica, ubicado en uno de los…",
-    price: "22.999",
-    bedrooms: 4,
-    bathrooms: 3,
-    area: "388",
-    type: "Penthouse" as const,
-    operation: "Venta" as const,
-    region: "Metropolitana",
-    comuna: "Las Condes",
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 11,
-    title: "Dpto Costas de Montemar",
-    location: "Concón",
-    description: "Precioso departamento ubicado en un exclusivo condominio de Costas de…",
-    price: "9.199",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: "123",
-    type: "Departamento" as const,
-    operation: "Venta" as const,
-    region: "Valparaíso",
-    comuna: "Concón",
-    image: "/placeholder-property.jpg",
-  },
-];
-
 export default function PropiedadesPage() {
-  const [allProperties, setAllProperties] = useState<Property[]>(mockProperties);
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(mockProperties);
+  // Estados sin datos hardcodeados - solo datos reales de WordPress
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Cargar propiedades desde WordPress al montar el componente
   useEffect(() => {
@@ -202,15 +38,16 @@ export default function PropiedadesPage() {
         setAllProperties(mapped);
         setFilteredProperties(mapped);
       } else {
-        console.log("No se encontraron propiedades, usando datos de ejemplo");
-        setAllProperties(mockProperties);
-        setFilteredProperties(mockProperties);
+        console.log("No hay propiedades disponibles en WordPress");
+        setError("No hay propiedades disponibles en este momento.");
+        setAllProperties([]);
+        setFilteredProperties([]);
       }
     } catch (err) {
       console.error("Error al cargar propiedades:", err);
-      setError("Error al cargar las propiedades. Mostrando datos de ejemplo.");
-      setAllProperties(mockProperties);
-      setFilteredProperties(mockProperties);
+      setError("Error al conectar con WordPress. Por favor, verifica tu conexión.");
+      setAllProperties([]);
+      setFilteredProperties([]);
     } finally {
       setLoading(false);
     }
@@ -241,6 +78,7 @@ export default function PropiedadesPage() {
     }
 
     setFilteredProperties(filtered);
+    setCurrentPage(1); // Reiniciar a la primera página al filtrar
   };
 
   const handleSort = (value: string) => {
@@ -267,6 +105,17 @@ export default function PropiedadesPage() {
         // newest - mantener orden original
         break;
     }
+  };
+
+  // Calcular propiedades paginadas
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProperties = filteredProperties.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -302,18 +151,19 @@ export default function PropiedadesPage() {
 
         {/* Mensaje de error */}
         {error && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-yellow-800">{error}</p>
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            <p className="font-medium">⚠️ {error}</p>
           </div>
         )}
 
+        {/* Filtros */}
         <PropertyFilters onFilter={handleFilter} />
 
+        {/* Contador y ordenamiento */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-gray-600">
             <span className="font-bold">{filteredProperties.length}</span> resultados
           </p>
-
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-600">Ordenar por:</label>
             <select
@@ -339,9 +189,46 @@ export default function PropiedadesPage() {
         {/* Grid de propiedades */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProperties.map((property) => (
+            {currentProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
+          </div>
+        )}
+
+        {/* Paginación */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-8 flex justify-center items-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Anterior
+            </button>
+            
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 rounded-md ${
+                    currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Siguiente
+            </button>
           </div>
         )}
 
@@ -349,7 +236,7 @@ export default function PropiedadesPage() {
         {!loading && filteredProperties.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
-              No se encontraron propiedades con los filtros seleccionados.
+              No se encontraron propiedades{error ? '.' : ' con los filtros seleccionados.'}
             </p>
           </div>
         )}
@@ -357,4 +244,3 @@ export default function PropiedadesPage() {
     </main>
   );
 }
-
