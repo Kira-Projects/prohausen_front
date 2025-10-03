@@ -215,8 +215,9 @@ export async function getPropertyImages(
   propertyId: number
 ): Promise<WordPressMedia[]> {
   try {
+    // Solicitar hasta 100 imágenes por página
     const response = await fetch(
-      `${WORDPRESS_API_URL}/media?parent=${propertyId}`,
+      `${WORDPRESS_API_URL}/media?parent=${propertyId}&per_page=100`,
       {
         next: { revalidate: 3600 },
       }
@@ -229,6 +230,13 @@ export async function getPropertyImages(
     }
 
     const images: WordPressMedia[] = await response.json();
+
+    // Log para ver cuántas imágenes se obtuvieron
+    const total = response.headers.get("X-WP-Total");
+    console.log(
+      `Imágenes obtenidas para propiedad ${propertyId}: ${images.length} de ${total} total`
+    );
+
     return images;
   } catch (error) {
     console.error(
