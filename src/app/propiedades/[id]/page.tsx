@@ -2,53 +2,129 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Property } from "@/types/property";
+import { getPropertyById, getFeatures, getMediaById, getPropertyImages } from "@/services/wordpress";
+import { mapWordPressProperty } from "@/utils/mapWordPressData";
 
 export default function PropertyDetailPage() {
+  const params = useParams();
+  const propertyId = params?.id ? parseInt(params.id as string) : null;
+  
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Datos estáticos de ejemplo (serán dinámicos más adelante)
-  const property = {
-    id: 1,
-    title: "Dpto Costas de Montemar",
-    type: "Departamento",
-    operation: "Venta",
-    region: "Valparaíso",
-    comuna: "Concón",
-    price: "9.199",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 123,
-    usefulArea: 95,
-    floors: 28,
-    floorNumber: 23,
-    groundLevel: -1,
-    yearBuilt: 2022,
-    description: `Precioso departamento ubicado en un exclusivo condominio de Costas de Montemar, Concón.
-Esta propiedad te fascinará por su imponente vista al mar y sus luminosos espacios. El departamento cuenta con un precioso hall de acceso, amplia cocina americana que conecta armónicamente con el living y terraza del departamento, 3 dormitorios, siendo 1 de ellos en suite, con vista al mar y su propia terraza independiente.
-En relación a sus áreas comunes, el departamento se encuentra al interior de un exclusivo departamento que cuenta lindas áreas verdes y comunes, tales como, sauna, jacuzzi, sala de cine, sala de eventos, azotea con parrilla y vista al mar, gimnasio, seguridad las 24 horas y circuito cerrado de cámaras. Adicionalmente la propiedad considera 2 estacionamiento y bodega asociada.`,
-    features: ["Azotea", "Gimnasio", "Jacuzzi", "Quincho", "Sala de cine", "Sala Eventos"],
-    images: [
-      "https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+1",
-      "https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+2",
-      "https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+3",
-      "https://via.placeholder.com/800x600/cccccc/666666?text=Imagen+4",
-    ],
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+  useEffect(() => {
+    if (propertyId) {
+      loadProperty(propertyId);
+    }
+  }, [propertyId]);
+
+  const loadProperty = async (id: number) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log(`Cargando propiedad ID: ${id}`);
+      const wpProperty = await getPropertyById(id);
+      
+      if (!wpProperty) {
+        setError("Propiedad no encontrada");
+        setLoading(false);
+        return;
+      }
+
+      // Cargar imagen destacada
+      let featuredImageUrl = "/placeholder-property.jpg";
+      if (wpProperty.featured_media) {
+        const media = await getMediaById(wpProperty.featured_media);
+        if (media?.source_url) {
+          featuredImageUrl = media.source_url;
+        }
+      }
+
+      // Mapear la propiedad con la imagen destacada
+      const mappedProperty = mapWordPressProperty(wpProperty, featuredImageUrl);
+      
+      // Cargar todas las imágenes de la galería
+      const propertyImages = await getPropertyImages(id);
+      const imageUrls = propertyImages.map(img => img.source_url);
+      
+      // Si hay imágenes de galería, usarlas; si no, usar solo la destacada
+      if (imageUrls.length > 0) {
+        mappedProperty.images = imageUrls;
+      } else if (featuredImageUrl !== "/placeholder-property.jpg") {
+        mappedProperty.images = [featuredImageUrl];
+      }
+      
+      // Cargar características (features) si existen
+      if (wpProperty.es_features && wpProperty.es_features.length > 0) {
+        const featuresData = await getFeatures();
+        const propertyFeatures = featuresData
+          .filter(f => wpProperty.es_features.includes(f.id))
+          .map(f => f.name);
+        mappedProperty.features = propertyFeatures;
+      }
+      
+      setProperty(mappedProperty);
+      console.log("Propiedad cargada:", mappedProperty);
+      console.log("Imágenes cargadas:", mappedProperty.images);
+    } catch (err) {
+      console.error("Error al cargar propiedad:", err);
+      setError("Error al cargar la propiedad");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+    if (property?.images && property.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+    }
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+    if (property?.images && property.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+    }
   };
 
   const copyUrl = () => {
     navigator.clipboard.writeText(window.location.href);
     alert("URL copiada al portapapeles");
   };
+
+  // Estado de carga
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando propiedad...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Estado de error
+  if (error || !property) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error || "Propiedad no encontrada"}</p>
+          <Link 
+            href="/propiedades"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors inline-block"
+          >
+            ← Volver a propiedades
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,7 +167,7 @@ En relación a sus áreas comunes, el departamento se encuentra al interior de u
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative aspect-video bg-gray-200">
                 <img 
-                  src={property.images[currentImageIndex]} 
+                  src={property.images && property.images.length > 0 ? property.images[currentImageIndex] : property.image} 
                   alt={`${property.title} - imagen ${currentImageIndex + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -118,13 +194,14 @@ En relación a sus áreas comunes, el departamento se encuentra al interior de u
 
                 {/* Indicador de imágenes */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                  {currentImageIndex + 1} / {property.images.length}
+                  {currentImageIndex + 1} / {property.images && property.images.length > 0 ? property.images.length : 1}
                 </div>
               </div>
 
               {/* Miniaturas */}
-              <div className="p-4 grid grid-cols-4 gap-2">
-                {property.images.map((img, idx) => (
+              {property.images && property.images.length > 1 && (
+                <div className="p-4 grid grid-cols-4 gap-2">
+                  {property.images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
@@ -135,48 +212,57 @@ En relación a sus áreas comunes, el departamento se encuentra al interior de u
                     <img src={img} alt={`Miniatura ${idx + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Características principales */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                  </svg>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">{property.bedrooms}</p>
-                    <p className="text-sm text-gray-600">Dormitorios</p>
+                {property.bedrooms && (
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{property.bedrooms}</p>
+                      <p className="text-sm text-gray-600">Dormitorios</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                  </svg>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">{property.bathrooms}</p>
-                    <p className="text-sm text-gray-600">Baños</p>
+                )}
+                {property.bathrooms && (
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{property.bathrooms}</p>
+                      <p className="text-sm text-gray-600">Baños</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
-                  </svg>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">{property.area}</p>
-                    <p className="text-sm text-gray-600">m² totales</p>
+                )}
+                {property.area && property.area !== "0" && (
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{property.area}</p>
+                      <p className="text-sm text-gray-600">m² totales</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
-                  </svg>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">{property.usefulArea}</p>
-                    <p className="text-sm text-gray-600">m² útiles</p>
+                )}
+                {property.usefulArea && (
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{property.usefulArea}</p>
+                      <p className="text-sm text-gray-600">m² útiles</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -200,38 +286,60 @@ En relación a sus áreas comunes, el departamento se encuentra al interior de u
                   <span className="font-medium text-gray-600">Comuna:</span>
                   <span className="text-gray-900">{property.comuna}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Dormitorios:</span>
-                  <span className="text-gray-900">{property.bedrooms}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Baños:</span>
-                  <span className="text-gray-900">{property.bathrooms}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Cantidad Pisos:</span>
-                  <span className="text-gray-900">{property.floors}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">N° de Piso:</span>
-                  <span className="text-gray-900">{property.floorNumber}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Nivel del suelo:</span>
-                  <span className="text-gray-900">{property.groundLevel}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Superficie total:</span>
-                  <span className="text-gray-900 font-bold">{property.area} m²</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Superficie útil:</span>
-                  <span className="text-gray-900 font-bold">{property.usefulArea} m²</span>
-                </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="font-medium text-gray-600">Año de construcción:</span>
-                  <span className="text-gray-900">{property.yearBuilt}</span>
-                </div>
+                {property.bedrooms && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Dormitorios:</span>
+                    <span className="text-gray-900">{property.bedrooms}</span>
+                  </div>
+                )}
+                {property.bathrooms && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Baños:</span>
+                    <span className="text-gray-900">{property.bathrooms}</span>
+                  </div>
+                )}
+                {property.floors && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Cantidad Pisos:</span>
+                    <span className="text-gray-900">{property.floors}</span>
+                  </div>
+                )}
+                {property.floorNumber && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">N° de Piso:</span>
+                    <span className="text-gray-900">{property.floorNumber}</span>
+                  </div>
+                )}
+                {property.groundLevel !== undefined && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Nivel del suelo:</span>
+                    <span className="text-gray-900">{property.groundLevel}</span>
+                  </div>
+                )}
+                {property.area && property.area !== "0" && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Superficie total:</span>
+                    <span className="text-gray-900 font-bold">{property.area} m²</span>
+                  </div>
+                )}
+                {property.usefulArea && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Superficie útil:</span>
+                    <span className="text-gray-900 font-bold">{property.usefulArea} m²</span>
+                  </div>
+                )}
+                {property.yearBuilt && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Año de construcción:</span>
+                    <span className="text-gray-900">{property.yearBuilt}</span>
+                  </div>
+                )}
+                {property.address && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-medium text-gray-600">Dirección:</span>
+                    <span className="text-gray-900">{property.address}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -244,19 +352,21 @@ En relación a sus áreas comunes, el departamento se encuentra al interior de u
             </div>
 
             {/* Servicios y características */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Servicios y características</h2>
-              <div className="flex flex-wrap gap-2">
-                {property.features.map((feature, idx) => (
-                  <span 
-                    key={idx}
-                    className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium"
-                  >
-                    {feature}
-                  </span>
-                ))}
+            {property.features && property.features.length > 0 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Servicios y características</h2>
+                <div className="flex flex-wrap gap-2">
+                  {property.features.map((feature, idx) => (
+                    <span 
+                      key={idx}
+                      className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Video */}
             {property.videoUrl && (
