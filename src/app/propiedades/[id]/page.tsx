@@ -15,12 +15,32 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
 
   useEffect(() => {
     if (propertyId) {
       loadProperty(propertyId);
     }
   }, [propertyId]);
+
+  // Manejar teclado para el modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isModalOpen || !property?.images) return;
+      
+      if (e.key === 'Escape') {
+        setIsModalOpen(false);
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen, currentImageIndex, property]);
 
   const loadProperty = async (id: number) => {
     setLoading(true);
@@ -112,6 +132,39 @@ export default function PropertyDetailPage() {
     );
   }
 
+  const nextImage = () => {
+    if (property?.images && property.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % property.images!.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (property?.images && property.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + property.images!.length) % property.images!.length);
+    }
+  };
+
+  const nextThumbnails = () => {
+    if (property?.images) {
+      const maxStart = Math.max(0, property.images.length - 5);
+      setThumbnailStartIndex((prev) => Math.min(prev + 5, maxStart));
+    }
+  };
+
+  const prevThumbnails = () => {
+    setThumbnailStartIndex((prev) => Math.max(0, prev - 5));
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    document.body.style.overflow = 'hidden'; // Prevenir scroll
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = 'unset';
+  };
+
   const currentImage = property.images && property.images.length > 0 
     ? property.images[currentImageIndex] 
     : property.image;
@@ -120,6 +173,12 @@ export default function PropertyDetailPage() {
   const bannerImage = property.images && property.images.length > 0 
     ? property.images[0] 
     : property.image;
+
+  // Calcular miniaturas visibles (5 a la vez)
+  const visibleThumbnails = property?.images?.slice(thumbnailStartIndex, thumbnailStartIndex + 5) || [];
+  const hasMoreThumbnails = property?.images && property.images.length > 5;
+  const canGoNext = property?.images && thumbnailStartIndex + 5 < property.images.length;
+  const canGoPrev = thumbnailStartIndex > 0;
 
   return (
     <div className="min-h-screen bg-white pt-20">
@@ -151,42 +210,252 @@ export default function PropertyDetailPage() {
         
         {/* Galería Principal */}
         <div className="mb-4">
-          <div className="relative w-full" style={{ height: '500px' }}>
+          <div className="relative w-full cursor-pointer" style={{ height: '500px' }} onClick={openModal}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={currentImage}
               alt={property.title}
               className="w-full h-full object-cover rounded"
             />
+            
+            {/* Flechas de navegación */}
+            {property.images && property.images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+                  aria-label="Imagen anterior"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+                  aria-label="Siguiente imagen"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Contador de imágenes */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {property.images.length}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Miniaturas horizontales */}
+          {/* Miniaturas horizontales - Mostrar 5 a la vez */}
           {property.images && property.images.length > 1 && (
-            <div className="mt-3 overflow-x-auto">
-              <div className="flex gap-2 pb-2">
-                {property.images.map((img, idx) => (
+            <div className="mt-3 relative">
+              <div className="flex items-center gap-2">
+                {/* Flecha izquierda para miniaturas */}
+                {hasMoreThumbnails && (
                   <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={`flex-shrink-0 ${
-                      idx === currentImageIndex 
-                        ? 'ring-2 ring-blue-600' 
-                        : 'opacity-70 hover:opacity-100'
+                    onClick={prevThumbnails}
+                    disabled={!canGoPrev}
+                    className={`flex-shrink-0 p-2 rounded ${
+                      canGoPrev 
+                        ? 'bg-gray-200 hover:bg-gray-300' 
+                        : 'bg-gray-100 opacity-50 cursor-not-allowed'
                     }`}
-                    style={{ width: '100px', height: '75px' }}
+                    aria-label="Miniaturas anteriores"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={img} 
-                      alt={`${property.title} - ${idx + 1}`} 
-                      className="w-full h-full object-cover rounded"
-                    />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
                   </button>
-                ))}
+                )}
+
+                {/* Miniaturas visibles */}
+                <div className="flex gap-2 overflow-hidden">
+                  {visibleThumbnails.map((img, idx) => {
+                    const actualIndex = thumbnailStartIndex + idx;
+                    return (
+                      <button
+                        key={actualIndex}
+                        onClick={() => setCurrentImageIndex(actualIndex)}
+                        className={`flex-shrink-0 transition-all ${
+                          actualIndex === currentImageIndex 
+                            ? 'ring-2 ring-blue-600' 
+                            : 'opacity-70 hover:opacity-100'
+                        }`}
+                        style={{ width: '100px', height: '75px' }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={img} 
+                          alt={`${property.title} - ${actualIndex + 1}`} 
+                          className="w-full h-full object-cover rounded"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Flecha derecha para miniaturas */}
+                {hasMoreThumbnails && (
+                  <button
+                    onClick={nextThumbnails}
+                    disabled={!canGoNext}
+                    className={`flex-shrink-0 p-2 rounded ${
+                      canGoNext 
+                        ? 'bg-gray-200 hover:bg-gray-300' 
+                        : 'bg-gray-100 opacity-50 cursor-not-allowed'
+                    }`}
+                    aria-label="Miniaturas siguientes"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           )}
         </div>
+
+        {/* Modal Lightbox */}
+        {isModalOpen && property.images && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          >
+            {/* Contenedor del modal */}
+            <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
+              
+              {/* Botón cerrar */}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full z-10"
+                aria-label="Cerrar"
+              >
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Contador de imágenes */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 text-white px-4 py-2 rounded-full text-lg font-semibold">
+                {currentImageIndex + 1} / {property.images.length}
+              </div>
+
+              {/* Imagen principal del modal */}
+              <div 
+                className="relative max-w-6xl max-h-[80vh] flex items-center justify-center"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={currentImage}
+                  alt={`${property.title} - ${currentImageIndex + 1}`}
+                  className="max-w-full max-h-[80vh] object-contain"
+                />
+
+                {/* Flechas de navegación */}
+                {property.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full transition-all"
+                      aria-label="Imagen anterior"
+                    >
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-4 rounded-full transition-all"
+                      aria-label="Siguiente imagen"
+                    >
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Miniaturas en el modal */}
+              {property.images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-6xl">
+                  <div className="flex items-center gap-2">
+                    {/* Flecha izquierda */}
+                    {hasMoreThumbnails && (
+                      <button
+                        onClick={prevThumbnails}
+                        disabled={!canGoPrev}
+                        className={`flex-shrink-0 p-2 rounded ${
+                          canGoPrev 
+                            ? 'bg-white/20 hover:bg-white/30' 
+                            : 'bg-white/10 opacity-50 cursor-not-allowed'
+                        } text-white`}
+                        aria-label="Miniaturas anteriores"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                    )}
+
+                    {/* Miniaturas visibles */}
+                    <div className="flex gap-2">
+                      {visibleThumbnails.map((img, idx) => {
+                        const actualIndex = thumbnailStartIndex + idx;
+                        return (
+                          <button
+                            key={actualIndex}
+                            onClick={() => setCurrentImageIndex(actualIndex)}
+                            className={`flex-shrink-0 transition-all ${
+                              actualIndex === currentImageIndex 
+                                ? 'ring-4 ring-white' 
+                                : 'opacity-60 hover:opacity-100'
+                            }`}
+                            style={{ width: '100px', height: '75px' }}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                              src={img} 
+                              alt={`Miniatura ${actualIndex + 1}`} 
+                              className="w-full h-full object-cover rounded"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Flecha derecha */}
+                    {hasMoreThumbnails && (
+                      <button
+                        onClick={nextThumbnails}
+                        disabled={!canGoNext}
+                        className={`flex-shrink-0 p-2 rounded ${
+                          canGoNext 
+                            ? 'bg-white/20 hover:bg-white/30' 
+                            : 'bg-white/10 opacity-50 cursor-not-allowed'
+                        } text-white`}
+                        aria-label="Miniaturas siguientes"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        )}
 
         {/* Layout 2 columnas */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
