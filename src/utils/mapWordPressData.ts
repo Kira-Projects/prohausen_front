@@ -186,6 +186,8 @@ export function mapWordPressProperty(
   let price = "0";
   let bedrooms: number | undefined;
   let bathrooms: number | undefined;
+  let halfBathrooms: number | undefined;
+  let totalRooms: number | undefined;
   let area = "0";
   let usefulArea: string | undefined;
   let landArea: string | undefined;
@@ -199,6 +201,12 @@ export function mapWordPressProperty(
   let country: string | undefined;
 
   if (wpProperty.property_meta) {
+    // Log para debug - ver qué campos vienen realmente de WordPress
+    console.log(
+      `🔍 property_meta para ${wpProperty.id}:`,
+      wpProperty.property_meta
+    );
+
     // Usar datos de metadatos de Estatik si están disponibles
     price = wpProperty.property_meta.price || "0";
     bedrooms = wpProperty.property_meta.bedrooms
@@ -207,13 +215,24 @@ export function mapWordPressProperty(
     bathrooms = wpProperty.property_meta.bathrooms
       ? parseInt(wpProperty.property_meta.bathrooms)
       : undefined;
+
+    // NOTA: half_bathrooms y total_rooms NO existen en Estatik por defecto
+    halfBathrooms = wpProperty.property_meta.half_bathrooms
+      ? parseInt(wpProperty.property_meta.half_bathrooms)
+      : undefined;
+    totalRooms = wpProperty.property_meta.total_rooms
+      ? parseInt(wpProperty.property_meta.total_rooms)
+      : undefined;
+
+    // Para mostrar en características principales (línea con íconos)
     area =
-      wpProperty.property_meta.area ||
       wpProperty.property_meta.land_area ||
+      wpProperty.property_meta.area ||
       "0";
 
-    // Campos extendidos
-    landArea = wpProperty.property_meta.land_area;
+    // Campos extendidos - CORREGIDOS
+    usefulArea = wpProperty.property_meta.area; // Superficie útil/construida (242 m²)
+    landArea = wpProperty.property_meta.land_area; // Superficie total/terreno (973 m²)
     floors = wpProperty.property_meta.floors
       ? parseInt(wpProperty.property_meta.floors)
       : undefined;
@@ -261,7 +280,7 @@ export function mapWordPressProperty(
   // Usar el contenido completo con HTML para la descripción
   // Esto permite que se muestre con formato en el frontend
   let description = content; // Mantener el HTML del contenido completo
-  
+
   // Si no hay contenido, usar el excerpt
   if (!description || description.length < 50) {
     description = excerpt;
@@ -305,6 +324,8 @@ export function mapWordPressProperty(
     address: address,
     zip: zip,
     country: country,
+    halfBathrooms: halfBathrooms,
+    totalRooms: totalRooms,
   };
 }
 

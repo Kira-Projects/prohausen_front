@@ -17,6 +17,7 @@ export default function PropertyDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (propertyId) {
@@ -26,21 +27,21 @@ export default function PropertyDetailPage() {
 
   // Manejar teclado para el modal
   useEffect(() => {
+    if (!isModalOpen || !property?.images) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isModalOpen || !property?.images) return;
-      
       if (e.key === 'Escape') {
         setIsModalOpen(false);
       } else if (e.key === 'ArrowLeft') {
-        prevImage();
+        setCurrentImageIndex((prev) => (prev - 1 + property.images!.length) % property.images!.length);
       } else if (e.key === 'ArrowRight') {
-        nextImage();
+        setCurrentImageIndex((prev) => (prev + 1) % property.images!.length);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen, currentImageIndex, property]);
+  }, [isModalOpen, property]);
 
   const loadProperty = async (id: number) => {
     setLoading(true);
@@ -165,6 +166,15 @@ export default function PropertyDetailPage() {
     document.body.style.overflow = 'unset';
   };
 
+  const copyToClipboard = () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    navigator.clipboard.writeText(url);
+    alert('URL copiada al portapapeles');
+  };
+
+  const shareUrl = typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : '';
+  const shareTitle = encodeURIComponent(property?.title || '');
+
   const currentImage = property.images && property.images.length > 0 
     ? property.images[currentImageIndex] 
     : property.image;
@@ -182,6 +192,19 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-white pt-20">
+      {/* Botón flotante de WhatsApp */}
+      <a
+        href={`https://wa.me/56912345678?text=Hola, me interesa la propiedad: ${property.title} - ${typeof window !== 'undefined' ? window.location.href : ''}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-2xl transition-all hover:scale-110"
+        aria-label="Contactar por WhatsApp"
+      >
+        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
+
       {/* Título de la propiedad - con imagen de fondo */}
       <div className="relative bg-gray-800 text-white py-50">
         {/* Imagen de fondo */}
@@ -218,31 +241,54 @@ export default function PropertyDetailPage() {
               className="w-full h-full object-cover rounded"
             />
             
-            {/* Flechas de navegación */}
+            {/* Badge "Destacado" - Superior Izquierda */}
+            {property.featured && (
+              <div className="absolute top-4 left-4 bg-white/75 hover:bg-white/90 text-gray-700 px-3 py-1.5 rounded text-sm font-medium shadow-md transition-all">
+                Destacado
+              </div>
+            )}
+
+            {/* Botón Compartir - Superior Derecha */}
+            <div className="absolute top-4 right-4">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowShareModal(true);
+                }}
+                className="bg-white/75 hover:bg-white/90 text-gray-700 p-2 rounded shadow-md transition-all"
+                aria-label="Compartir propiedad"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Flechas de navegación - SIN círculos */}
             {property.images && property.images.length > 1 && (
               <>
-                <button
+                <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     prevImage();
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-all"
                   aria-label="Imagen anterior"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg className="w-10 h-10 drop-shadow-2xl" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <button
+                <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     nextImage();
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-all"
                   aria-label="Siguiente imagen"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg className="w-10 h-10 drop-shadow-2xl" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
 
@@ -277,19 +323,19 @@ export default function PropertyDetailPage() {
                 )}
 
                 {/* Miniaturas visibles */}
-                <div className="flex gap-2 overflow-hidden">
+                <div className="flex flex-1 gap-2">
                   {visibleThumbnails.map((img, idx) => {
                     const actualIndex = thumbnailStartIndex + idx;
                     return (
                       <button
                         key={actualIndex}
                         onClick={() => setCurrentImageIndex(actualIndex)}
-                        className={`flex-shrink-0 transition-all ${
+                        className={`flex-1 transition-all rounded ${
                           actualIndex === currentImageIndex 
                             ? 'ring-2 ring-blue-600' 
                             : 'opacity-70 hover:opacity-100'
                         }`}
-                        style={{ width: '100px', height: '75px' }}
+                        style={{ height: '120px' }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
@@ -300,7 +346,7 @@ export default function PropertyDetailPage() {
                       </button>
                     );
                   })}
-                </div>
+              </div>
 
                 {/* Flecha derecha para miniaturas */}
                 {hasMoreThumbnails && (
@@ -322,7 +368,123 @@ export default function PropertyDetailPage() {
               </div>
             </div>
           )}
-        </div>
+            </div>
+
+        {/* Modal de Compartir */}
+        {showShareModal && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setShowShareModal(false)}
+          >
+            <div 
+              className="bg-white rounded-lg shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Encabezado */}
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900">Comparte esta casa</h3>
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Input para copiar URL */}
+              <div className="mb-6">
+                <p className="text-sm text-gray-600 mb-2">Copie esta URL para compartir</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={typeof window !== 'undefined' ? window.location.href : ''}
+                    readOnly
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm bg-gray-50"
+                  />
+                  <button
+                    onClick={copyToClipboard}
+                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded font-medium text-sm transition-colors"
+                  >
+                    DUPDO
+                  </button>
+                </div>
+              </div>
+
+              {/* Redes Sociales */}
+                  <div>
+                <p className="text-sm text-gray-600 mb-3">O compartir con</p>
+                <div className="flex gap-3 justify-center">
+                  {/* LinkedIn */}
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                    aria-label="Compartir en LinkedIn"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                  </a>
+
+                  {/* Facebook */}
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                    aria-label="Compartir en Facebook"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+
+                  {/* X (Twitter) */}
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                    aria-label="Compartir en X"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+
+                  {/* Pinterest */}
+                  <a
+                    href={`https://pinterest.com/pin/create/button/?url=${shareUrl}&description=${shareTitle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                    aria-label="Compartir en Pinterest"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+                    </svg>
+                  </a>
+
+                  {/* WhatsApp */}
+                  <a
+                    href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                    aria-label="Compartir en WhatsApp"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal Lightbox */}
         {isModalOpen && property.images && (
@@ -407,19 +569,19 @@ export default function PropertyDetailPage() {
                     )}
 
                     {/* Miniaturas visibles */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-1 gap-2 max-w-2xl">
                       {visibleThumbnails.map((img, idx) => {
                         const actualIndex = thumbnailStartIndex + idx;
                         return (
                           <button
                             key={actualIndex}
                             onClick={() => setCurrentImageIndex(actualIndex)}
-                            className={`flex-shrink-0 transition-all ${
+                            className={`flex-1 transition-all rounded ${
                               actualIndex === currentImageIndex 
                                 ? 'ring-4 ring-white' 
                                 : 'opacity-60 hover:opacity-100'
                             }`}
-                            style={{ width: '100px', height: '75px' }}
+                            style={{ height: '100px' }}
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
@@ -446,7 +608,7 @@ export default function PropertyDetailPage() {
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                  </svg>
                       </button>
                     )}
                   </div>
@@ -463,88 +625,130 @@ export default function PropertyDetailPage() {
           {/* Columna izquierda - Contenido principal */}
           <div className="lg:col-span-2 space-y-6">
             
-            {/* Información básica */}
-            <div className="bg-white rounded border p-4">
-              <h2 className="text-2xl font-bold mb-2">{property.title}</h2>
-              <p className="text-gray-600 text-sm mb-4">{property.address || property.location}</p>
+            {/* Información básica - Estilo WordPress */}
+            <div className="bg-white">
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-2 text-sm mb-4">
+                <span className="text-gray-600">{property.operation}</span>
+                <span className="text-gray-400">•</span>
+                <span className="text-gray-600">{property.type}</span>
+                <span className="text-gray-400">•</span>
+                <span className="text-gray-600">{property.region}</span>
+              </div>
+
+              {/* Título */}
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">{property.title}</h1>
+
+              {/* Ubicación */}
+              <p className="text-gray-600 mb-6">{property.address || `${property.location}, ${property.region}, Chile`}</p>
               
-              {/* Características rápidas */}
-              <div className="flex gap-8 text-center py-4 border-y">
+              {/* Características principales - en línea con íconos */}
+              <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
                 {property.bedrooms && (
-                  <div>
-                    <div className="text-3xl font-bold">{property.bedrooms}</div>
-                    <div className="text-sm text-gray-600">Dormitorios</div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                    <span className="text-gray-900 font-semibold">{property.bedrooms}</span>
+                    <span className="text-gray-600">camas</span>
                   </div>
                 )}
                 {property.bathrooms && (
-                  <div>
-                    <div className="text-3xl font-bold">{property.bathrooms}</div>
-                    <div className="text-sm text-gray-600">Baños</div>
-                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                    </svg>
+                    <span className="text-gray-900 font-semibold">{property.bathrooms}</span>
+                    <span className="text-gray-600">baños</span>
+                </div>
                 )}
                 {property.area && property.area !== "0" && (
-                  <div>
-                    <div className="text-3xl font-bold">{property.area}</div>
-                    <div className="text-sm text-gray-600">m²</div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                    <span className="text-gray-900 font-semibold">{property.area}</span>
+                    <span className="text-gray-600">m²</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Características */}
-            <div className="bg-white rounded border p-4">
-              <h3 className="text-xl font-bold mb-4">Características</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-gray-600">Categoría:</span>
-                  <span className="font-semibold">{property.type}</span>
+            {/* Características - Layout WordPress (4 columnas, 3 filas) */}
+            <div className="bg-white border border-gray-200 rounded">
+              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 bg-gray-50">Características</h3>
+              <div className="px-6 py-6">
+                {/* Fila 1 */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Categoría</p>
+                    <p className="font-semibold text-gray-900">{property.type}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Operación</p>
+                    <p className="font-semibold text-gray-900">{property.operation}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Comuna</p>
+                    <p className="font-semibold text-gray-900">{property.comuna}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Dormitorios</p>
+                    <p className="font-semibold text-gray-900">{property.bedrooms || 0}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-gray-600">Operación:</span>
-                  <span className="font-semibold">{property.operation}</span>
+
+                {/* Fila 2 */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Baños</p>
+                    <p className="font-semibold text-gray-900">{property.bathrooms || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Medios baños</p>
+                    <p className="font-semibold text-gray-900">{property.halfBathrooms || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Habitaciones totales</p>
+                    <p className="font-semibold text-gray-900">{property.totalRooms || property.bedrooms || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Cantidad Pisos</p>
+                    <p className="font-semibold text-gray-900">{property.floors || 0}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-gray-600">Región:</span>
-                  <span className="font-semibold">{property.region}</span>
+
+                {/* Fila 3 */}
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">N° de Piso</p>
+                    <p className="font-semibold text-gray-900">{property.floorNumber || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Superficie total</p>
+                    <p className="font-semibold text-gray-900">{property.landArea || property.area} m²</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Superficie Útil</p>
+                    <p className="font-semibold text-gray-900">{property.usefulArea || property.area} m²</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 text-sm mb-1">Año de construcción</p>
+                    <p className="font-semibold text-gray-900">{property.yearBuilt || '-'}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between py-2 border-b">
-                  <span className="text-gray-600">Comuna:</span>
-                  <span className="font-semibold">{property.comuna}</span>
-                </div>
-                {property.bedrooms && (
-                <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Dormitorios:</span>
-                    <span className="font-semibold">{property.bedrooms}</span>
-                </div>
-                )}
-                {property.bathrooms && (
-                <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Baños:</span>
-                    <span className="font-semibold">{property.bathrooms}</span>
-                </div>
-                )}
-                {property.area && property.area !== "0" && (
-                <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Área:</span>
-                    <span className="font-semibold">{property.area} m²</span>
-                </div>
-                )}
-                {property.address && (
-                  <div className="flex justify-between py-2 border-b col-span-2">
-                    <span className="text-gray-600">Dirección:</span>
-                    <span className="font-semibold">{property.address}</span>
-                </div>
-                )}
               </div>
             </div>
 
-            {/* Descripción */}
-            <div className="bg-white rounded border p-4">
-              <h3 className="text-xl font-bold mb-4">Descripción</h3>
-              <div 
-                className="text-gray-700 leading-relaxed prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: property.description }}
-              />
+            {/* Descripción - Estilo WordPress */}
+            <div className="bg-white border border-gray-200 rounded">
+              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 bg-gray-50">Descripción</h3>
+              <div className="px-6 py-6">
+                <div 
+                  className="text-gray-700 leading-relaxed prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: property.description }}
+                />
+              </div>
             </div>
 
             {/* Servicios y características */}
@@ -604,10 +808,10 @@ export default function PropertyDetailPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-4">
               
-              {/* Precio */}
+              {/* Precio - Como viene de la API */}
               <div className="bg-white rounded border p-6">
                 <div className="text-4xl font-bold text-gray-900 mb-4">
-                  $ {property.price}
+                  {property.price}
                 </div>
 
                 {/* Botones para compartir */}

@@ -25,18 +25,21 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <a href="#inicio" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm cursor-pointer">
+            <Link href="/" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm">
               Inicio
-            </a>
-            <a href="#propiedades" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm cursor-pointer">
+            </Link>
+            <Link href="/propiedades" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm">
               Propiedades
-            </a>
-            <a href="#servicios" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm cursor-pointer">
+            </Link>
+            <Link href="/#servicios" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm">
               Nuestros Servicios
-            </a>
-            <a href="#contacto" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm cursor-pointer">
+            </Link>
+            <Link href="/#contacto" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm">
               Contacto
-            </a>
+            </Link>
+            <Link href="/manual-compra" className="text-white hover:text-gray-300 font-medium transition-colors uppercase text-sm">
+              Manual de Compra
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -58,34 +61,41 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden pb-4">
             <div className="flex flex-col space-y-2">
-              <a
-                href="#inicio"
-                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm cursor-pointer"
+              <Link
+                href="/"
+                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Inicio
-              </a>
-              <a
-                href="#propiedades"
-                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm cursor-pointer"
+              </Link>
+              <Link
+                href="/propiedades"
+                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Propiedades
-              </a>
-              <a
-                href="#servicios"
-                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm cursor-pointer"
+              </Link>
+              <Link
+                href="/#servicios"
+                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Nuestros Servicios
-              </a>
-              <a
-                href="#contacto"
-                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm cursor-pointer"
+              </Link>
+              <Link
+                href="/#contacto"
+                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contacto
-              </a>
+              </Link>
+              <Link
+                href="/manual-compra"
+                className="text-white hover:text-gray-300 font-medium py-2 transition-colors uppercase text-sm"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Manual de Compra
+              </Link>
             </div>
           </div>
         )}

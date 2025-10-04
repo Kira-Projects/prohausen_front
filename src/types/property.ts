@@ -27,6 +27,8 @@ export interface Property {
   address?: string;
   zip?: string;
   country?: string;
+  halfBathrooms?: number;
+  totalRooms?: number;
 }
 
 export type PropertyType =
@@ -86,6 +88,8 @@ export interface WordPressProperty {
     price?: string;
     bedrooms?: string;
     bathrooms?: string;
+    half_bathrooms?: string;
+    total_rooms?: string;
     area?: string;
     land_area?: string;
     address?: string;
