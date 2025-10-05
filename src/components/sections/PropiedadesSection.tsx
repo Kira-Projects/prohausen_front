@@ -3,7 +3,6 @@
 import { useState } from "react";
 import PropertyCard from "@/components/properties/PropertyCard";
 import PropertyListCard from "@/components/properties/PropertyListCard";
-import PropertyFilters from "@/components/properties/PropertyFilters";
 
 // Datos de ejemplo extendidos
 const allProperties = [
@@ -19,7 +18,7 @@ const allProperties = [
     region: "O'Higgins",
     comuna: "Navidad",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 2,
@@ -33,7 +32,7 @@ const allProperties = [
     region: "O'Higgins",
     comuna: "Navidad",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 3,
@@ -49,7 +48,7 @@ const allProperties = [
     region: "Metropolitana",
     comuna: "Vitacura",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 4,
@@ -65,7 +64,7 @@ const allProperties = [
     region: "Metropolitana",
     comuna: "Providencia",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 5,
@@ -79,7 +78,7 @@ const allProperties = [
     region: "Los Lagos",
     comuna: "Panguipulli",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 6,
@@ -93,7 +92,7 @@ const allProperties = [
     region: "Valparaíso",
     comuna: "Quillota",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 7,
@@ -109,7 +108,7 @@ const allProperties = [
     region: "Valparaíso",
     comuna: "Viña del Mar",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
   {
     id: 8,
@@ -125,7 +124,7 @@ const allProperties = [
     region: "Valparaíso",
     comuna: "Viña del Mar",
     featured: true,
-    image: "/placeholder-property.jpg",
+    image: "/placeholder-property.svg",
   },
 ];
 
@@ -134,36 +133,11 @@ export default function PropiedadesSection() {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid"); // grid, list, map
 
-  const handleFilter = (filters: any) => {
-    let filtered = [...allProperties];
 
-    if (filters.operacion) {
-      filtered = filtered.filter(
-        (p) => p.operation.toLowerCase() === filters.operacion.toLowerCase()
-      );
-    }
-    if (filters.categoria) {
-      filtered = filtered.filter(
-        (p) => p.type.toLowerCase() === filters.categoria.toLowerCase()
-      );
-    }
-    if (filters.region) {
-      filtered = filtered.filter(
-        (p) => p.region.toLowerCase().includes(filters.region.toLowerCase())
-      );
-    }
-    if (filters.comuna) {
-      filtered = filtered.filter(
-        (p) => p.comuna.toLowerCase().includes(filters.comuna.toLowerCase())
-      );
-    }
-
-    setFilteredProperties(filtered);
-  };
 
   const handleSort = (value: string) => {
     setSortBy(value);
-    let sorted = [...filteredProperties];
+    const sorted = [...filteredProperties];
 
     switch (value) {
       case "price-asc":

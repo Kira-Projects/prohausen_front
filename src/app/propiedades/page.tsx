@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import PropertyCard from "@/components/properties/PropertyCard";
 import PropertyFilters from "@/components/properties/PropertyFilters";
 import { Property } from "@/types/property";
-import { getProperties } from "@/services/wordpress";
-import { mapWordPressProperties } from "@/utils/mapWordPressData";
+import { getProperties, getPropertyImagesOptimized } from "@/services/wordpress";
+import { mapWordPressProperty } from "@/utils/mapWordPressData";
 
 export default function PropiedadesPage() {
   // Estados sin datos hardcodeados - solo datos reales de WordPress
@@ -34,9 +34,31 @@ export default function PropiedadesPage() {
       
       if (wpProperties.length > 0) {
         console.log(`${wpProperties.length} propiedades obtenidas de WordPress`);
-        const mapped = mapWordPressProperties(wpProperties);
-        setAllProperties(mapped);
-        setFilteredProperties(mapped);
+        
+        const mappedProperties = await Promise.all(
+          wpProperties.map(async (wpProp) => {
+            // Usar método híbrido optimizado para obtener múltiples imágenes
+            const allImages = await getPropertyImagesOptimized(wpProp);
+            
+            let featuredImageUrl = "";
+            if (allImages.length > 0) {
+              featuredImageUrl = allImages[0];
+            }
+
+            const mappedProperty = mapWordPressProperty(wpProp, featuredImageUrl);
+            
+            // Agregar todas las imágenes a la propiedad mapeada (máximo 5)
+            if (allImages.length > 0) {
+              mappedProperty.images = allImages.slice(0, 5); // Limitar a 5 imágenes
+              mappedProperty.image = allImages[0]; // La primera imagen como principal
+            }
+
+            return mappedProperty;
+          })
+        );
+
+        setAllProperties(mappedProperties);
+        setFilteredProperties(mappedProperties);
       } else {
         console.log("No hay propiedades disponibles en WordPress");
         setError("No hay propiedades disponibles en este momento.");
@@ -121,32 +143,8 @@ export default function PropiedadesPage() {
   return (
     <main className="min-h-screen pt-24 pb-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900">Propiedades</h1>
-          
-          {/* Botón de actualizar */}
-          <button
-            onClick={loadPropertiesFromWordPress}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Cargando...
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Actualizar
-              </>
-            )}
-          </button>
         </div>
 
         {/* Mensaje de error */}

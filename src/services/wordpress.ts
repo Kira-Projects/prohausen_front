@@ -4,6 +4,20 @@ import {
   WordPressMedia,
 } from "@/types/property";
 
+// Tipo para propiedades de WordPress con datos embebidos
+interface WordPressPropertyWithEmbeds extends WordPressProperty {
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{
+      source_url: string;
+      id: number;
+    }>;
+    "wp:attachment"?: Array<{
+      source_url: string;
+      id: number;
+    }>;
+  };
+}
+
 const WORDPRESS_API_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   "https://prohausen.cl/wp-json/wp/v2";
@@ -17,11 +31,11 @@ const WORDPRESS_API_URL =
  */
 export async function getProperties(): Promise<WordPressProperty[]> {
   try {
-    // Solicitar hasta 100 propiedades por página
+    // Solicitar propiedades con imágenes embebidas para reducir llamadas API
     const response = await fetch(
-      `${WORDPRESS_API_URL}/properties?per_page=100`,
+      `${WORDPRESS_API_URL}/properties?per_page=100&_embed`,
       {
-        next: { revalidate: 60 }, // Revalidar cada 60 segundos
+        next: { revalidate: 300 }, // Revalidar cada 5 minutos (menos frecuente)
       }
     );
 
@@ -245,4 +259,81 @@ export async function getPropertyImages(
     );
     return [];
   }
+}
+
+/**
+ * Extrae imágenes de una propiedad usando datos embebidos (optimizado)
+ */
+export function extractEmbeddedImages(
+  wpProperty: WordPressPropertyWithEmbeds
+): string[] {
+  const images: string[] = [];
+
+  try {
+    // Obtener imagen destacada desde _embedded
+    if (wpProperty._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
+      images.push(wpProperty._embedded["wp:featuredmedia"][0].source_url);
+    }
+
+    // También intentar obtener attachments si están disponibles
+    if (wpProperty._embedded?.["wp:attachment"]) {
+      wpProperty._embedded["wp:attachment"].forEach((attachment) => {
+        if (attachment.source_url && !images.includes(attachment.source_url)) {
+          images.push(attachment.source_url);
+        }
+      });
+    }
+
+    console.log(
+      `🖼️ Imágenes encontradas para propiedad ${wpProperty.id}:`,
+      images.length,
+      images
+    );
+  } catch (error) {
+    console.warn(
+      `Error extracting embedded images for property ${wpProperty.id}:`,
+      error
+    );
+  }
+
+  return images.slice(0, 5); // Limitar a 5 imágenes como solicitaste
+}
+
+/**
+ * Obtiene múltiples imágenes de una propiedad (método híbrido optimizado)
+ */
+export async function getPropertyImagesOptimized(
+  wpProperty: WordPressPropertyWithEmbeds
+): Promise<string[]> {
+  // Primero intentar con datos embebidos (rápido)
+  let images = extractEmbeddedImages(wpProperty);
+
+  // Si tenemos menos de 2 imágenes, intentar obtener más de la galería
+  if (images.length < 2) {
+    try {
+      console.log(
+        `🔍 Buscando más imágenes para propiedad ${wpProperty.id}...`
+      );
+      const galleryImages = await getPropertyImages(wpProperty.id);
+
+      // Agregar URLs de la galería que no estén ya incluidas
+      const galleryUrls = galleryImages
+        .map((img) => img.source_url)
+        .filter((url) => url && !images.includes(url))
+        .slice(0, 4); // Máximo 4 adicionales
+
+      images = [...images, ...galleryUrls];
+      console.log(
+        `✅ Total de imágenes para propiedad ${wpProperty.id}:`,
+        images.length
+      );
+    } catch (error) {
+      console.warn(
+        `⚠️ Error obteniendo galería para propiedad ${wpProperty.id}:`,
+        error
+      );
+    }
+  }
+
+  return images.slice(0, 5); // Limitar a 5 imágenes máximo
 }

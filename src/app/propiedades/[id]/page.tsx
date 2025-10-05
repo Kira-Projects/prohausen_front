@@ -57,7 +57,7 @@ export default function PropertyDetailPage() {
         return;
       }
 
-      let featuredImageUrl = "/placeholder-property.jpg";
+      let featuredImageUrl = "/placeholder-property.svg";
       if (wpProperty.featured_media) {
         const media = await getMediaById(wpProperty.featured_media);
         if (media?.source_url) {
@@ -76,7 +76,7 @@ export default function PropertyDetailPage() {
       const allImages: string[] = [];
       
       // Primero agregar imagen destacada
-      if (featuredImageUrl && featuredImageUrl !== "/placeholder-property.jpg") {
+      if (featuredImageUrl && featuredImageUrl !== "/placeholder-property.svg") {
         allImages.push(featuredImageUrl);
       }
       
@@ -808,7 +808,7 @@ export default function PropertyDetailPage() {
                     width="100%"
                     height="100%"
                     src={(() => {
-                      let url = property.videoUrl;
+                      const url = property.videoUrl;
                       // Convertir youtu.be a embed
                       if (url.includes('youtu.be/')) {
                         const videoId = url.split('youtu.be/')[1].split('?')[0];

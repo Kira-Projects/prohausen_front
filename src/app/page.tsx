@@ -1,5 +1,5 @@
 import SearchHero from "@/components/home/SearchHero";
-import PropiedadesSection from "@/components/sections/PropiedadesSection";
+import FeaturedProperties from "@/components/home/FeaturedProperties";
 import ServiciosSection from "@/components/sections/ServiciosSection";
 import ContactoSection from "@/components/sections/ContactoSection";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
@@ -11,7 +11,7 @@ export default function Home() {
         <SearchHero />
       </section>
       
-      <PropiedadesSection />
+      <FeaturedProperties />
       <ServiciosSection />
       <ContactoSection />
       

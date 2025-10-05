@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Property } from "@/types/property";
@@ -37,7 +38,7 @@ export default function PropertyDetailPageEstatik() {
       }
 
       // Cargar imagen destacada
-      let featuredImageUrl = "/placeholder-property.jpg";
+      let featuredImageUrl = "/placeholder-property.svg";
       if (wpProperty.featured_media) {
         const media = await getMediaById(wpProperty.featured_media);
         if (media?.source_url) {
@@ -55,7 +56,7 @@ export default function PropertyDetailPageEstatik() {
       // Si hay imágenes de galería, usarlas; si no, usar solo la destacada
       if (imageUrls.length > 0) {
         mappedProperty.images = imageUrls;
-      } else if (featuredImageUrl !== "/placeholder-property.jpg") {
+      } else if (featuredImageUrl !== "/placeholder-property.svg") {
         mappedProperty.images = [featuredImageUrl];
       }
       
@@ -138,10 +139,12 @@ export default function PropertyDetailPageEstatik() {
             {/* Galería Principal */}
             <div className="bg-white">
               <div className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
-                <img 
+                <Image 
                   src={currentImage}
                   alt={property.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
                 />
               </div>
 
@@ -158,7 +161,7 @@ export default function PropertyDetailPageEstatik() {
                           : 'border-gray-200 opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt={`${property.title} - ${idx + 1}`} className="w-full h-full object-cover" />
+                      <Image src={img} alt={`${property.title} - ${idx + 1}`} fill className="object-cover" sizes="(max-width: 768px) 25vw, 15vw" />
                     </button>
                   ))}
                 </div>

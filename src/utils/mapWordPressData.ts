@@ -402,7 +402,7 @@ export function mapWordPressProperty(
     region: region || "Sin región",
     comuna: comuna || "Sin comuna",
     featured: featured,
-    image: featuredImageUrl || "/placeholder-property.jpg",
+    image: featuredImageUrl || "/placeholder-property.svg",
     images: featuredImageUrl ? [featuredImageUrl] : [],
     // Campos extendidos
     usefulArea: usefulArea,

@@ -1,70 +1,77 @@
-import PropertyCard from "@/components/properties/PropertyCard";
+"use client";
 
-// Datos de ejemplo basados en el sitio original
-const featuredProperties = [
-  {
-    id: 1,
-    title: "Parcelas Bajo El Azul, Pupuya, Matanzas",
-    location: "X4QC+3G Navidad, Chile",
-    description: "Exclusivas parcelas de agrado ubicadas en un privilegiado sector de…",
-    price: "1.690",
-    area: "5700",
-    type: "Parcela",
-    operation: "Venta",
-    region: "O'Higgins",
-    comuna: "Navidad",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 2,
-    title: "Parcelas Punta Pupuya, Matanzas",
-    location: "24F9+26 Navidad, Chile",
-    description: "Condominio Punta Pupuya es un proyecto inmobiliario ubicado en primera…",
-    price: "13.900",
-    area: "5000",
-    type: "Parcela",
-    operation: "Venta",
-    region: "O'Higgins",
-    comuna: "Navidad",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 3,
-    title: "Dpto Manquehue Norte",
-    location: "Av. Manquehue Nte. 2475, Vitacura",
-    description: "Exclusivo y amplio departamento ubicado en un privilegiado sector de…",
-    price: "16.900",
-    bedrooms: 4,
-    bathrooms: 4,
-    area: "220",
-    type: "Departamento",
-    operation: "Venta",
-    region: "Metropolitana",
-    comuna: "Vitacura",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-  {
-    id: 4,
-    title: "Dpto I Proyecto Pocuro",
-    location: "Av. Pocuro 2191, Providencia",
-    description: "Exclusivos departamentos nuevos en venta, ubicados en calle Pocuro, comuna…",
-    price: "12.190",
-    bedrooms: 3,
-    bathrooms: 3,
-    area: "121",
-    type: "Departamento",
-    operation: "Venta",
-    region: "Metropolitana",
-    comuna: "Providencia",
-    featured: true,
-    image: "/placeholder-property.jpg",
-  },
-];
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import PropertyCard from "@/components/properties/PropertyCard";
+import { Property } from "@/types/property";
+import { getProperties, getPropertyImagesOptimized } from "@/services/wordpress";
+import { mapWordPressProperty } from "@/utils/mapWordPressData";
+
+
 
 export default function FeaturedProperties() {
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFeaturedProperties() {
+      try {
+        const wpProperties = await getProperties();
+        
+        // Filtrar solo las propiedades destacadas
+        const featured = wpProperties.filter(
+          (prop) => prop.class_list.includes("es_label-featured")
+        );
+
+        // Mapear propiedades y obtener imágenes destacadas
+        const mappedProperties = await Promise.all(
+          featured.slice(0, 4).map(async (wpProp) => {
+            // Usar método híbrido para obtener múltiples imágenes
+            const allImages = await getPropertyImagesOptimized(wpProp);
+            
+            let featuredImageUrl = "";
+            if (allImages.length > 0) {
+              featuredImageUrl = allImages[0];
+            }
+
+            const mappedProperty = mapWordPressProperty(wpProp, featuredImageUrl);
+            
+            // Agregar todas las imágenes a la propiedad mapeada
+            if (allImages.length > 0) {
+              mappedProperty.images = allImages;
+              mappedProperty.image = allImages[0]; // La primera imagen como principal
+            }
+
+            return mappedProperty;
+          })
+        );
+
+        setFeaturedProperties(mappedProperties);
+      } catch (error) {
+        console.error("Error loading featured properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFeaturedProperties();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+            Propiedades Destacadas
+          </h2>
+          <div className="text-center text-gray-600">
+            Cargando propiedades...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,12 +84,12 @@ export default function FeaturedProperties() {
         </div>
 
         <div className="text-center mt-12">
-          <a
+          <Link
             href="/propiedades"
             className="inline-block bg-blue-900 text-white px-8 py-3 rounded-md hover:bg-blue-800 transition-colors font-medium"
           >
             Ver todas las propiedades
-          </a>
+          </Link>
         </div>
       </div>
     </section>
