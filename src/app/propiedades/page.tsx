@@ -186,7 +186,7 @@ export default function PropiedadesPage() {
 
         {/* Grid de propiedades */}
         {!loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {currentProperties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
@@ -195,21 +195,31 @@ export default function PropiedadesPage() {
 
         {/* Paginación */}
         {!loading && totalPages > 1 && (
-          <div className="mt-8 flex justify-center items-center gap-2">
+          <div className="mt-8 flex justify-center items-center gap-1 sm:gap-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 sm:px-4 py-2 text-xs sm:text-sm rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Anterior
+              <span className="hidden sm:inline">Anterior</span>
+              <span className="sm:hidden">‹</span>
             </button>
             
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="flex gap-1 sm:gap-2 overflow-x-auto max-w-xs sm:max-w-none">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  // En móviles, mostrar solo 3 páginas alrededor de la actual
+                  if (totalPages <= 5) return true; // Mostrar todas si son pocas
+                  
+                  const start = Math.max(1, currentPage - 1);
+                  const end = Math.min(totalPages, currentPage + 1);
+                  return page >= start && page <= end;
+                })
+                .map((page) => (
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 rounded-md ${
+                  className={`px-2 sm:px-4 py-2 text-xs sm:text-sm rounded-md min-w-[32px] sm:min-w-[40px] ${
                     currentPage === page
                       ? 'bg-blue-600 text-white'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -223,9 +233,10 @@ export default function PropiedadesPage() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 sm:px-4 py-2 text-xs sm:text-sm rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Siguiente
+              <span className="hidden sm:inline">Siguiente</span>
+              <span className="sm:hidden">›</span>
             </button>
           </div>
         )}

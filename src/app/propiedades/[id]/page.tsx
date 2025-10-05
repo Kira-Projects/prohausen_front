@@ -342,19 +342,18 @@ export default function PropertyDetailPage() {
                 )}
 
                 {/* Miniaturas visibles */}
-                <div className="flex flex-1 gap-2">
+                <div className="flex flex-1 gap-2 overflow-x-auto md:overflow-visible">
                   {visibleThumbnails.map((img, idx) => {
                     const actualIndex = thumbnailStartIndex + idx;
                     return (
                       <button
                         key={actualIndex}
                         onClick={() => setCurrentImageIndex(actualIndex)}
-                        className={`flex-1 transition-all rounded ${
+                        className={`transition-all rounded ${
                           actualIndex === currentImageIndex 
                             ? 'ring-2 ring-blue-600' 
                             : 'opacity-70 hover:opacity-100'
-                        }`}
-                        style={{ height: '120px' }}
+                        } flex-shrink-0 md:flex-1 w-[120px] md:w-auto h-20`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
@@ -588,19 +587,18 @@ export default function PropertyDetailPage() {
                     )}
 
                     {/* Miniaturas visibles */}
-                    <div className="flex flex-1 gap-2 max-w-2xl">
+                    <div className="flex flex-1 gap-2 max-w-2xl md:max-w-4xl overflow-x-auto">
                       {visibleThumbnails.map((img, idx) => {
                         const actualIndex = thumbnailStartIndex + idx;
                         return (
                           <button
                             key={actualIndex}
                             onClick={() => setCurrentImageIndex(actualIndex)}
-                            className={`flex-1 transition-all rounded ${
+                            className={`transition-all rounded ${
                               actualIndex === currentImageIndex 
                                 ? 'ring-4 ring-white' 
                                 : 'opacity-60 hover:opacity-100'
-                            }`}
-                            style={{ height: '100px' }}
+                            } flex-shrink-0 md:flex-1 w-[100px] md:w-auto h-[70px]`}
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
@@ -697,64 +695,62 @@ export default function PropertyDetailPage() {
             <div className="bg-white border border-gray-200 rounded">
               <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 bg-gray-50">Características</h3>
               <div className="px-6 py-6">
-                {/* Fila 1 */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div>
+                {/* Grid responsivo de características */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Categoría</p>
-                    <p className="font-semibold text-gray-900">{property.type}</p>
+                    <p className="font-semibold text-gray-900 break-words">{property.type}</p>
                   </div>
-                  <div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Operación</p>
-                    <p className="font-semibold text-gray-900">{property.operation}</p>
+                    <p className="font-semibold text-gray-900 break-words">{property.operation}</p>
                   </div>
-                  <div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Comuna</p>
-                    <p className="font-semibold text-gray-900">{property.comuna}</p>
+                    <p className="font-semibold text-gray-900 break-words">{property.comuna}</p>
                   </div>
-                  <div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Dormitorios</p>
                     <p className="font-semibold text-gray-900">{property.bedrooms || 0}</p>
-                </div>
+                  </div>
                 </div>
 
-                {/* Fila 2 */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Baños</p>
                     <p className="font-semibold text-gray-900">{property.bathrooms || 0}</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Medios baños</p>
                     <p className="font-semibold text-gray-900">{property.halfBathrooms || 0}</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Habitaciones totales</p>
                     <p className="font-semibold text-gray-900">{property.totalRooms || property.bedrooms || 0}</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Cantidad Pisos</p>
                     <p className="font-semibold text-gray-900">{property.floors || 0}</p>
-                </div>
+                  </div>
                 </div>
 
-                {/* Fila 3 */}
-                <div className="grid grid-cols-4 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">N° de Piso</p>
                     <p className="font-semibold text-gray-900">{property.floorNumber || 0}</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Superficie total</p>
                     <p className="font-semibold text-gray-900">{property.landArea || property.area} m²</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Superficie Útil</p>
                     <p className="font-semibold text-gray-900">{property.usefulArea || property.area} m²</p>
-                </div>
-                  <div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
                     <p className="text-gray-600 text-sm mb-1">Año de construcción</p>
                     <p className="font-semibold text-gray-900">{property.yearBuilt || '-'}</p>
-                </div>
+                  </div>
                 </div>
               </div>
             </div>

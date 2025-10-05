@@ -18,7 +18,7 @@ export default function Navbar() {
               alt="Prohausen Propiedades" 
               width={220} 
               height={80}
-              className="h-16 w-auto"
+              className="h-12 sm:h-16 w-auto"
               priority
             />
           </Link>

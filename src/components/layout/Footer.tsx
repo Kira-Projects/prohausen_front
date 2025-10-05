@@ -13,20 +13,17 @@ export default function Footer() {
   return (
     <footer className="bg-[#505050] text-white">
       <div className="container mx-auto px-4 py-6">
-        {/* Fila 1: Logo + Botón + Redes Sociales + Contacto */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-4">
+        {/* Layout responsive: columna en móvil, fila en desktop */}
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-4">
           {/* Logo + Botón de Flecha */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 lg:order-1">
             <Image 
               src="/LOGO-PH-SIN-FONDO-BLANCO-2.png" 
               alt="Prohausen Propiedades" 
               width={160} 
               height={60}
-              className="h-auto w-40"
+              className="h-auto w-32 sm:w-40"
             />
-          </div>
-
-          <div>
             <button
               onClick={scrollToTop}
               className="flex items-center justify-center w-10 h-10 bg-black hover:bg-gray-800 rounded-full transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-xl"
@@ -44,10 +41,10 @@ export default function Footer() {
             </button>
           </div>
           
-           {/* Columna 2: Redes sociales y Trustpilot */}
-          <div className="space-y-6">
+          {/* Redes sociales y Trustpilot */}
+          <div className="space-y-4 lg:order-2">
             {/* Redes sociales */}
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-3 sm:gap-4">
               <a 
                 href="https://web.facebook.com/people/Prohausen/61556233381908/" 
                 target="_blank" 
@@ -124,24 +121,24 @@ export default function Footer() {
           </div>
 
           {/* Información de Contacto */}
-          <div className="flex flex-col items-center md:items-end gap-1 text-sm text-white">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center lg:items-end gap-2 text-xs sm:text-sm text-white lg:order-3">
+            <div className="flex items-center gap-2 text-center lg:text-right">
               <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
               </svg>
               <span>+56 9 4045 4965</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-center lg:text-right">
               <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
               </svg>
-              <span>contacto@prohausen.cl</span>
+              <span className="break-all">contacto@prohausen.cl</span>
             </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-start gap-2 text-center lg:text-right max-w-xs lg:max-w-none">
+              <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
-              <span>Isidora Goyenechea 3000, Las Condes, Santiago</span>
+              <span className="leading-tight">Isidora Goyenechea 3000, Las Condes, Santiago</span>
             </div>
           </div>
         </div>
