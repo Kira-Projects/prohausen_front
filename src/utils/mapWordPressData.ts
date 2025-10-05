@@ -22,29 +22,39 @@ function extractLocationFromClassList(classList: string[]): {
 } {
   let region = "";
   let comuna = "";
+  let pais = "";
 
-  classList.forEach((className) => {
-    // Buscar región
-    if (className.includes("es_location-")) {
-      const location = className.replace("es_location-", "").replace(/-/g, " ");
+  const locations = classList
+    .filter((c) => c.includes("es_location-"))
+    .map((c) => c.replace("es_location-", "").replace(/-/g, " "));
 
-      // Regiones conocidas
-      const regiones = [
-        "metropolitana",
-        "valparaiso",
-        "ohiggins",
-        "los lagos",
-        "libertador b ohiggins",
-        "region metropolitana",
-      ];
+  locations.forEach((location) => {
+    const locationLower = location.toLowerCase();
 
-      const locationLower = location.toLowerCase();
+    // Detectar país (excluir de región/comuna)
+    if (locationLower === "chile") {
+      pais = location;
+      return; // No es región ni comuna
+    }
 
-      if (regiones.some((r) => locationLower.includes(r))) {
-        region = location;
-      } else if (!comuna) {
-        comuna = location;
-      }
+    // Detectar regiones conocidas
+    const regiones = [
+      "valparaiso",
+      "metropolitana",
+      "region metropolitana",
+      "ohiggins",
+      "los lagos",
+      "libertador b ohiggins",
+    ];
+
+    if (regiones.some((r) => locationLower.includes(r))) {
+      region = location;
+    } else if (location !== pais && !region) {
+      // Si no es país ni región, es comuna
+      comuna = location;
+    } else if (location !== pais && region) {
+      // Si ya tenemos región, el siguiente es comuna
+      comuna = location;
     }
   });
 
@@ -171,9 +181,10 @@ export function mapWordPressProperty(
   wpProperty: WordPressProperty,
   featuredImageUrl?: string
 ): Property {
-  const { region, comuna } = extractLocationFromClassList(
-    wpProperty.class_list
-  );
+  const locationData = extractLocationFromClassList(wpProperty.class_list);
+  let region = locationData.region;
+  const comuna = locationData.comuna;
+
   const type = extractPropertyType(wpProperty.class_list);
   const operation = extractOperationType(wpProperty.class_list);
   const featured = isFeatured(wpProperty.class_list);
@@ -225,14 +236,17 @@ export function mapWordPressProperty(
       : undefined;
 
     // Para mostrar en características principales (línea con íconos)
+    // Priorizar land_area (superficie construida) para el display principal
     area =
       wpProperty.property_meta.land_area ||
       wpProperty.property_meta.area ||
       "0";
 
-    // Campos extendidos - CORREGIDOS
-    usefulArea = wpProperty.property_meta.area; // Superficie útil/construida (242 m²)
-    landArea = wpProperty.property_meta.land_area; // Superficie total/terreno (973 m²)
+    // Campos extendidos - CORREGIDOS según los datos reales de Estatik
+    // area = 973 (Superficie total/terreno)
+    // land_area = 242 (Superficie construida/útil)
+    usefulArea = wpProperty.property_meta.land_area; // 242 m² (Tamaño del lote)
+    landArea = wpProperty.property_meta.area; // 973 m² (Área total)
     floors = wpProperty.property_meta.floors
       ? parseInt(wpProperty.property_meta.floors)
       : undefined;
@@ -245,10 +259,56 @@ export function mapWordPressProperty(
     yearBuilt = wpProperty.property_meta.year_built
       ? parseInt(wpProperty.property_meta.year_built)
       : undefined;
-    videoUrl = wpProperty.property_meta.video_url;
+
+    // videoUrl viene como objeto serializado, extraer la URL
+    if (wpProperty.property_meta.video_url) {
+      if (typeof wpProperty.property_meta.video_url === "object") {
+        videoUrl = wpProperty.property_meta.video_url.video_url || "";
+      } else {
+        videoUrl = wpProperty.property_meta.video_url;
+      }
+    }
+
     address = wpProperty.property_meta.address;
     zip = wpProperty.property_meta.zip;
     country = wpProperty.property_meta.country;
+  }
+
+  // Si no hay superficies en property_meta, intentar extraer del contenido
+  if (!usefulArea || usefulArea === "") {
+    // Buscar patrones como "242 m²" o "242m2" o "242 metros cuadrados"
+    const areaMatch = content.match(/(\d+(?:[.,]\d+)?)\s*(?:m[²2]|metros)/i);
+    if (areaMatch) {
+      usefulArea = areaMatch[1].replace(",", ".");
+      console.log(
+        `📐 Superficie útil extraída del contenido: ${usefulArea} m²`
+      );
+    }
+  }
+
+  if (!landArea || landArea === "") {
+    // Buscar patrones como "terreno de 973 m²"
+    const landMatch = content.match(
+      /terreno[^0-9]*(\d+(?:[.,]\d+)?)\s*(?:m[²2]|metros)/i
+    );
+    if (landMatch) {
+      landArea = landMatch[1].replace(",", ".");
+      console.log(
+        `📐 Superficie terreno extraída del contenido: ${landArea} m²`
+      );
+    }
+  }
+
+  // Si usefulArea tiene valor, usarlo para 'area' si area está en "0"
+  if (area === "0" && usefulArea && usefulArea !== "") {
+    area = usefulArea;
+    console.log(`📏 Usando superficie útil como área principal: ${area} m²`);
+  }
+
+  // Si landArea tiene valor y usefulArea no, usar landArea para 'area'
+  if (area === "0" && !usefulArea && landArea && landArea !== "") {
+    area = landArea;
+    console.log(`📏 Usando superficie terreno como área principal: ${area} m²`);
   }
 
   // Fallback: Extraer desde contenido si no hay metadatos
@@ -267,6 +327,32 @@ export function mapWordPressProperty(
 
   // Construir ubicación más completa
   let location = comuna || region || "Sin ubicación";
+
+  // Si tenemos address en property_meta, extraer ciudad de ahí (MÁS PRECISO)
+  if (address && address.includes(",")) {
+    const addressParts = address.split(",").map((p) => p.trim());
+
+    // Formato esperado: "Halimeda, Viña del Mar, Valparaíso, Chile"
+    // addressParts[0] = calle
+    // addressParts[1] = ciudad/comuna
+    // addressParts[2] = región
+    // addressParts[3] = país
+
+    if (addressParts.length >= 2) {
+      const ciudadFromAddress = addressParts[1];
+      if (ciudadFromAddress && ciudadFromAddress.toLowerCase() !== "chile") {
+        location = ciudadFromAddress; // Usar la ciudad del address
+        console.log(`📍 Ubicación desde address: ${location}`);
+      }
+    }
+
+    if (addressParts.length >= 3) {
+      const regionFromAddress = addressParts[2];
+      if (regionFromAddress && !region) {
+        region = regionFromAddress;
+      }
+    }
+  }
 
   // Intentar extraer ubicación del título o contenido si no hay en class_list
   if (location === "Sin ubicación") {

@@ -99,7 +99,13 @@ export interface WordPressProperty {
     floor_number?: string;
     basement?: string;
     year_built?: string;
-    video_url?: string;
+    video_url?:
+      | string
+      | {
+          video_url: string;
+          video_iframe: string;
+          video_file: string;
+        };
   };
   _links: {
     self: { href: string }[];

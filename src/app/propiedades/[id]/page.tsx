@@ -90,11 +90,29 @@ export default function PropertyDetailPage() {
       console.log(`Total imágenes: ${mappedProperty.images.length}`, mappedProperty.images);
       
       if (wpProperty.es_features && wpProperty.es_features.length > 0) {
-        const featuresData = await getFeatures();
-        const propertyFeatures = featuresData
-          .filter(f => wpProperty.es_features.includes(f.id))
-          .map(f => f.name);
-        mappedProperty.features = propertyFeatures;
+        console.log(
+          `🏷️ Feature IDs de la propiedad: ${wpProperty.es_features.join(", ")}`
+        );
+
+        try {
+          const featuresData = await getFeatures();
+          console.log(`📦 Features disponibles: ${featuresData.length}`);
+
+          if (featuresData.length === 0) {
+            console.warn("⚠️ No se obtuvieron features de la API");
+          } else {
+            const propertyFeatures = featuresData
+              .filter((f) => wpProperty.es_features.includes(f.id))
+              .map((f) => f.name);
+
+            console.log(`✅ Features mapeadas: ${propertyFeatures.join(", ")}`);
+            mappedProperty.features = propertyFeatures;
+          }
+        } catch (error) {
+          console.error("❌ Error al obtener features:", error);
+        }
+      } else {
+        console.log("ℹ️ Esta propiedad no tiene features asignadas");
       }
       
       setProperty(mappedProperty);
@@ -695,7 +713,7 @@ export default function PropertyDetailPage() {
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Dormitorios</p>
                     <p className="font-semibold text-gray-900">{property.bedrooms || 0}</p>
-                  </div>
+                </div>
                 </div>
 
                 {/* Fila 2 */}
@@ -703,19 +721,19 @@ export default function PropertyDetailPage() {
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Baños</p>
                     <p className="font-semibold text-gray-900">{property.bathrooms || 0}</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Medios baños</p>
                     <p className="font-semibold text-gray-900">{property.halfBathrooms || 0}</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Habitaciones totales</p>
                     <p className="font-semibold text-gray-900">{property.totalRooms || property.bedrooms || 0}</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Cantidad Pisos</p>
                     <p className="font-semibold text-gray-900">{property.floors || 0}</p>
-                  </div>
+                </div>
                 </div>
 
                 {/* Fila 3 */}
@@ -723,19 +741,19 @@ export default function PropertyDetailPage() {
                   <div>
                     <p className="text-gray-600 text-sm mb-1">N° de Piso</p>
                     <p className="font-semibold text-gray-900">{property.floorNumber || 0}</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Superficie total</p>
                     <p className="font-semibold text-gray-900">{property.landArea || property.area} m²</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Superficie Útil</p>
                     <p className="font-semibold text-gray-900">{property.usefulArea || property.area} m²</p>
-                  </div>
+                </div>
                   <div>
                     <p className="text-gray-600 text-sm mb-1">Año de construcción</p>
                     <p className="font-semibold text-gray-900">{property.yearBuilt || '-'}</p>
-                  </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -791,7 +809,19 @@ export default function PropertyDetailPage() {
                   <iframe
                     width="100%"
                     height="100%"
-                    src={property.videoUrl.replace('watch?v=', 'embed/')}
+                    src={(() => {
+                      let url = property.videoUrl;
+                      // Convertir youtu.be a embed
+                      if (url.includes('youtu.be/')) {
+                        const videoId = url.split('youtu.be/')[1].split('?')[0];
+                        return `https://www.youtube.com/embed/${videoId}`;
+                      }
+                      // Convertir watch?v= a embed
+                      if (url.includes('watch?v=')) {
+                        return url.replace('watch?v=', 'embed/');
+                      }
+                      return url;
+                    })()}
                     title="Video de la propiedad"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
