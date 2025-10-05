@@ -210,6 +210,8 @@ export function mapWordPressProperty(
   let address: string | undefined;
   let zip: string | undefined;
   let country: string | undefined;
+  let latitude: string | undefined;
+  let longitude: string | undefined;
 
   if (wpProperty.property_meta) {
     // Log para debug - ver qué campos vienen realmente de WordPress
@@ -272,6 +274,10 @@ export function mapWordPressProperty(
     address = wpProperty.property_meta.address;
     zip = wpProperty.property_meta.zip;
     country = wpProperty.property_meta.country;
+
+    // Coordenadas GPS para el mapa
+    latitude = wpProperty.property_meta.latitude;
+    longitude = wpProperty.property_meta.longitude;
   }
 
   // Si no hay superficies en property_meta, intentar extraer del contenido
@@ -412,6 +418,8 @@ export function mapWordPressProperty(
     country: country,
     halfBathrooms: halfBathrooms,
     totalRooms: totalRooms,
+    latitude: latitude,
+    longitude: longitude,
   };
 }
 

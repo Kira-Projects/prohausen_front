@@ -29,6 +29,8 @@ export interface Property {
   country?: string;
   halfBathrooms?: number;
   totalRooms?: number;
+  latitude?: string;
+  longitude?: string;
 }
 
 export type PropertyType =
@@ -106,6 +108,8 @@ export interface WordPressProperty {
           video_iframe: string;
           video_file: string;
         };
+    latitude?: string;
+    longitude?: string;
   };
   _links: {
     self: { href: string }[];

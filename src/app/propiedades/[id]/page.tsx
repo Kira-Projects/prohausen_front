@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Property } from "@/types/property";
 import { getPropertyById, getFeatures, getMediaById, getPropertyImages } from "@/services/wordpress";
 import { mapWordPressProperty } from "@/utils/mapWordPressData";
+import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -785,20 +786,17 @@ export default function PropertyDetailPage() {
             )}
 
             {/* Ubicación - Mapa */}
-            {property.address && (
+            {property.latitude && property.longitude && (
               <div className="bg-white rounded border p-4">
                 <h3 className="text-xl font-bold mb-4">Ubicación</h3>
                 <div className="w-full h-96 bg-gray-200 rounded overflow-hidden">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    scrolling="no"
-                    src={`https://www.openstreetmap.org/export/embed.html?bbox=-71.55,-33.05,-71.45,-32.95&layer=mapnik&marker=-33.0,-71.5`}
-                    className="w-full h-full"
+                  <GoogleMapComponent
+                    latitude={property.latitude}
+                    longitude={property.longitude}
+                    title={property.title}
                   />
+                </div>
               </div>
-            </div>
             )}
 
             {/* Video */}
