@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 
+interface FilterState {
+  operacion?: string;
+  categoria?: string;
+  region?: string;
+  comuna?: string;
+}
+
 interface PropertyFiltersProps {
-  onFilter: (filters: any) => void;
+  onFilter: (filters: FilterState) => void;
 }
 
 export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
@@ -49,11 +56,11 @@ export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Operación */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">Operación</label>
+              <label className="block text-sm font-medium mb-2 text-black">Operación</label>
               <select
                 value={filters.operacion}
                 onChange={(e) => handleFilterChange("operacion", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
               >
                 <option value="">Todas</option>
                 <option value="arriendo">Arriendo</option>
@@ -63,11 +70,11 @@ export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
 
             {/* Categoría */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">Categoría</label>
+              <label className="block text-sm font-medium mb-2 text-black">Categoría</label>
               <select
                 value={filters.categoria}
                 onChange={(e) => handleFilterChange("categoria", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
               >
                 <option value="">Todas</option>
                 <option value="casa">Casa</option>
@@ -80,11 +87,11 @@ export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
 
             {/* Región */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">Región</label>
+              <label className="block text-sm font-medium mb-2 text-black">Región</label>
               <select
                 value={filters.region}
                 onChange={(e) => handleFilterChange("region", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
               >
                 <option value="">Todas</option>
                 <option value="libertador-b-ohiggins">Libertador B. O&apos;Higgins</option>
@@ -97,13 +104,13 @@ export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
 
             {/* Comuna */}
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">Comuna</label>
+              <label className="block text-sm font-medium mb-2 text-black">Comuna</label>
               <input
                 type="text"
                 value={filters.comuna}
                 onChange={(e) => handleFilterChange("comuna", e.target.value)}
                 placeholder="Buscar comuna"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-placeholder-black placeholder-black"
               />
             </div>
           </div>
@@ -111,7 +118,7 @@ export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
           <div className="mt-4 flex justify-end">
             <button
               onClick={clearFilters}
-              className="text-blue-900 hover:text-blue-700 font-medium"
+              className="text-black hover:text-gray-700 font-medium"
             >
               Limpiar filtros
             </button>

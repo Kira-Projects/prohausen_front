@@ -159,15 +159,15 @@ export default function PropiedadesPage() {
 
         {/* Contador y ordenamiento */}
         <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600">
+          <p className="text-black">
             <span className="font-bold">{filteredProperties.length}</span> resultados
           </p>
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">Ordenar por:</label>
+            <label className="text-sm text-black">Ordenar por:</label>
             <select
               value={sortBy}
               onChange={(e) => handleSort(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
             >
               <option value="newest">El más nuevo</option>
               <option value="price-asc">Precio más bajo</option>
@@ -233,7 +233,7 @@ export default function PropiedadesPage() {
         {/* Sin resultados */}
         {!loading && filteredProperties.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
+            <p className="text-black text-lg">
               No se encontraron propiedades{error ? '.' : ' con los filtros seleccionados.'}
             </p>
           </div>

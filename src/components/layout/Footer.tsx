@@ -1,6 +1,6 @@
-"use client";
+﻿'use client';
 
-import Image from "next/image";
+import Image from 'next/image';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -12,24 +12,28 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#505050] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Columna 1: Logo y botón scroll to top */}
-          <div className="flex flex-col items-center md:items-start gap-4">
+      <div className="container mx-auto px-4 py-6">
+        {/* Fila 1: Logo + Botón + Redes Sociales + Contacto */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-4">
+          {/* Logo + Botón de Flecha */}
+          <div className="flex items-center gap-4">
             <Image 
               src="/LOGO-PH-SIN-FONDO-BLANCO-2.png" 
               alt="Prohausen Propiedades" 
-              width={200} 
-              height={70}
-              className="h-auto w-48"
+              width={160} 
+              height={60}
+              className="h-auto w-40"
             />
+          </div>
+
+          <div>
             <button
               onClick={scrollToTop}
-              className="flex items-center justify-center w-12 h-12 bg-black hover:bg-gray-800 rounded-full transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-xl"
+              className="flex items-center justify-center w-10 h-10 bg-black hover:bg-gray-800 rounded-full transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-xl"
               aria-label="Volver al inicio"
             >
               <svg 
-                className="w-6 h-6 transform group-hover:-translate-y-1 transition-transform" 
+                className="w-5 h-5 transform group-hover:-translate-y-1 transition-transform" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -39,8 +43,8 @@ export default function Footer() {
               </svg>
             </button>
           </div>
-
-          {/* Columna 2: Redes sociales y Trustpilot */}
+          
+           {/* Columna 2: Redes sociales y Trustpilot */}
           <div className="space-y-6">
             {/* Redes sociales */}
             <div className="flex justify-center gap-4">
@@ -119,39 +123,36 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Columna 3: Información de contacto */}
-          <div className="space-y-4 text-sm">
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+          {/* Información de Contacto */}
+          <div className="flex flex-col items-center md:items-end gap-1 text-sm text-white">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
               </svg>
               <span>+56 9 4045 4965</span>
             </div>
-
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
               </svg>
               <span>contacto@prohausen.cl</span>
             </div>
-
-            <div className="flex items-start gap-3">
-              <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
-              <span>Isidora Goyenechea 3000, Las Condes.</span>
+              <span>Isidora Goyenechea 3000, Las Condes, Santiago</span>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Copyright */}
+        {/* Copyright */}
       <div className="border-t border-gray-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-center text-sm text-gray-300">
             © {new Date().getFullYear()} Prohausen Propiedades. Todos los derechos reservados.
           </p>
         </div>
+      </div>
       </div>
     </footer>
   );

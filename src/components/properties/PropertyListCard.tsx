@@ -62,7 +62,7 @@ export default function PropertyListCard({ property }: PropertyListCardProps) {
         {/* Contenido */}
         <div className="flex-1 p-6 relative">
           {/* Ubicación */}
-          <p className="text-sm text-gray-500 mb-2">{property.location}</p>
+          <p className="text-sm text-black mb-2">{property.location}</p>
 
           {/* Descripción */}
           <p className="text-gray-600 text-sm mb-3 line-clamp-2">{property.description}</p>
