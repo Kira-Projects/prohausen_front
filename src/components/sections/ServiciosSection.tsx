@@ -85,34 +85,32 @@ export default function ServiciosSection() {
       {/* Services Section */}
       <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
               <div
                 key={index}
-                className={`flex flex-col ${
-                  index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
-                } gap-8 items-center bg-white rounded-lg shadow-lg p-8`}
+                className="flex flex-col bg-white rounded-lg shadow-lg p-8 h-full"
               >
                 {/* Icono y título */}
-                <div className="lg:w-1/2">
-                  <div className="flex justify-center lg:justify-start text-blue-900 mb-6">
+                <div className="text-center mb-6">
+                  <div className="flex justify-center text-blue-900 mb-4">
                     {service.icon}
                   </div>
-                  <h3 className="text-3xl font-bold mb-4 text-gray-900 text-center lg:text-left">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-900">
                     {service.title}
                   </h3>
-                  <p className="text-gray-600 text-lg mb-6 text-center lg:text-left">
+                  <p className="text-gray-600 text-base">
                     {service.description}
                   </p>
                 </div>
 
                 {/* Features */}
-                <div className="lg:w-1/2">
+                <div className="flex-grow">
                   <ul className="space-y-3">
                     {service.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <svg
-                          className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5"
+                          className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -124,7 +122,7 @@ export default function ServiciosSection() {
                             d="M5 13l4 4L19 7"
                           />
                         </svg>
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700 text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
