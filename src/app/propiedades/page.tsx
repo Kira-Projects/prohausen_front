@@ -12,7 +12,6 @@ export default function PropiedadesPage() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loadTime, setLoadTime] = useState<number>(0);
   
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,8 +27,6 @@ export default function PropiedadesPage() {
     setError(null);
 
     try {
-      const startTime = performance.now();
-      
       const response = await fetch('/api/all-properties', {
         method: 'GET',
         next: { revalidate: 60 }
@@ -46,9 +43,6 @@ export default function PropiedadesPage() {
       }
 
       const properties: Property[] = data.properties;
-      const endTime = performance.now();
-      const totalLoadTime = Math.round(endTime - startTime);
-      setLoadTime(totalLoadTime);
 
       setAllProperties(properties);
       setFilteredProperties(properties);
@@ -130,13 +124,8 @@ export default function PropiedadesPage() {
   return (
     <main className="min-h-screen pt-24 pb-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900">Propiedades</h1>
-          {loadTime > 0 && (
-            <span className={`text-sm font-mono ${loadTime < 1500 ? 'text-green-600' : 'text-orange-600'}`}>
-              ⚡ {loadTime < 1000 ? '🚀 CACHE' : 'CACHE'} - {loadTime}ms
-            </span>
-          )}
         </div>
 
         {/* Mensaje de error */}

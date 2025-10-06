@@ -8,13 +8,10 @@ import { Property } from "@/types/property";
 export default function FeaturedProperties() {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadTime, setLoadTime] = useState<number>(0);
 
   useEffect(() => {
     async function loadFeaturedProperties() {
       try {
-        const startTime = performance.now();
-        
         const response = await fetch('/api/featured-properties', {
           method: 'GET',
           next: { revalidate: 60 }
@@ -31,10 +28,6 @@ export default function FeaturedProperties() {
         }
 
         const mapped: Property[] = data.properties;
-
-        const endTime = performance.now();
-        const totalLoadTime = Math.round(endTime - startTime);
-        setLoadTime(totalLoadTime);
 
         setFeaturedProperties(mapped);
       } catch (error) {
@@ -79,11 +72,6 @@ export default function FeaturedProperties() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900">Propiedades Destacadas</h2>
-          {loadTime > 0 && (
-            <span className={`text-sm font-mono ${loadTime < 1500 ? 'text-green-600' : 'text-orange-600'}`}>
-              ⚡ {loadTime < 1000 ? '🚀 CACHE' : 'API'} - {loadTime}ms
-            </span>
-          )}
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

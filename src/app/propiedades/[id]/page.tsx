@@ -17,7 +17,6 @@ export default function PropertyDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [loadTime, setLoadTime] = useState<number>(0);
 
   useEffect(() => {
     if (propertyId) {
@@ -48,8 +47,6 @@ export default function PropertyDetailPage() {
     setError(null);
     
     try {
-      const startTime = performance.now();
-      
       const response = await fetch(`/api/property/${id}`, {
         method: 'GET',
         next: { revalidate: 60 }
@@ -73,10 +70,6 @@ export default function PropertyDetailPage() {
         return;
       }
 
-      const endTime = performance.now();
-      const totalLoadTime = Math.round(endTime - startTime);
-      setLoadTime(totalLoadTime);
-
       setProperty(data.property);
     } catch (err) {
       console.error("Error al cargar propiedad:", err);
@@ -92,9 +85,6 @@ export default function PropertyDetailPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
           <p className="text-gray-600">Cargando propiedad desde caché...</p>
-          {loadTime > 0 && (
-            <p className="text-sm text-green-600 mt-2">⚡ {loadTime}ms</p>
-          )}
         </div>
       </div>
     );
@@ -207,14 +197,7 @@ export default function PropertyDetailPage() {
         
         {/* Título sobre la imagen */}
         <div className="relative max-w-6xl mx-auto px-4 z-10">
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-2xl flex-1 text-center">{property.title}</h1>
-            {loadTime > 0 && (
-              <span className={`text-sm font-mono ${loadTime < 500 ? 'text-green-300' : 'text-yellow-300'} drop-shadow-lg`}>
-                ⚡ {loadTime < 500 ? '🚀' : ''} {loadTime}ms
-              </span>
-            )}
-          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-2xl text-center">{property.title}</h1>
         </div>
       </div>
 
