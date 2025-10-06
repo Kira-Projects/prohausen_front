@@ -13,6 +13,32 @@ const WORDPRESS_API_URL =
   "https://prohausen.cl/wp-json/wp/v2";
 
 /**
+ * Obtiene URLs de imágenes desde WordPress por ID de propiedad
+ * Consulta todas las imágenes adjuntas (attachments) a una propiedad
+ */
+async function getPropertyImageUrls(propertyId: number): Promise<string[]> {
+  try {
+    const response = await fetch(
+      `${WORDPRESS_API_URL}/media?parent=${propertyId}&per_page=20`,
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) return [];
+
+    const mediaItems = await response.json();
+    return mediaItems
+      .map((item: { source_url?: string }) => item.source_url)
+      .filter((url: string | undefined): url is string => !!url);
+  } catch (error) {
+    console.warn(
+      `⚠️ Error obteniendo imágenes para propiedad ${propertyId}:`,
+      error
+    );
+    return [];
+  }
+}
+
+/**
  * API Endpoint para refrescar el caché manualmente
  * Solo accesible con contraseña correcta
  */
@@ -51,23 +77,37 @@ export async function POST(request: NextRequest) {
 
     const featuredProperties = await featuredResponse.json();
 
-    // Mapear propiedades destacadas con imágenes
-    const mappedFeatured = (featuredProperties as WordPressProperty[]).map(
-      (prop) => {
-        // Extraer URL de imagen destacada desde _embedded
-        let featuredImage = "";
+    // Mapear propiedades destacadas con imágenes (incluyendo galería)
+    const mappedFeatured = await Promise.all(
+      (featuredProperties as WordPressProperty[]).map(async (prop) => {
+        const images: string[] = [];
+
+        // 1. Imagen destacada
         if (prop._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
-          featuredImage = prop._embedded["wp:featuredmedia"][0].source_url;
+          images.push(prop._embedded["wp:featuredmedia"][0].source_url);
         } else if (prop._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
-          featuredImage = prop._embedded["wp:featuredmedia"][0].guid.rendered;
+          images.push(prop._embedded["wp:featuredmedia"][0].guid.rendered);
         }
 
+        // 2. Imágenes de la galería
+        const galleryUrls = await getPropertyImageUrls(prop.id);
+        galleryUrls.forEach((url) => {
+          if (!images.includes(url)) {
+            images.push(url);
+          }
+        });
+
         console.log(
-          `📸 Imagen para ${prop.id} (${prop.title.rendered}):`,
-          featuredImage || "❌ Sin imagen"
+          `📸 Imágenes para ${prop.id} (${prop.title.rendered}):`,
+          images.length,
+          "imágenes"
         );
-        return mapWordPressProperty(prop, featuredImage);
-      }
+
+        const featuredImage = images[0] || "";
+        const mapped = mapWordPressProperty(prop, featuredImage);
+        mapped.images = images.slice(0, 5); // Máximo 5 imágenes
+        return mapped;
+      })
     );
 
     // 3. Obtener todas las propiedades de WordPress (con imágenes)
@@ -84,18 +124,49 @@ export async function POST(request: NextRequest) {
 
     const allProperties = await allResponse.json();
 
-    // Mapear todas las propiedades con imágenes
-    const mappedAll = (allProperties as WordPressProperty[]).map((prop) => {
-      // Extraer URL de imagen destacada desde _embedded
-      let featuredImage = "";
-      if (prop._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
-        featuredImage = prop._embedded["wp:featuredmedia"][0].source_url;
-      } else if (prop._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
-        featuredImage = prop._embedded["wp:featuredmedia"][0].guid.rendered;
-      }
+    // Mapear todas las propiedades con imágenes (incluyendo galería)
+    console.log(
+      `📦 Procesando ${
+        (allProperties as WordPressProperty[]).length
+      } propiedades...`
+    );
 
-      return mapWordPressProperty(prop, featuredImage);
-    });
+    const mappedAll = await Promise.all(
+      (allProperties as WordPressProperty[]).map(async (prop, index) => {
+        const images: string[] = [];
+
+        // 1. Imagen destacada
+        if (prop._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
+          images.push(prop._embedded["wp:featuredmedia"][0].source_url);
+        } else if (prop._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
+          images.push(prop._embedded["wp:featuredmedia"][0].guid.rendered);
+        }
+
+        // 2. Imágenes de la galería
+        const galleryUrls = await getPropertyImageUrls(prop.id);
+        galleryUrls.forEach((url) => {
+          if (!images.includes(url)) {
+            images.push(url);
+          }
+        });
+
+        // Log progreso cada 10 propiedades
+        if ((index + 1) % 10 === 0) {
+          console.log(
+            `⏳ ${index + 1}/${
+              (allProperties as WordPressProperty[]).length
+            } procesadas`
+          );
+        }
+
+        const featuredImage = images[0] || "";
+        const mapped = mapWordPressProperty(prop, featuredImage);
+        mapped.images = images.slice(0, 5); // Máximo 5 imágenes
+        return mapped;
+      })
+    );
+
+    console.log(`✅ Todas las propiedades procesadas`);
 
     // 4. Guardar en Upstash SIN TTL (dura para siempre)
     await setCachedFeaturedProperties(mappedFeatured);
