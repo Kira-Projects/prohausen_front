@@ -1,8 +1,18 @@
 import {
+  Property,
   WordPressProperty,
   WordPressTaxonomy,
   WordPressMedia,
 } from "@/types/property";
+import {
+  getCachedFeaturedProperties,
+  setCachedFeaturedProperties,
+  getCachedAllProperties,
+  setCachedAllProperties,
+  getCachedProperty,
+  setCachedProperty,
+} from "@/lib/cache";
+import { mapWordPressProperty } from "@/utils/mapWordPressData";
 
 // Tipo para propiedades de WordPress con datos embebidos
 interface WordPressPropertyWithEmbeds extends WordPressProperty {
@@ -27,7 +37,127 @@ const WORDPRESS_API_URL =
  */
 
 /**
- * Obtiene todas las propiedades de WordPress
+ * Obtiene propiedades destacadas CON CACHÉ REDIS
+ * Primero verifica el caché, si no existe llama a WordPress
+ */
+export async function getFeaturedPropertiesWithCache(): Promise<Property[]> {
+  try {
+    // 1. Intentar obtener del caché primero
+    const cached = await getCachedFeaturedProperties();
+    if (cached) {
+      console.log("✅ Propiedades destacadas servidas desde REDIS CACHE");
+      return cached;
+    }
+
+    // 2. Si no hay caché, llamar a WordPress API
+    console.log("⚠️ Cache miss - Obteniendo de WordPress API...");
+    const startTime = Date.now();
+
+    const response = await fetch(
+      `${WORDPRESS_API_URL}/properties?per_page=4&_embed=wp:featuredmedia,wp:attachment&es_featured=true`,
+      {
+        cache: "no-store", // Desactivar caché del navegador cuando usamos Redis
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error fetching featured properties: ${response.status}`);
+    }
+
+    const properties: WordPressPropertyWithEmbeds[] = await response.json();
+    const loadTime = Date.now() - startTime;
+    console.log(`⏱️ WordPress API respondió en ${loadTime}ms`);
+
+    // 3. Mapear los datos de WordPress a nuestro formato
+    const mappedProperties = properties.map((prop) =>
+      mapWordPressProperty(prop)
+    );
+
+    // 4. Guardar en caché para próximas peticiones
+    await setCachedFeaturedProperties(mappedProperties);
+    console.log("💾 Propiedades guardadas en REDIS CACHE (TTL: 30min)");
+
+    return mappedProperties;
+  } catch (error) {
+    console.error("❌ Error al obtener propiedades destacadas:", error);
+    return [];
+  }
+}
+
+/**
+ * Obtiene todas las propiedades CON CACHÉ REDIS
+ */
+export async function getPropertiesWithCache(): Promise<Property[]> {
+  try {
+    // 1. Intentar obtener del caché primero
+    const cached = await getCachedAllProperties();
+    if (cached) {
+      console.log("✅ Todas las propiedades servidas desde REDIS CACHE");
+      return cached;
+    }
+
+    // 2. Si no hay caché, llamar a WordPress API
+    console.log(
+      "⚠️ Cache miss - Obteniendo todas las propiedades de WordPress..."
+    );
+    const properties = await getProperties();
+
+    // 3. Mapear los datos
+    const mappedProperties = properties.map((prop) =>
+      mapWordPressProperty(prop)
+    );
+
+    // 4. Guardar en caché
+    await setCachedAllProperties(mappedProperties);
+    console.log(
+      "💾 Todas las propiedades guardadas en REDIS CACHE (TTL: 15min)"
+    );
+
+    return mappedProperties;
+  } catch (error) {
+    console.error("❌ Error al obtener todas las propiedades:", error);
+    return [];
+  }
+}
+
+/**
+ * Obtiene una propiedad específica por ID CON CACHÉ REDIS
+ */
+export async function getPropertyByIdWithCache(
+  id: number
+): Promise<Property | null> {
+  try {
+    // 1. Intentar obtener del caché primero
+    const cached = await getCachedProperty(id);
+    if (cached) {
+      console.log(`✅ Propiedad ${id} servida desde REDIS CACHE`);
+      return cached;
+    }
+
+    // 2. Si no hay caché, llamar a WordPress API
+    console.log(`⚠️ Cache miss - Obteniendo propiedad ${id} de WordPress...`);
+    const property = await getPropertyById(id);
+
+    if (!property) {
+      return null;
+    }
+
+    // 3. Mapear los datos
+    const mappedProperty = mapWordPressProperty(property);
+
+    // 4. Guardar en caché
+    await setCachedProperty(id, mappedProperty);
+    console.log(`💾 Propiedad ${id} guardada en REDIS CACHE (TTL: 1hr)`);
+
+    return mappedProperty;
+  } catch (error) {
+    console.error(`❌ Error al obtener propiedad ${id}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Obtiene todas las propiedades de WordPress (SIN CACHÉ - función original)
  */
 export async function getProperties(): Promise<WordPressProperty[]> {
   try {

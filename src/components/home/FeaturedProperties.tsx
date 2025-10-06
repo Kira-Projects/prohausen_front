@@ -4,81 +4,30 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import PropertyCard from "@/components/properties/PropertyCard";
 import { Property } from "@/types/property";
-import { mapWordPressProperty } from "@/utils/mapWordPressData";
-import type { WordPressProperty } from "@/types/property";
-
-// Interface temporal para datos embebidos
-interface EmbeddedProperty extends WordPressProperty {
-  _embedded?: {
-    "wp:featuredmedia"?: Array<{
-      source_url?: string;
-      guid?: {
-        rendered: string;
-      };
-    }>;
-  };
-}
-
-
+import { getFeaturedPropertiesWithCache } from "@/services/wordpress";
 
 export default function FeaturedProperties() {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadTime, setLoadTime] = useState<number>(0);
 
   useEffect(() => {
     async function loadFeaturedProperties() {
       try {
+        const startTime = performance.now();
         console.time("🏠 Total Featured Properties Load Time");
         
-        // SOLUCIÓN FINAL: Una sola llamada con _embed pero limitada y optimizada
+        // 🚀 NUEVA IMPLEMENTACIÓN CON REDIS CACHE
+        // Llamada simple - la lógica de caché está en el servicio
+        const properties = await getFeaturedPropertiesWithCache();
         
-        // Obtener SOLO propiedades destacadas con imágenes embebidas en UNA SOLA LLAMADA
-        const response = await fetch(
-          `https://prohausen.cl/wp-json/wp/v2/properties?per_page=20&_embed&orderby=modified&order=desc`,
-          { next: { revalidate: 7200 } } // Cache 2 horas para evitar sobrecarga
-        );
+        const endTime = performance.now();
+        const totalLoadTime = Math.round(endTime - startTime);
+        setLoadTime(totalLoadTime);
         
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
-        }
-        
-        const propertiesWithMedia = await response.json();
-        console.log(`📋 Propiedades con media obtenidas: ${propertiesWithMedia.length}`);
-        
-        // Filtrar solo las destacadas
-        const featuredProperties = (propertiesWithMedia as EmbeddedProperty[])
-          .filter((prop) => prop.class_list.includes("es_label-featured"))
-          .slice(0, 4);
-          
-        console.log(`⭐ Propiedades destacadas encontradas: ${featuredProperties.length}`);
-        
-        // Mapear con imágenes embebidas (sin llamadas adicionales)
-        const mappedProperties = featuredProperties.map((wpProp) => {
-          let featuredImageUrl = "";
-          
-          // Extraer imagen de datos embebidos
-          try {
-            if (wpProp._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
-              featuredImageUrl = wpProp._embedded["wp:featuredmedia"][0].source_url;
-              console.log(`✅ Imagen embebida para ${wpProp.id}: ${featuredImageUrl}`);
-            } else if (wpProp._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
-              // Backup: usar guid si source_url no está disponible
-              featuredImageUrl = wpProp._embedded["wp:featuredmedia"][0].guid.rendered;
-              console.log(`🔄 Usando GUID para ${wpProp.id}: ${featuredImageUrl}`);
-            } else {
-              console.warn(`⚠️ No image data for property ${wpProp.id}`, wpProp._embedded);
-            }
-          } catch (error) {
-            console.error(`❌ Error procesando imagen para ${wpProp.id}:`, error);
-          }
-
-          const mappedProperty = mapWordPressProperty(wpProp, featuredImageUrl);
-          return mappedProperty;
-        });
-
-        setFeaturedProperties(mappedProperties);
+        setFeaturedProperties(properties);
         console.timeEnd("🏠 Total Featured Properties Load Time");
-        console.log(`⚡ ${mappedProperties.length} propiedades destacadas cargadas en tiempo récord`);
+        console.log(`⚡ ${properties.length} propiedades destacadas cargadas en ${totalLoadTime}ms`);
       } catch (error) {
         console.error("Error loading featured properties:", error);
         setFeaturedProperties([]);
@@ -119,7 +68,14 @@ export default function FeaturedProperties() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Propiedades Destacadas</h2>
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">Propiedades Destacadas</h2>
+          {loadTime > 0 && (
+            <span className={`text-sm font-mono ${loadTime < 1500 ? 'text-green-600' : 'text-orange-600'}`}>
+              ⚡ {loadTime < 1000 ? '🚀 CACHE' : 'API'} - {loadTime}ms
+            </span>
+          )}
+        </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {featuredProperties.map((property) => (
