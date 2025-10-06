@@ -600,46 +600,46 @@ export default function PropertyDetailPage() {
             <div className="bg-white">
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm mb-4">
-                <span className="text-gray-600">{property.operation}</span>
+                <span className="text-gray-800 font-medium">{property.operation}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-gray-600">{property.type}</span>
+                <span className="text-gray-800 font-medium">{property.type}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-gray-600">{property.region}</span>
+                <span className="text-gray-800 font-medium">{property.region}</span>
               </div>
 
               {/* Título */}
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{property.title}</h1>
 
               {/* Ubicación */}
-              <p className="text-gray-600 mb-6">{property.address || `${property.location}, ${property.region}, Chile`}</p>
+              <p className="text-gray-800 mb-6 font-medium">{property.address || `${property.location}, ${property.region}, Chile`}</p>
               
               {/* Características principales - en línea con íconos */}
               <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
                 {property.bedrooms && (
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
                     <span className="text-gray-900 font-semibold">{property.bedrooms}</span>
-                    <span className="text-gray-600">camas</span>
+                    <span className="text-gray-800 font-medium">camas</span>
                   </div>
                 )}
                 {property.bathrooms && (
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                     </svg>
                     <span className="text-gray-900 font-semibold">{property.bathrooms}</span>
-                    <span className="text-gray-600">baños</span>
+                    <span className="text-gray-800 font-medium">baños</span>
                 </div>
                 )}
                 {property.area && property.area !== "0" && (
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                   </svg>
                     <span className="text-gray-900 font-semibold">{property.area}</span>
-                    <span className="text-gray-600">m²</span>
+                    <span className="text-gray-800 font-medium">m²</span>
                   </div>
                 )}
               </div>
@@ -647,62 +647,62 @@ export default function PropertyDetailPage() {
 
             {/* Características - Layout WordPress (4 columnas, 3 filas) */}
             <div className="bg-white border border-gray-200 rounded">
-              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 bg-gray-50">Características</h3>
+              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 text-gray-900">Características</h3>
               <div className="px-6 py-6">
                 {/* Grid responsivo de características */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Categoría</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Categoría</p>
                     <p className="font-semibold text-gray-900 break-words">{property.type}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Operación</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Operación</p>
                     <p className="font-semibold text-gray-900 break-words">{property.operation}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Comuna</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Comuna</p>
                     <p className="font-semibold text-gray-900 break-words">{property.comuna}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Dormitorios</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Dormitorios</p>
                     <p className="font-semibold text-gray-900">{property.bedrooms || 0}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Baños</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Baños</p>
                     <p className="font-semibold text-gray-900">{property.bathrooms || 0}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Medios baños</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Medios baños</p>
                     <p className="font-semibold text-gray-900">{property.halfBathrooms || 0}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Habitaciones totales</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Habitaciones totales</p>
                     <p className="font-semibold text-gray-900">{property.totalRooms || property.bedrooms || 0}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Cantidad Pisos</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Cantidad Pisos</p>
                     <p className="font-semibold text-gray-900">{property.floors || 0}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">N° de Piso</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">N° de Piso</p>
                     <p className="font-semibold text-gray-900">{property.floorNumber || 0}</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Superficie total</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Superficie total</p>
                     <p className="font-semibold text-gray-900">{property.landArea || property.area} m²</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Superficie Útil</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Superficie Útil</p>
                     <p className="font-semibold text-gray-900">{property.usefulArea || property.area} m²</p>
                   </div>
                   <div className="bg-gray-50 p-3 rounded">
-                    <p className="text-gray-600 text-sm mb-1">Año de construcción</p>
+                    <p className="text-gray-700 text-sm mb-1 font-medium">Año de construcción</p>
                     <p className="font-semibold text-gray-900">{property.yearBuilt || '-'}</p>
                   </div>
                 </div>
@@ -711,7 +711,7 @@ export default function PropertyDetailPage() {
 
             {/* Descripción - Estilo WordPress */}
             <div className="bg-white border border-gray-200 rounded">
-              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 bg-gray-50">Descripción</h3>
+              <h3 className="text-xl font-bold px-6 py-4 border-b border-gray-200 text-gray-900">Descripción</h3>
               <div className="px-6 py-6">
                 <div 
                   className="text-gray-700 leading-relaxed prose max-w-none"
@@ -738,7 +738,7 @@ export default function PropertyDetailPage() {
             {/* Ubicación - Mapa */}
             {property.latitude && property.longitude && (
               <div className="bg-white rounded border p-4">
-                <h3 className="text-xl font-bold mb-4">Ubicación</h3>
+                <h3 className="text-xl font-bold mb-4 text-gray-900">Ubicación</h3>
                 <div className="w-full h-96 bg-gray-200 rounded overflow-hidden">
                   <GoogleMapComponent
                     latitude={property.latitude}
@@ -752,7 +752,7 @@ export default function PropertyDetailPage() {
             {/* Video */}
             {property.videoUrl && (
               <div className="bg-white rounded border p-4">
-                <h3 className="text-xl font-bold mb-4">Video</h3>
+                <h3 className="text-xl font-bold mb-4 text-gray-900">Video</h3>
                 <div className="aspect-video bg-gray-200 rounded overflow-hidden">
                   <iframe
                     width="100%"
@@ -806,21 +806,21 @@ export default function PropertyDetailPage() {
 
               {/* Formulario de contacto */}
               <div className="bg-white rounded border p-6">
-                <h3 className="text-lg font-bold mb-4">¿Te interesa esta propiedad?</h3>
+                <h3 className="text-lg font-bold mb-4 text-gray-900">¿Te interesa esta propiedad?</h3>
                 <form className="space-y-3">
                   <div>
                     <label className="block text-sm text-gray-700 mb-1">Nombre</label>
                     <input 
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder=""
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+                      placeholder="" 
                     />
                   </div>
                   <div>
                     <label className="block text-sm text-gray-700 mb-1">Teléfono</label>
                     <input 
                       type="tel"
-                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                       placeholder=""
                     />
                   </div>
@@ -828,7 +828,7 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm text-gray-700 mb-1">Email</label>
                     <input 
                       type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                       placeholder=""
                     />
                   </div>
@@ -836,7 +836,7 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm text-gray-700 mb-1">Mensaje</label>
                     <textarea 
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                       placeholder=""
                     />
                   </div>
