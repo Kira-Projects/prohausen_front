@@ -47,18 +47,18 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           </div>
         )}
 
-        {/* Imagen actual */}
+        {/* Imagen actual - Optimizada con prioridad */}
         <Image
           src={currentImage}
           alt={property.title}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={currentImageIndex === 0} // Prioridad solo para primera imagen
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyOiKhco6RqWw==" 
           onError={() => {
             console.error(`❌ Error cargando imagen para ${property.title}:`, currentImage);
-          }}
-          onLoad={() => {
-            console.log(`✅ Imagen cargada exitosamente para ${property.title}:`, currentImage);
           }}
         />
 

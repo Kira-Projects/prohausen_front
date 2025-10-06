@@ -135,7 +135,7 @@ export interface WordPressTaxonomy {
   slug: string;
   taxonomy: string;
   parent: number;
-  meta: any[];
+  meta: Record<string, unknown>[];
   _links: {
     self: { href: string }[];
     collection: { href: string }[];
