@@ -14,12 +14,13 @@ const WORDPRESS_API_URL =
 
 /**
  * Obtiene URLs de imágenes desde WordPress por ID de propiedad
- * Consulta todas las imágenes adjuntas (attachments) a una propiedad
+ * Consulta TODAS las imágenes adjuntas (attachments) a una propiedad
+ * Límite aumentado a 100 para soportar propiedades con muchas imágenes
  */
 async function getPropertyImageUrls(propertyId: number): Promise<string[]> {
   try {
     const response = await fetch(
-      `${WORDPRESS_API_URL}/media?parent=${propertyId}&per_page=20`,
+      `${WORDPRESS_API_URL}/media?parent=${propertyId}&per_page=100`,
       { cache: "no-store" }
     );
 
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
 
         const featuredImage = images[0] || "";
         const mapped = mapWordPressProperty(prop, featuredImage);
-        mapped.images = images.slice(0, 5); // Máximo 5 imágenes
+        mapped.images = images; // ✅ TODAS las imágenes sin límite
         return mapped;
       })
     );
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
 
         const featuredImage = images[0] || "";
         const mapped = mapWordPressProperty(prop, featuredImage);
-        mapped.images = images.slice(0, 5); // Máximo 5 imágenes
+        mapped.images = images; // ✅ TODAS las imágenes sin límite
         return mapped;
       })
     );
