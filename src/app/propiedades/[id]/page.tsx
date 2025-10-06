@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Property } from "@/types/property";
-import { getPropertyById, getFeatures, getMediaById, getPropertyImages } from "@/services/wordpress";
-import { mapWordPressProperty } from "@/utils/mapWordPressData";
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
 
 export default function PropertyDetailPage() {
@@ -19,10 +17,11 @@ export default function PropertyDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [loadTime, setLoadTime] = useState<number>(0);
 
   useEffect(() => {
     if (propertyId) {
-      loadProperty(propertyId);
+      loadPropertyFromCache(propertyId);
     }
   }, [propertyId]);
 
@@ -44,81 +43,60 @@ export default function PropertyDetailPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen, property]);
 
-  const loadProperty = async (id: number) => {
+  const loadPropertyFromCache = async (id: number) => {
     setLoading(true);
     setError(null);
     
     try {
-      const wpProperty = await getPropertyById(id);
+      const startTime = performance.now();
+      console.log(`🔍 [Detalle] Solicitando propiedad ${id} desde /api/property/${id}...`);
       
-      if (!wpProperty) {
-        setError("Propiedad no encontrada");
+      // Consultar desde Upstash cache (vía API route backend)
+      // Usa revalidate en lugar de no-store para permitir cache del navegador
+      const response = await fetch(`/api/property/${id}`, {
+        method: 'GET',
+        next: { revalidate: 60 } // Cache por 60 segundos
+      });
+
+      console.log("📡 [Detalle] Respuesta recibida:", response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ [Detalle] Error en respuesta:", errorData);
+        
+        if (response.status === 404) {
+          setError("Propiedad no encontrada");
+        } else {
+          setError(errorData.error || 'Error al cargar la propiedad desde caché');
+        }
         setLoading(false);
         return;
       }
 
-      let featuredImageUrl = "/placeholder-property.svg";
-      if (wpProperty.featured_media) {
-        const media = await getMediaById(wpProperty.featured_media);
-        if (media?.source_url) {
-          featuredImageUrl = media.source_url;
-        }
-      }
-
-      const mappedProperty = mapWordPressProperty(wpProperty, featuredImageUrl);
-      
-      const propertyImages = await getPropertyImages(id);
-      console.log(`Imágenes de galería: ${propertyImages.length}`);
-      
-      const imageUrls = propertyImages.map(img => img.source_url);
-      
-      // Combinar imagen destacada con imágenes de galería
-      const allImages: string[] = [];
-      
-      // Primero agregar imagen destacada
-      if (featuredImageUrl && featuredImageUrl !== "/placeholder-property.svg") {
-        allImages.push(featuredImageUrl);
-      }
-      
-      // Luego agregar imágenes de galería (evitando duplicados)
-      imageUrls.forEach(url => {
-        if (!allImages.includes(url)) {
-          allImages.push(url);
-        }
+      const data = await response.json();
+      console.log("📦 [Detalle] Datos recibidos:", {
+        success: data.success,
+        cached: data.cached,
+        loadTime: data.loadTime,
+        tieneImagenes: data.property?.images?.length || 0
       });
       
-      mappedProperty.images = allImages.length > 0 ? allImages : [featuredImageUrl];
-      console.log(`Total imágenes: ${mappedProperty.images.length}`, mappedProperty.images);
-      
-      if (wpProperty.es_features && wpProperty.es_features.length > 0) {
-        console.log(
-          `🏷️ Feature IDs de la propiedad: ${wpProperty.es_features.join(", ")}`
-        );
-
-        try {
-          const featuresData = await getFeatures();
-          console.log(`📦 Features disponibles: ${featuresData.length}`);
-
-          if (featuresData.length === 0) {
-            console.warn("⚠️ No se obtuvieron features de la API");
-          } else {
-            const propertyFeatures = featuresData
-              .filter((f) => wpProperty.es_features.includes(f.id))
-              .map((f) => f.name);
-
-            console.log(`✅ Features mapeadas: ${propertyFeatures.join(", ")}`);
-            mappedProperty.features = propertyFeatures;
-          }
-        } catch (error) {
-          console.error("❌ Error al obtener features:", error);
-        }
-      } else {
-        console.log("ℹ️ Esta propiedad no tiene features asignadas");
+      if (!data.success || !data.property) {
+        setError('No se pudo cargar la propiedad desde caché');
+        setLoading(false);
+        return;
       }
-      
-      setProperty(mappedProperty);
+
+      const endTime = performance.now();
+      const totalLoadTime = Math.round(endTime - startTime);
+      setLoadTime(totalLoadTime);
+
+      console.log(`✅ [Detalle] Propiedad ${id} cargada en ${totalLoadTime}ms (CACHE)`);
+      console.log(`📸 [Detalle] Imágenes: ${data.property.images?.length || 0}`);
+
+      setProperty(data.property);
     } catch (err) {
-      console.error("Error al cargar propiedad:", err);
+      console.error("❌ [Detalle] Error al cargar propiedad:", err);
       setError("Error al cargar la propiedad");
     } finally {
       setLoading(false);
@@ -130,7 +108,10 @@ export default function PropertyDetailPage() {
       <div className="min-h-screen bg-white flex items-center justify-center pt-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-800 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando propiedad...</p>
+          <p className="text-gray-600">Cargando propiedad desde caché...</p>
+          {loadTime > 0 && (
+            <p className="text-sm text-green-600 mt-2">⚡ {loadTime}ms</p>
+          )}
         </div>
       </div>
     );
@@ -243,7 +224,14 @@ export default function PropertyDetailPage() {
         
         {/* Título sobre la imagen */}
         <div className="relative max-w-6xl mx-auto px-4 z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-center text-white drop-shadow-2xl">{property.title}</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-2xl flex-1 text-center">{property.title}</h1>
+            {loadTime > 0 && (
+              <span className={`text-sm font-mono ${loadTime < 500 ? 'text-green-300' : 'text-yellow-300'} drop-shadow-lg`}>
+                ⚡ {loadTime < 500 ? '🚀' : ''} {loadTime}ms
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

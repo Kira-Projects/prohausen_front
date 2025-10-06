@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import PropertyCard from "@/components/properties/PropertyCard";
 import { Property } from "@/types/property";
-import { getFeaturedPropertiesWithCache } from "@/services/wordpress";
 
 export default function FeaturedProperties() {
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
@@ -16,18 +15,50 @@ export default function FeaturedProperties() {
       try {
         const startTime = performance.now();
         console.time("🏠 Total Featured Properties Load Time");
+        console.log("🔍 [Frontend] Solicitando propiedades a /api/featured-properties...");
         
-        // 🚀 NUEVA IMPLEMENTACIÓN CON REDIS CACHE
-        // Llamada simple - la lógica de caché está en el servicio
-        const properties = await getFeaturedPropertiesWithCache();
+        // Consultar desde Upstash cache (vía API route backend)
+        // Usa revalidate en lugar de no-store para permitir cache del navegador
+        const response = await fetch('/api/featured-properties', {
+          method: 'GET',
+          next: { revalidate: 60 } // Cache por 60 segundos
+        });
+
+        console.log("📡 [Frontend] Respuesta recibida:", response.status, response.statusText);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("❌ [Frontend] Error en respuesta:", errorData);
+          throw new Error(`API Error: ${response.status} - ${errorData.error || 'Unknown'}`);
+        }
+
+        const data = await response.json();
+        console.log("📦 [Frontend] Datos recibidos:", {
+          success: data.success,
+          cached: data.cached,
+          count: data.count,
+          loadTime: data.loadTime,
+          tienePropiedades: !!data.properties,
+          cantidadPropiedades: data.properties?.length || 0
+        });
         
+        if (!data.success || !data.properties) {
+          throw new Error('No se pudieron cargar las propiedades desde caché');
+        }
+
+        const mapped: Property[] = data.properties;
+        console.log(`✅ [Frontend] Propiedades mapeadas: ${mapped.length}`);
+        console.log("📋 [Frontend] Primera propiedad:", mapped[0]);
+
         const endTime = performance.now();
         const totalLoadTime = Math.round(endTime - startTime);
         setLoadTime(totalLoadTime);
-        
-        setFeaturedProperties(properties);
+
+        setFeaturedProperties(mapped);
         console.timeEnd("🏠 Total Featured Properties Load Time");
-        console.log(`⚡ ${properties.length} propiedades destacadas cargadas en ${totalLoadTime}ms`);
+        console.log(
+          `⚡ [Frontend] ${mapped.length} propiedades destacadas cargadas en ${totalLoadTime}ms (CACHE)`
+        );
       } catch (error) {
         console.error("Error loading featured properties:", error);
         setFeaturedProperties([]);

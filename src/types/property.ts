@@ -124,6 +124,22 @@ export interface WordPressProperty {
       href: string;
     }[];
   };
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{
+      id: number;
+      source_url?: string;
+      guid?: {
+        rendered: string;
+      };
+      media_details?: {
+        sizes?: {
+          [key: string]: {
+            source_url: string;
+          };
+        };
+      };
+    }>;
+  };
 }
 
 export interface WordPressTaxonomy {

@@ -21,10 +21,47 @@ export async function getCachedFeaturedProperties(): Promise<
   Property[] | null
 > {
   try {
+    console.log(
+      "🔍 [Cache] Consultando Redis con key:",
+      CACHE_KEYS.FEATURED_PROPERTIES
+    );
+    console.log(
+      "🔍 [Cache] Redis URL:",
+      process.env.UPSTASH_REDIS_REST_URL ? "✅ OK" : "❌ MISSING"
+    );
+    console.log(
+      "🔍 [Cache] Redis Token:",
+      process.env.UPSTASH_REDIS_REST_TOKEN
+        ? "✅ OK (length:" + process.env.UPSTASH_REDIS_REST_TOKEN.length + ")"
+        : "❌ MISSING"
+    );
+
+    const startTime = performance.now();
     const cached = await redis.get<Property[]>(CACHE_KEYS.FEATURED_PROPERTIES);
+    const endTime = performance.now();
+
+    console.log("📊 [Cache] Resultado de Redis:", {
+      tieneResultado: !!cached,
+      esArray: Array.isArray(cached),
+      cantidad: cached?.length || 0,
+      tiempoMs: Math.round(endTime - startTime),
+    });
+
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      console.log("✅ [Cache] Primera propiedad:", {
+        id: cached[0].id,
+        title: cached[0].title,
+        price: cached[0].price,
+        image: cached[0].image ? "✅ Tiene imagen" : "❌ Sin imagen",
+      });
+    }
+
     return cached;
   } catch (error) {
-    console.error("Error obteniendo cache de propiedades destacadas:", error);
+    console.error(
+      "❌ [Cache] Error obteniendo cache de propiedades destacadas:",
+      error
+    );
     return null;
   }
 }

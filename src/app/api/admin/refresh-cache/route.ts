@@ -50,13 +50,29 @@ export async function POST(request: NextRequest) {
     }
 
     const featuredProperties = await featuredResponse.json();
+
+    // Mapear propiedades destacadas con imágenes
     const mappedFeatured = (featuredProperties as WordPressProperty[]).map(
-      (prop) => mapWordPressProperty(prop)
+      (prop) => {
+        // Extraer URL de imagen destacada desde _embedded
+        let featuredImage = "";
+        if (prop._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
+          featuredImage = prop._embedded["wp:featuredmedia"][0].source_url;
+        } else if (prop._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
+          featuredImage = prop._embedded["wp:featuredmedia"][0].guid.rendered;
+        }
+
+        console.log(
+          `📸 Imagen para ${prop.id} (${prop.title.rendered}):`,
+          featuredImage || "❌ Sin imagen"
+        );
+        return mapWordPressProperty(prop, featuredImage);
+      }
     );
 
-    // 3. Obtener todas las propiedades de WordPress
+    // 3. Obtener todas las propiedades de WordPress (con imágenes)
     const allResponse = await fetch(
-      `${WORDPRESS_API_URL}/properties?per_page=100`,
+      `${WORDPRESS_API_URL}/properties?per_page=100&_embed=wp:featuredmedia`,
       { cache: "no-store" }
     );
 
@@ -67,9 +83,19 @@ export async function POST(request: NextRequest) {
     }
 
     const allProperties = await allResponse.json();
-    const mappedAll = (allProperties as WordPressProperty[]).map((prop) =>
-      mapWordPressProperty(prop)
-    );
+
+    // Mapear todas las propiedades con imágenes
+    const mappedAll = (allProperties as WordPressProperty[]).map((prop) => {
+      // Extraer URL de imagen destacada desde _embedded
+      let featuredImage = "";
+      if (prop._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
+        featuredImage = prop._embedded["wp:featuredmedia"][0].source_url;
+      } else if (prop._embedded?.["wp:featuredmedia"]?.[0]?.guid?.rendered) {
+        featuredImage = prop._embedded["wp:featuredmedia"][0].guid.rendered;
+      }
+
+      return mapWordPressProperty(prop, featuredImage);
+    });
 
     // 4. Guardar en Upstash SIN TTL (dura para siempre)
     await setCachedFeaturedProperties(mappedFeatured);

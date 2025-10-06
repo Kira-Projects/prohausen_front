@@ -4,70 +4,72 @@ import { useState, useEffect } from "react";
 import PropertyCard from "@/components/properties/PropertyCard";
 import PropertyFilters from "@/components/properties/PropertyFilters";
 import { Property } from "@/types/property";
-import { getProperties, getPropertyImagesOptimized } from "@/services/wordpress";
-import { mapWordPressProperty } from "@/utils/mapWordPressData";
 
 export default function PropiedadesPage() {
-  // Estados sin datos hardcodeados - solo datos reales de WordPress
+  // Estados sin datos hardcodeados - solo datos reales desde Upstash
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadTime, setLoadTime] = useState<number>(0);
   
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Cargar propiedades desde WordPress al montar el componente
+  // Cargar propiedades desde Upstash al montar el componente
   useEffect(() => {
-    loadPropertiesFromWordPress();
+    loadPropertiesFromCache();
   }, []);
 
-  const loadPropertiesFromWordPress = async () => {
+  const loadPropertiesFromCache = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      console.log("Cargando propiedades desde WordPress...");
-      const wpProperties = await getProperties();
+      const startTime = performance.now();
+      console.log("🔍 [Propiedades] Solicitando todas las propiedades desde /api/all-properties...");
       
-      if (wpProperties.length > 0) {
-        console.log(`${wpProperties.length} propiedades obtenidas de WordPress`);
-        
-        const mappedProperties = await Promise.all(
-          wpProperties.map(async (wpProp) => {
-            // Usar método híbrido optimizado para obtener múltiples imágenes
-            const allImages = await getPropertyImagesOptimized(wpProp);
-            
-            let featuredImageUrl = "";
-            if (allImages.length > 0) {
-              featuredImageUrl = allImages[0];
-            }
+      // Consultar desde Upstash cache (vía API route backend)
+      // Usa revalidate en lugar de no-store para permitir cache del navegador
+      const response = await fetch('/api/all-properties', {
+        method: 'GET',
+        next: { revalidate: 60 } // Cache por 60 segundos
+      });
 
-            const mappedProperty = mapWordPressProperty(wpProp, featuredImageUrl);
-            
-            // Agregar todas las imágenes a la propiedad mapeada (máximo 5)
-            if (allImages.length > 0) {
-              mappedProperty.images = allImages.slice(0, 5); // Limitar a 5 imágenes
-              mappedProperty.image = allImages[0]; // La primera imagen como principal
-            }
+      console.log("📡 [Propiedades] Respuesta recibida:", response.status, response.statusText);
 
-            return mappedProperty;
-          })
-        );
-
-        setAllProperties(mappedProperties);
-        setFilteredProperties(mappedProperties);
-      } else {
-        console.log("No hay propiedades disponibles en WordPress");
-        setError("No hay propiedades disponibles en este momento.");
-        setAllProperties([]);
-        setFilteredProperties([]);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ [Propiedades] Error en respuesta:", errorData);
+        throw new Error(errorData.error || 'Error al cargar propiedades desde caché');
       }
+
+      const data = await response.json();
+      console.log("📦 [Propiedades] Datos recibidos:", {
+        success: data.success,
+        cached: data.cached,
+        count: data.count,
+        loadTime: data.loadTime
+      });
+      
+      if (!data.success || !data.properties) {
+        throw new Error('No se pudieron cargar las propiedades desde caché');
+      }
+
+      const properties: Property[] = data.properties;
+      const endTime = performance.now();
+      const totalLoadTime = Math.round(endTime - startTime);
+      setLoadTime(totalLoadTime);
+
+      console.log(`✅ [Propiedades] ${properties.length} propiedades cargadas en ${totalLoadTime}ms (CACHE)`);
+
+      setAllProperties(properties);
+      setFilteredProperties(properties);
     } catch (err) {
-      console.error("Error al cargar propiedades:", err);
-      setError("Error al conectar con WordPress. Por favor, verifica tu conexión.");
+      console.error("❌ [Propiedades] Error al cargar propiedades:", err);
+      setError(err instanceof Error ? err.message : "Error al conectar con el caché. Por favor, verifica tu conexión.");
       setAllProperties([]);
       setFilteredProperties([]);
     } finally {
@@ -143,8 +145,13 @@ export default function PropiedadesPage() {
   return (
     <main className="min-h-screen pt-24 pb-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-8 flex justify-between items-center">
           <h1 className="text-4xl font-bold text-gray-900">Propiedades</h1>
+          {loadTime > 0 && (
+            <span className={`text-sm font-mono ${loadTime < 1500 ? 'text-green-600' : 'text-orange-600'}`}>
+              ⚡ {loadTime < 1000 ? '🚀 CACHE' : 'CACHE'} - {loadTime}ms
+            </span>
+          )}
         </div>
 
         {/* Mensaje de error */}
@@ -180,7 +187,7 @@ export default function PropiedadesPage() {
         {loading && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Cargando propiedades desde WordPress...</p>
+            <p className="mt-4 text-gray-600">Cargando propiedades desde caché...</p>
           </div>
         )}
 
