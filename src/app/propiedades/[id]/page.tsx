@@ -49,37 +49,23 @@ export default function PropertyDetailPage() {
     
     try {
       const startTime = performance.now();
-      console.log(`🔍 [Detalle] Solicitando propiedad ${id} desde /api/property/${id}...`);
       
-      // Consultar desde Upstash cache (vía API route backend)
-      // Usa revalidate en lugar de no-store para permitir cache del navegador
       const response = await fetch(`/api/property/${id}`, {
         method: 'GET',
-        next: { revalidate: 60 } // Cache por 60 segundos
+        next: { revalidate: 60 }
       });
 
-      console.log("📡 [Detalle] Respuesta recibida:", response.status, response.statusText);
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ [Detalle] Error en respuesta:", errorData);
-        
         if (response.status === 404) {
           setError("Propiedad no encontrada");
         } else {
-          setError(errorData.error || 'Error al cargar la propiedad desde caché');
+          setError('Error al cargar la propiedad desde caché');
         }
         setLoading(false);
         return;
       }
 
       const data = await response.json();
-      console.log("📦 [Detalle] Datos recibidos:", {
-        success: data.success,
-        cached: data.cached,
-        loadTime: data.loadTime,
-        tieneImagenes: data.property?.images?.length || 0
-      });
       
       if (!data.success || !data.property) {
         setError('No se pudo cargar la propiedad desde caché');
@@ -91,12 +77,9 @@ export default function PropertyDetailPage() {
       const totalLoadTime = Math.round(endTime - startTime);
       setLoadTime(totalLoadTime);
 
-      console.log(`✅ [Detalle] Propiedad ${id} cargada en ${totalLoadTime}ms (CACHE)`);
-      console.log(`📸 [Detalle] Imágenes: ${data.property.images?.length || 0}`);
-
       setProperty(data.property);
     } catch (err) {
-      console.error("❌ [Detalle] Error al cargar propiedad:", err);
+      console.error("Error al cargar propiedad:", err);
       setError("Error al cargar la propiedad");
     } finally {
       setLoading(false);

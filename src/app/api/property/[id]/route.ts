@@ -29,15 +29,12 @@ export async function GET(
       );
     }
 
-    console.log(`🔍 [API] Buscando propiedad ${propertyId} en Upstash...`);
-
     const startTime = performance.now();
 
     // Obtener todas las propiedades del cache
     const allProperties = await getCachedAllProperties();
 
     if (!allProperties || allProperties.length === 0) {
-      console.warn("⚠️ [API] No hay propiedades en caché");
       return NextResponse.json(
         {
           success: false,
@@ -56,7 +53,6 @@ export async function GET(
     const loadTime = Math.round(endTime - startTime);
 
     if (!property) {
-      console.warn(`⚠️ [API] Propiedad ${propertyId} no encontrada en caché`);
       return NextResponse.json(
         {
           success: false,
@@ -67,11 +63,6 @@ export async function GET(
       );
     }
 
-    console.log(`✅ [API] Propiedad ${propertyId} encontrada en ${loadTime}ms`);
-    console.log(
-      `📸 [API] Propiedad tiene ${property.images?.length || 0} imágenes`
-    );
-
     return NextResponse.json({
       success: true,
       property: property,
@@ -79,7 +70,7 @@ export async function GET(
       loadTime: `${loadTime}ms`,
     });
   } catch (error) {
-    console.error("❌ [API] Error al obtener propiedad desde caché:", error);
+    console.error("Error al obtener propiedad desde caché:", error);
 
     return NextResponse.json(
       {

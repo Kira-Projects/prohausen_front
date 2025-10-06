@@ -11,34 +11,11 @@ export const revalidate = 60;
  */
 export async function GET() {
   try {
-    console.log("🔍 [API] Iniciando consulta a Upstash...");
-    console.log(
-      "🔍 [API] UPSTASH_REDIS_REST_URL:",
-      process.env.UPSTASH_REDIS_REST_URL
-        ? "✅ Configurado"
-        : "❌ NO configurado"
-    );
-    console.log(
-      "🔍 [API] UPSTASH_REDIS_REST_TOKEN:",
-      process.env.UPSTASH_REDIS_REST_TOKEN
-        ? "✅ Configurado"
-        : "❌ NO configurado"
-    );
-
     const startTime = performance.now();
     const cachedProperties = await getCachedFeaturedProperties();
     const endTime = performance.now();
 
-    console.log("📊 [API] Respuesta de Upstash:", {
-      tieneResultados: !!cachedProperties,
-      cantidad: cachedProperties?.length || 0,
-      tiempoMs: Math.round(endTime - startTime),
-    });
-
     if (!cachedProperties || cachedProperties.length === 0) {
-      console.warn(
-        '⚠️ [API] No hay propiedades en caché. El admin debe presionar "Reflejar Cambios"'
-      );
       return NextResponse.json(
         {
           success: false,
@@ -52,9 +29,6 @@ export async function GET() {
     }
 
     const loadTime = Math.round(endTime - startTime);
-    console.log(
-      `✅ [API] ${cachedProperties.length} propiedades obtenidas de Upstash en ${loadTime}ms`
-    );
 
     return NextResponse.json({
       success: true,
@@ -64,7 +38,7 @@ export async function GET() {
       loadTime: `${loadTime}ms`,
     });
   } catch (error) {
-    console.error("❌ Error al obtener propiedades desde caché:", error);
+    console.error("Error al obtener propiedades desde caché:", error);
 
     return NextResponse.json(
       {

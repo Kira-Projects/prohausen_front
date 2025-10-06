@@ -29,30 +29,17 @@ export default function PropiedadesPage() {
 
     try {
       const startTime = performance.now();
-      console.log("🔍 [Propiedades] Solicitando todas las propiedades desde /api/all-properties...");
       
-      // Consultar desde Upstash cache (vía API route backend)
-      // Usa revalidate en lugar de no-store para permitir cache del navegador
       const response = await fetch('/api/all-properties', {
         method: 'GET',
-        next: { revalidate: 60 } // Cache por 60 segundos
+        next: { revalidate: 60 }
       });
 
-      console.log("📡 [Propiedades] Respuesta recibida:", response.status, response.statusText);
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ [Propiedades] Error en respuesta:", errorData);
-        throw new Error(errorData.error || 'Error al cargar propiedades desde caché');
+        throw new Error('Error al cargar propiedades desde caché');
       }
 
       const data = await response.json();
-      console.log("📦 [Propiedades] Datos recibidos:", {
-        success: data.success,
-        cached: data.cached,
-        count: data.count,
-        loadTime: data.loadTime
-      });
       
       if (!data.success || !data.properties) {
         throw new Error('No se pudieron cargar las propiedades desde caché');
@@ -63,12 +50,10 @@ export default function PropiedadesPage() {
       const totalLoadTime = Math.round(endTime - startTime);
       setLoadTime(totalLoadTime);
 
-      console.log(`✅ [Propiedades] ${properties.length} propiedades cargadas en ${totalLoadTime}ms (CACHE)`);
-
       setAllProperties(properties);
       setFilteredProperties(properties);
     } catch (err) {
-      console.error("❌ [Propiedades] Error al cargar propiedades:", err);
+      console.error("Error al cargar propiedades:", err);
       setError(err instanceof Error ? err.message : "Error al conectar con el caché. Por favor, verifica tu conexión.");
       setAllProperties([]);
       setFilteredProperties([]);
