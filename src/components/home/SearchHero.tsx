@@ -38,14 +38,14 @@ export default function SearchHero() {
         </div>
 
         <div className="mx-4 sm:mx-6 lg:mx-8">
-          <form onSubmit={handleSearch} className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl p-4 sm:p-6 text-gray-900">
+          <form onSubmit={handleSearch} className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-4 sm:p-6 text-white">
             <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:items-end">
             {/* Operación */}
             <div>
               <select
                 value={filters.operacion}
                 onChange={(e) => setFilters({ ...filters, operacion: e.target.value })}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
               >
                 <option value="">Operación</option>
                 <option value="arriendo">Arriendo</option>
@@ -58,7 +58,7 @@ export default function SearchHero() {
               <select
                 value={filters.categoria}
                 onChange={(e) => setFilters({ ...filters, categoria: e.target.value })}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
               >
                 <option value="">Categoría</option>
                 <option value="casa">Casa</option>
@@ -74,7 +74,7 @@ export default function SearchHero() {
               <select
                 value={filters.region}
                 onChange={(e) => setFilters({ ...filters, region: e.target.value })}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer"
+                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
               >
                 <option value="">Región</option>
                 <option value="libertador-b-ohiggins">Libertador B. O&apos;Higgins</option>
@@ -92,7 +92,7 @@ export default function SearchHero() {
                 value={filters.comuna}
                 onChange={(e) => setFilters({ ...filters, comuna: e.target.value })}
                 placeholder="Comuna"
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
               />
             </div>
 

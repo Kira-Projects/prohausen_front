@@ -13,34 +13,82 @@ export default function ContactoSection() {
     comentario: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // Función para formatear números con separador de miles (formato chileno)
+  const formatNumber = (value: string) => {
+    // Remover caracteres no numéricos
+    const numericValue = value.replace(/[^\d]/g, '');
+    if (!numericValue) return '';
     
-    // Aquí se implementará la integración con el backend
-    setTimeout(() => {
-      setSubmitMessage("¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.");
-      setIsSubmitting(false);
-      setFormData({
-        nombre: "",
-        telefono: "",
-        email: "",
-        rentaPromedio: "",
-        complementaRenta: "no",
-        rentaCodeudor: "",
-        comentario: "",
-      });
-    }, 1000);
+    // Formatear con puntos como separadores de miles
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
+  // Función para remover el formato y obtener solo números
+  const unformatNumber = (value: string) => {
+    return value.replace(/[^\d]/g, '');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Preparar datos para envío (remover formato de los números)
+    const submitData = {
+      ...formData,
+      rentaPromedio: unformatNumber(formData.rentaPromedio),
+      rentaCodeudor: unformatNumber(formData.rentaCodeudor),
+    };
+    
+    // Crear el asunto del email
+    const subject = `Nuevo mensaje de contacto - ${submitData.nombre}`;
+    
+    // Crear el cuerpo del email
+    const body = `
+Hola,
+
+He recibido información de contacto a través del sitio web de Prohausen.
+
+DATOS DEL CONTACTO:
+• Nombre: ${submitData.nombre}
+• Teléfono: ${submitData.telefono}
+• Email: ${submitData.email}
+• Renta Promedio: ${submitData.rentaPromedio ? '$' + submitData.rentaPromedio : 'No especificada'}
+• Complementa Renta: ${submitData.complementaRenta === 'si' ? 'Sí' : 'No'}
+${submitData.complementaRenta === 'si' && submitData.rentaCodeudor ? `• Renta Codeudor: $${submitData.rentaCodeudor}` : ''}
+
+MENSAJE:
+${submitData.comentario}
+
+---
+Este mensaje fue enviado desde el formulario de contacto de prohausen.cl
+    `.trim();
+    
+    // Crear el enlace mailto
+    const mailtoLink = `mailto:contacto@prohausen.cl?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Abrir el cliente de email del usuario
+    window.location.href = mailtoLink;
+    
+    // Mostrar mensaje de confirmación
+    setSubmitMessage("Se abrió tu cliente de email. Por favor, envía el mensaje para completar el contacto.");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    // Aplicar formato de miles a los campos de renta
+    if (name === 'rentaPromedio' || name === 'rentaCodeudor') {
+      setFormData({
+        ...formData,
+        [name]: formatNumber(value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   return (
@@ -81,7 +129,7 @@ export default function ContactoSection() {
                     value={formData.nombre}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Nombre *"
                   />
                 </div>
@@ -94,7 +142,7 @@ export default function ContactoSection() {
                     value={formData.telefono}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Teléfono *"
                   />
                 </div>
@@ -107,7 +155,7 @@ export default function ContactoSection() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Email *"
                   />
                 </div>
@@ -122,7 +170,7 @@ export default function ContactoSection() {
                     name="rentaPromedio"
                     value={formData.rentaPromedio}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     placeholder="Renta Promedio"
                   />
                 </div>
@@ -133,7 +181,7 @@ export default function ContactoSection() {
                     name="complementaRenta"
                     value={formData.complementaRenta}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer text-gray-900"
                   >
                     <option value="no">¿Complementas renta?</option>
                     <option value="si">Sí</option>
@@ -154,7 +202,7 @@ export default function ContactoSection() {
                     value={formData.rentaCodeudor}
                     onChange={handleChange}
                     disabled={formData.complementaRenta !== "si"}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900"
                     placeholder="Renta Promedio Codeudor"
                   />
                 </div>
@@ -170,7 +218,7 @@ export default function ContactoSection() {
                   required
                   rows={5}
                   maxLength={180}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900"
                   placeholder="Comentario *"
                 />
                 <p className="text-sm text-gray-500 mt-1 text-right">
@@ -182,10 +230,9 @@ export default function ContactoSection() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="bg-gray-400 hover:bg-gray-500 text-white px-8 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md transition-colors font-medium"
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar mensaje"}
+                  Enviar mensaje
                 </button>
               </div>
             </form>
