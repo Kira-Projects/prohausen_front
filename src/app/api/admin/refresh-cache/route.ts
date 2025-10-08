@@ -61,11 +61,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("🔄 Iniciando actualización de caché...");
-
     // 1. Limpiar caché existente en Upstash
     await invalidateAllCache();
-    console.log("🗑️ Caché anterior limpiado");
 
     // 2. Obtener propiedades destacadas de WordPress
     const featuredResponse = await fetch(
@@ -101,12 +98,6 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        console.log(
-          `📸 Imágenes para ${prop.id} (${prop.title.rendered}):`,
-          images.length,
-          "imágenes"
-        );
-
         const featuredImage = images[0] || "";
         const mapped = mapWordPressProperty(prop, featuredImage);
         mapped.images = images; // ✅ TODAS las imágenes sin límite
@@ -129,14 +120,8 @@ export async function POST(request: NextRequest) {
     const allProperties = await allResponse.json();
 
     // Mapear todas las propiedades con imágenes (incluyendo galería)
-    console.log(
-      `📦 Procesando ${
-        (allProperties as WordPressProperty[]).length
-      } propiedades...`
-    );
-
     const mappedAll = await Promise.all(
-      (allProperties as WordPressProperty[]).map(async (prop, index) => {
+      (allProperties as WordPressProperty[]).map(async (prop) => {
         const images: string[] = [];
 
         // 1. Imagen destacada
@@ -154,15 +139,6 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        // Log progreso cada 10 propiedades
-        if ((index + 1) % 10 === 0) {
-          console.log(
-            `⏳ ${index + 1}/${
-              (allProperties as WordPressProperty[]).length
-            } procesadas`
-          );
-        }
-
         const featuredImage = images[0] || "";
         const mapped = mapWordPressProperty(prop, featuredImage);
         mapped.images = images; // ✅ TODAS las imágenes sin límite
@@ -170,19 +146,13 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    console.log(`✅ Todas las propiedades procesadas`);
-
     // 4. Guardar en Upstash SIN TTL (dura para siempre)
     await setCachedFeaturedProperties(mappedFeatured);
     await setCachedAllProperties(mappedAll);
-    console.log(
-      `💾 Guardado en Upstash: ${mappedFeatured.length} destacadas, ${mappedAll.length} totales`
-    );
 
     // 5. Revalidar páginas de Next.js (ISR)
     revalidatePath("/");
     revalidatePath("/propiedades");
-    console.log("♻️ Páginas revalidadas");
 
     // 6. Guardar timestamp de última actualización
     const timestamp = new Date().toISOString();

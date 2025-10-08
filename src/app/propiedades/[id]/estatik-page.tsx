@@ -28,7 +28,6 @@ export default function PropertyDetailPageEstatik() {
     setError(null);
     
     try {
-      console.log(`Cargando propiedad ID: ${id}`);
       const wpProperty = await getPropertyById(id);
       
       if (!wpProperty) {
@@ -70,7 +69,6 @@ export default function PropertyDetailPageEstatik() {
       }
       
       setProperty(mappedProperty);
-      console.log("Propiedad cargada:", mappedProperty);
     } catch (err) {
       console.error("Error al cargar propiedad:", err);
       setError("Error al cargar la propiedad");
@@ -310,7 +308,7 @@ export default function PropertyDetailPageEstatik() {
               {/* Precio */}
               <div className="bg-gray-50 border rounded-lg p-6">
                 <div className="text-4xl font-bold text-gray-900 mb-2">
-                  $ {property.price}
+                  {property.price}
                 </div>
                 <p className="text-sm text-gray-600">Comparte esta propiedad</p>
                 <div className="flex gap-2 mt-4">

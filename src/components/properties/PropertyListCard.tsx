@@ -100,7 +100,7 @@ export default function PropertyListCard({ property }: PropertyListCardProps) {
 
           {/* Precio */}
           <div className="absolute top-6 right-6">
-            <p className="text-2xl font-bold text-gray-900">$ {property.price}</p>
+            <p className="text-2xl font-bold text-gray-900">{property.price}</p>
           </div>
         </div>
       </div>

@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Invalidar todo el caché
-    console.log("🗑️ Invalidando caché de Redis...");
     await invalidateAllCache();
 
     // 3. Responder con éxito

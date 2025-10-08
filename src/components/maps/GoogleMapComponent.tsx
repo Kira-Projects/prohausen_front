@@ -21,9 +21,6 @@ export default function GoogleMapComponent({
 }: GoogleMapComponentProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  console.log("🗺️ Google Maps Component - API Key:", apiKey ? "Configurada" : "NO configurada");
-  console.log("📍 Coordenadas:", { latitude, longitude });
-
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey || "",
   });
@@ -81,8 +78,6 @@ export default function GoogleMapComponent({
       </div>
     );
   }
-
-  console.log("✅ Google Maps cargado correctamente");
 
   return (
     <GoogleMap

@@ -129,7 +129,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
         {/* Precio */}
         <div className="mb-3">
-          <p className="text-xl font-bold text-gray-900">$ {property.price}</p>
+          <p className="text-xl font-bold text-gray-900">{property.price}</p>
         </div>
 
         {/* Tags */}

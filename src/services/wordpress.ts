@@ -45,14 +45,10 @@ export async function getFeaturedPropertiesWithCache(): Promise<Property[]> {
     // 1. Intentar obtener del caché primero
     const cached = await getCachedFeaturedProperties();
     if (cached) {
-      console.log("✅ Propiedades destacadas servidas desde REDIS CACHE");
       return cached;
     }
 
     // 2. Si no hay caché, llamar a WordPress API
-    console.log("⚠️ Cache miss - Obteniendo de WordPress API...");
-    const startTime = Date.now();
-
     const response = await fetch(
       `${WORDPRESS_API_URL}/properties?per_page=4&_embed=wp:featuredmedia,wp:attachment&es_featured=true`,
       {
@@ -65,8 +61,6 @@ export async function getFeaturedPropertiesWithCache(): Promise<Property[]> {
     }
 
     const properties: WordPressPropertyWithEmbeds[] = await response.json();
-    const loadTime = Date.now() - startTime;
-    console.log(`⏱️ WordPress API respondió en ${loadTime}ms`);
 
     // 3. Mapear los datos de WordPress a nuestro formato
     const mappedProperties = properties.map((prop) =>
@@ -75,7 +69,6 @@ export async function getFeaturedPropertiesWithCache(): Promise<Property[]> {
 
     // 4. Guardar en caché para próximas peticiones
     await setCachedFeaturedProperties(mappedProperties);
-    console.log("💾 Propiedades guardadas en REDIS CACHE (TTL: 30min)");
 
     return mappedProperties;
   } catch (error) {
@@ -92,14 +85,10 @@ export async function getPropertiesWithCache(): Promise<Property[]> {
     // 1. Intentar obtener del caché primero
     const cached = await getCachedAllProperties();
     if (cached) {
-      console.log("✅ Todas las propiedades servidas desde REDIS CACHE");
       return cached;
     }
 
     // 2. Si no hay caché, llamar a WordPress API
-    console.log(
-      "⚠️ Cache miss - Obteniendo todas las propiedades de WordPress..."
-    );
     const properties = await getProperties();
 
     // 3. Mapear los datos
@@ -109,9 +98,6 @@ export async function getPropertiesWithCache(): Promise<Property[]> {
 
     // 4. Guardar en caché
     await setCachedAllProperties(mappedProperties);
-    console.log(
-      "💾 Todas las propiedades guardadas en REDIS CACHE (TTL: 15min)"
-    );
 
     return mappedProperties;
   } catch (error) {
@@ -130,12 +116,10 @@ export async function getPropertyByIdWithCache(
     // 1. Intentar obtener del caché primero
     const cached = await getCachedProperty(id);
     if (cached) {
-      console.log(`✅ Propiedad ${id} servida desde REDIS CACHE`);
       return cached;
     }
 
     // 2. Si no hay caché, llamar a WordPress API
-    console.log(`⚠️ Cache miss - Obteniendo propiedad ${id} de WordPress...`);
     const property = await getPropertyById(id);
 
     if (!property) {
@@ -147,7 +131,6 @@ export async function getPropertyByIdWithCache(
 
     // 4. Guardar en caché
     await setCachedProperty(id, mappedProperty);
-    console.log(`💾 Propiedad ${id} guardada en REDIS CACHE (TTL: 1hr)`);
 
     return mappedProperty;
   } catch (error) {
@@ -174,13 +157,6 @@ export async function getProperties(): Promise<WordPressProperty[]> {
     }
 
     const properties: WordPressProperty[] = await response.json();
-
-    // Log para ver cuántas propiedades se obtuvieron
-    const totalPages = response.headers.get("X-WP-TotalPages");
-    const total = response.headers.get("X-WP-Total");
-    console.log(
-      `Propiedades obtenidas: ${properties.length} de ${total} total (${totalPages} páginas)`
-    );
 
     return properties;
   } catch (error) {
@@ -394,12 +370,6 @@ export async function getPropertyImages(
 
     const images: WordPressMedia[] = await response.json();
 
-    // Log para ver cuántas imágenes se obtuvieron
-    const total = response.headers.get("X-WP-Total");
-    console.log(
-      `Imágenes obtenidas para propiedad ${propertyId}: ${images.length} de ${total} total`
-    );
-
     return images;
   } catch (error) {
     console.error(
@@ -432,12 +402,6 @@ export function extractEmbeddedImages(
         }
       });
     }
-
-    console.log(
-      `🖼️ Imágenes encontradas para propiedad ${wpProperty.id}:`,
-      images.length,
-      images
-    );
   } catch (error) {
     console.warn(
       `Error extracting embedded images for property ${wpProperty.id}:`,
@@ -460,9 +424,6 @@ export async function getPropertyImagesOptimized(
   // Si tenemos menos de 2 imágenes, intentar obtener más de la galería
   if (images.length < 2) {
     try {
-      console.log(
-        `🔍 Buscando más imágenes para propiedad ${wpProperty.id}...`
-      );
       const galleryImages = await getPropertyImages(wpProperty.id);
 
       // Agregar URLs de la galería que no estén ya incluidas
@@ -472,10 +433,6 @@ export async function getPropertyImagesOptimized(
         .slice(0, 4); // Máximo 4 adicionales
 
       images = [...images, ...galleryUrls];
-      console.log(
-        `✅ Total de imágenes para propiedad ${wpProperty.id}:`,
-        images.length
-      );
     } catch (error) {
       console.warn(
         `⚠️ Error obteniendo galería para propiedad ${wpProperty.id}:`,
@@ -494,8 +451,6 @@ export async function getFeaturedPropertiesOptimized(): Promise<
   WordPressProperty[]
 > {
   try {
-    console.time("⚡ Featured Properties API Call");
-
     // Consulta básica SIN _embed para máxima velocidad (1.5s vs 7s)
     const response = await fetch(
       `${WORDPRESS_API_URL}/properties?per_page=50`,
@@ -509,16 +464,11 @@ export async function getFeaturedPropertiesOptimized(): Promise<
     }
 
     const properties: WordPressProperty[] = await response.json();
-    console.timeEnd("⚡ Featured Properties API Call");
 
     // Filtrado frontend - mucho más rápido que meta_query en WordPress
     const featured = properties
       .filter((prop) => prop.class_list.includes("es_label-featured"))
       .slice(0, 4);
-
-    console.log(
-      `🏠 ${featured.length} propiedades destacadas encontradas de ${properties.length} total`
-    );
 
     return featured;
   } catch (error) {

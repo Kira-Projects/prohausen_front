@@ -110,28 +110,46 @@ function isFeatured(classList: string[]): boolean {
 }
 
 /**
- * Extrae el precio desde el contenido HTML
+ * Formatea un número con puntos como separadores de miles (estilo chileno)
+ * Ejemplo: 14890 → "14.890", 140000000 → "140.000.000"
+ */
+function formatNumberWithDots(numberStr: string): string {
+  const number = parseInt(numberStr);
+  if (isNaN(number)) return numberStr;
+  return number
+    .toLocaleString("es-CL", { useGrouping: true })
+    .replace(/,/g, ".");
+}
+
+/**
+ * Extrae el precio desde el contenido HTML y lo formatea con símbolo $ (peso chileno)
  * Busca patrones como "$ 14.890" o "$14890" o "UF 575"
  */
 function extractPrice(content: string): string {
   // Patrón para precio en pesos con formato "$ 14.890"
   const pesosMatch = content.match(/\$\s*([\d.,]+)/);
   if (pesosMatch) {
-    // Remover puntos (separadores de miles) y devolver solo números
-    const cleanPrice = pesosMatch[1].replace(/\./g, "").replace(/,/g, "");
-    return cleanPrice;
+    // Limpiar el número (remover puntos y comas)
+    const cleanNumber = pesosMatch[1].replace(/\./g, "").replace(/,/g, "");
+    // Formatear con puntos de miles y devolver con símbolo $
+    return `$ ${formatNumberWithDots(cleanNumber)}`;
   }
 
-  // Patrón para precio en UF
+  // Patrón para precio en UF - convertir a pesos chilenos
   const ufMatch = content.match(/(?:UF|uf)\s*([\d.,]+)/i);
   if (ufMatch) {
-    return ufMatch[1].replace(/\./g, "").replace(/,/g, "");
+    // Limpiar el número (remover puntos y comas)
+    const cleanNumber = ufMatch[1].replace(/\./g, "").replace(/,/g, "");
+    // Formatear con puntos de miles y devolver con símbolo $
+    return `$ ${formatNumberWithDots(cleanNumber)}`;
   }
 
   // Buscar números grandes que puedan ser precios (más de 3 dígitos)
   const numberMatch = content.match(/\b(\d{3,}(?:[.,]\d{3})*)\b/);
   if (numberMatch) {
-    return numberMatch[1].replace(/\./g, "").replace(/,/g, "");
+    const cleanNumber = numberMatch[1].replace(/\./g, "").replace(/,/g, "");
+    // Formatear con puntos de miles y devolver con símbolo $
+    return `$ ${formatNumberWithDots(cleanNumber)}`;
   }
 
   return "0";
@@ -214,14 +232,11 @@ export function mapWordPressProperty(
   let longitude: string | undefined;
 
   if (wpProperty.property_meta) {
-    // Log para debug - ver qué campos vienen realmente de WordPress
-    console.log(
-      `🔍 property_meta para ${wpProperty.id}:`,
-      wpProperty.property_meta
-    );
-
     // Usar datos de metadatos de Estatik si están disponibles
-    price = wpProperty.property_meta.price || "0";
+    // Formatear el precio con símbolo $ y puntos de miles
+    const rawPrice = wpProperty.property_meta.price || "0";
+    price = rawPrice === "0" ? "0" : extractPrice(rawPrice);
+
     bedrooms = wpProperty.property_meta.bedrooms
       ? parseInt(wpProperty.property_meta.bedrooms)
       : undefined;
@@ -286,9 +301,6 @@ export function mapWordPressProperty(
     const areaMatch = content.match(/(\d+(?:[.,]\d+)?)\s*(?:m[²2]|metros)/i);
     if (areaMatch) {
       usefulArea = areaMatch[1].replace(",", ".");
-      console.log(
-        `📐 Superficie útil extraída del contenido: ${usefulArea} m²`
-      );
     }
   }
 
@@ -299,22 +311,17 @@ export function mapWordPressProperty(
     );
     if (landMatch) {
       landArea = landMatch[1].replace(",", ".");
-      console.log(
-        `📐 Superficie terreno extraída del contenido: ${landArea} m²`
-      );
     }
   }
 
   // Si usefulArea tiene valor, usarlo para 'area' si area está en "0"
   if (area === "0" && usefulArea && usefulArea !== "") {
     area = usefulArea;
-    console.log(`📏 Usando superficie útil como área principal: ${area} m²`);
   }
 
   // Si landArea tiene valor y usefulArea no, usar landArea para 'area'
   if (area === "0" && !usefulArea && landArea && landArea !== "") {
     area = landArea;
-    console.log(`📏 Usando superficie terreno como área principal: ${area} m²`);
   }
 
   // Fallback: Extraer desde contenido si no hay metadatos
@@ -348,7 +355,6 @@ export function mapWordPressProperty(
       const ciudadFromAddress = addressParts[1];
       if (ciudadFromAddress && ciudadFromAddress.toLowerCase() !== "chile") {
         location = ciudadFromAddress; // Usar la ciudad del address
-        console.log(`📍 Ubicación desde address: ${location}`);
       }
     }
 
@@ -383,10 +389,6 @@ export function mapWordPressProperty(
     price !== "0" && price.length > 3
       ? price.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
       : price;
-
-  console.log(
-    `Mapeando propiedad ${wpProperty.id}: ${title} - Precio: $${formattedPrice}`
-  );
 
   return {
     id: wpProperty.id,
