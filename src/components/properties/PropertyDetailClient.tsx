@@ -656,7 +656,7 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                 <p className="text-sm text-gray-600 mb-3">¿Te interesa esta propiedad?</p>
                 <a
                   href={`https://wa.me/56940454965?text=${encodeURIComponent(
-                    `Hola, tengo algunas preguntas sobre ${property.title}. ${typeof window !== 'undefined' ? window.location.href : ''}`
+                    `Hola, tengo algunas preguntas sobre ${property.title}. ${typeof window !== 'undefined' ? `${window.location.origin}/propiedades/${property.id}` : ''}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
