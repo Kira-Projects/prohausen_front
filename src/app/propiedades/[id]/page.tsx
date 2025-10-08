@@ -17,12 +17,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   try {
     // En Server Components, usar URL absoluta solo en producción
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-      console.log("Base URL:", baseUrl);
-      console.log("Fetching property ID:", propertyId);
-      console.log("Fetch URL:", `${baseUrl}/api/property/${propertyId}`);
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    console.log("Base URL:", baseUrl);
+    console.log("Fetching property ID:", propertyId);
+    console.log("Fetch URL:", `${baseUrl}/api/property/${propertyId}`);
       
     
     const response = await fetch(`${baseUrl}/api/property/${propertyId}`, {
