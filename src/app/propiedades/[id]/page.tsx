@@ -16,9 +16,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   let error: string | null = null;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    // En Server Components, usar URL absoluta solo en producción
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    
     const response = await fetch(`${baseUrl}/api/property/${propertyId}`, {
-      next: { revalidate: 60 } // Revalidar cada 60 segundos
+      next: { revalidate: 60 }, // Revalidar cada 60 segundos
+      cache: 'no-store' // Importante: no cachear en build time
     });
 
     if (!response.ok) {

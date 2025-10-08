@@ -9,8 +9,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   // Obtener la propiedad desde la API
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/property/${id}`, {
-      next: { revalidate: 60 }
+    // En Server Components, usar URL absoluta solo en producción
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    
+    const response = await fetch(`${baseUrl}/api/property/${id}`, {
+      next: { revalidate: 60 },
+      cache: 'no-store'
     })
     const data = await response.json()
     
@@ -22,8 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const property = data.property
-    const imageUrl = property.images?.[0] || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/placeholder-property.svg`
-    const currentUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/propiedades/${id}`
+    const siteUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    const imageUrl = property.images?.[0] || `${siteUrl}/placeholder-property.svg`
+    const currentUrl = `${siteUrl}/propiedades/${id}`
 
     return {
       title: `${property.title} - Prohausen Propiedades`,
