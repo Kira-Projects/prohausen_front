@@ -17,28 +17,24 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   try {
     // En Server Components, usar URL absoluta solo en producción
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    console.log("Base URL:", baseUrl);
-    console.log("Fetching property ID:", propertyId);
-    console.log("Fetch URL:", `${baseUrl}/api/property/${propertyId}`);
-      
-    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
     const response = await fetch(`${baseUrl}/api/property/${propertyId}`, {
       next: { revalidate: 60 }, // Revalidar cada 60 segundos
-      cache: 'no-store' // Importante: no cachear en build time
+      cache: "no-store", // Importante: no cachear en build time
     });
 
     if (!response.ok) {
       if (response.status === 404) {
         error = "Propiedad no encontrada";
       } else {
-        error = 'Error al cargar la propiedad desde caché';
+        error = "Error al cargar la propiedad desde caché";
       }
     } else {
       const data = await response.json();
-      
+
       if (!data.success || !data.property) {
-        error = 'No se pudo cargar la propiedad desde caché';
+        error = "No se pudo cargar la propiedad desde caché";
       } else {
         property = data.property;
       }
@@ -52,8 +48,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center pt-20">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || "Propiedad no encontrada"}</p>
-          <Link 
+          <p className="text-red-600 mb-4">
+            {error || "Propiedad no encontrada"}
+          </p>
+          <Link
             href="/propiedades"
             className="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded transition-colors inline-block"
           >
