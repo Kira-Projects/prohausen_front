@@ -8,6 +8,9 @@ import {
 import { mapWordPressProperty } from "@/utils/mapWordPressData";
 import type { WordPressProperty } from "@/types/property";
 
+// Forzar dynamic rendering para evitar errores en build
+export const dynamic = "force-dynamic";
+
 const WORDPRESS_API_URL =
   process.env.NEXT_PUBLIC_WORDPRESS_API_URL ||
   "https://prohausen.cl/wp-json/wp/v2";

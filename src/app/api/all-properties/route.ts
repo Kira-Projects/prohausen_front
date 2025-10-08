@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCachedAllProperties } from "@/lib/cache";
 
-// Cache la respuesta por 60 segundos en el edge de Next.js
-// Los datos siguen viniendo de Upstash, pero Next.js cachea la respuesta
-export const revalidate = 60;
+// Forzar dynamic rendering para evitar errores en build
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /**
  * GET /api/all-properties

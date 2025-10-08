@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCachedFeaturedProperties } from "@/lib/cache";
 
+// Forzar dynamic rendering para evitar errores en build
+export const dynamic = "force-dynamic";
+
 /**
  * DEBUG: Verificar qué imágenes están en caché
  */

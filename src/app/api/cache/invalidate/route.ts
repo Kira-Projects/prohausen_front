@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateAllCache } from "@/lib/cache";
 
+// Forzar dynamic rendering para evitar errores en build
+export const dynamic = "force-dynamic";
+
 /**
  * API Route para invalidar el caché de Redis
  *

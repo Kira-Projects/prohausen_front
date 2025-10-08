@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import PropertyCard from "@/components/properties/PropertyCard";
 import PropertyFilters from "@/components/properties/PropertyFilters";
 import { Property } from "@/types/property";
 
-export default function PropiedadesPage() {
+function PropiedadesContent() {
   // Estados sin datos hardcodeados - solo datos reales desde Upstash
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
@@ -288,5 +288,21 @@ export default function PropiedadesPage() {
         )}
       </div>
     </main>
+  );
+}
+
+// Componente principal con Suspense boundary
+export default function PropiedadesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando propiedades...</p>
+        </div>
+      </div>
+    }>
+      <PropiedadesContent />
+    </Suspense>
   );
 }
