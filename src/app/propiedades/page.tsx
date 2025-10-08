@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import PropertyCard from "@/components/properties/PropertyCard";
 import PropertyFilters from "@/components/properties/PropertyFilters";
 import { Property } from "@/types/property";
@@ -12,15 +13,62 @@ export default function PropiedadesPage() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtersApplied, setFiltersApplied] = useState(false);
   
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Obtener parámetros de búsqueda de la URL
+  const searchParams = useSearchParams();
+
   // Cargar propiedades desde Upstash al montar el componente
   useEffect(() => {
     loadPropertiesFromCache();
   }, []);
+
+  // Aplicar filtros de la URL cuando se cargan las propiedades
+  useEffect(() => {
+    if (allProperties.length > 0 && !filtersApplied) {
+      const urlFilters = {
+        operacion: searchParams.get('operacion') || '',
+        categoria: searchParams.get('categoria') || '',
+        region: searchParams.get('region') || '',
+        comuna: searchParams.get('comuna') || ''
+      };
+      
+      // Solo aplicar filtros si hay al menos uno presente en la URL
+      if (Object.values(urlFilters).some(value => value)) {
+        // Aplicar filtros directamente aquí
+        let filtered = [...allProperties];
+
+        if (urlFilters.operacion) {
+          filtered = filtered.filter(
+            (p) => p.operation.toLowerCase() === urlFilters.operacion!.toLowerCase()
+          );
+        }
+        if (urlFilters.categoria) {
+          filtered = filtered.filter(
+            (p) => p.type.toLowerCase() === urlFilters.categoria!.toLowerCase()
+          );
+        }
+        if (urlFilters.region) {
+          filtered = filtered.filter(
+            (p) => p.region.toLowerCase().includes(urlFilters.region!.toLowerCase())
+          );
+        }
+        if (urlFilters.comuna) {
+          filtered = filtered.filter(
+            (p) => p.comuna.toLowerCase().includes(urlFilters.comuna!.toLowerCase())
+          );
+        }
+
+        setFilteredProperties(filtered);
+        setCurrentPage(1);
+        setFiltersApplied(true);
+      }
+    }
+  }, [allProperties, searchParams, filtersApplied]);
 
   const loadPropertiesFromCache = async () => {
     setLoading(true);
@@ -136,7 +184,15 @@ export default function PropiedadesPage() {
         )}
 
         {/* Filtros */}
-        <PropertyFilters onFilter={handleFilter} />
+        <PropertyFilters 
+          onFilter={handleFilter} 
+          initialFilters={{
+            operacion: searchParams.get('operacion') || '',
+            categoria: searchParams.get('categoria') || '',
+            region: searchParams.get('region') || '',
+            comuna: searchParams.get('comuna') || ''
+          }}
+        />
 
         {/* Contador y ordenamiento */}
         <div className="flex justify-between items-center mb-6">

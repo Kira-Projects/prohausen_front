@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface FilterState {
   operacion?: string;
@@ -11,16 +11,29 @@ interface FilterState {
 
 interface PropertyFiltersProps {
   onFilter: (filters: FilterState) => void;
+  initialFilters?: FilterState;
 }
 
-export default function PropertyFilters({ onFilter }: PropertyFiltersProps) {
+export default function PropertyFilters({ onFilter, initialFilters }: PropertyFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
-    operacion: "",
-    categoria: "",
-    region: "",
-    comuna: "",
+    operacion: initialFilters?.operacion || "",
+    categoria: initialFilters?.categoria || "",
+    region: initialFilters?.region || "",
+    comuna: initialFilters?.comuna || "",
   });
+
+  // Actualizar filtros cuando cambien los initialFilters
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters({
+        operacion: initialFilters.operacion || "",
+        categoria: initialFilters.categoria || "",
+        region: initialFilters.region || "",
+        comuna: initialFilters.comuna || "",
+      });
+    }
+  }, [initialFilters]);
 
   const handleFilterChange = (key: string, value: string) => {
     const newFilters = { ...filters, [key]: value };
