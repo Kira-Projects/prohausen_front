@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
-    
+
     const response = await fetch(`${baseUrl}/api/property/${id}`, {
       next: { revalidate: 60 },
       cache: 'no-store'
     })
     const data = await response.json()
-    
+
     if (!data.success || !data.property) {
       return {
         title: 'Propiedad no encontrada',
@@ -31,13 +31,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const siteUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
-    const imageUrl = property.images?.[0] || `${siteUrl}/placeholder-property.svg`
-    const currentUrl = `${siteUrl}/propiedades/${id}`
+
+    // Asegurarse que la imagen sea absoluta y pública
+    let imageUrl = property.images?.[0] || property.image || `${siteUrl}/placeholder-property.svg`;
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      imageUrl = `${siteUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    }
+    const currentUrl = `${siteUrl}/propiedades/${id}`;
 
     return {
       title: `${property.title} - Prohausen Propiedades`,
       description: `${property.location} • ${property.price} • ${property.bedrooms} hab • ${property.bathrooms} baños • ${property.area} m²`,
-      
+
       // Open Graph para WhatsApp, Facebook, LinkedIn
       openGraph: {
         title: property.title,
@@ -55,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         locale: 'es_CL',
         type: 'website',
       },
-      
+
       // Twitter Card
       twitter: {
         card: 'summary_large_image',
