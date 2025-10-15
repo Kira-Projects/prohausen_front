@@ -77,8 +77,8 @@ export default function SearchHero() {
                 className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
               >
                 <option value="">Región</option>
-                <option value="libertador-b-ohiggins">Libertador B. O&apos;Higgins</option>
-                <option value="los-lagos">Los Lagos</option>
+                <option value="libertador b ohiggins">Libertador B. O&apos;Higgins</option>
+                <option value="los lagos">Los Lagos</option>
                 <option value="metropolitana">Metropolitana</option>
                 <option value="ohiggins">O&apos;Higgins</option>
                 <option value="valparaiso">Valparaíso</option>

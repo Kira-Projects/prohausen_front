@@ -13,7 +13,6 @@ function PropiedadesContent() {
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtersApplied, setFiltersApplied] = useState(false);
   
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,9 +26,9 @@ function PropiedadesContent() {
     loadPropertiesFromCache();
   }, []);
 
-  // Aplicar filtros de la URL cuando se cargan las propiedades
+  // Aplicar filtros de la URL cuando cambian los searchParams o las propiedades
   useEffect(() => {
-    if (allProperties.length > 0 && !filtersApplied) {
+    if (allProperties.length > 0) {
       const urlFilters = {
         operacion: searchParams.get('operacion') || '',
         categoria: searchParams.get('categoria') || '',
@@ -37,38 +36,34 @@ function PropiedadesContent() {
         comuna: searchParams.get('comuna') || ''
       };
       
-      // Solo aplicar filtros si hay al menos uno presente en la URL
-      if (Object.values(urlFilters).some(value => value)) {
-        // Aplicar filtros directamente aquí
-        let filtered = [...allProperties];
+      // Aplicar filtros
+      let filtered = [...allProperties];
 
-        if (urlFilters.operacion) {
-          filtered = filtered.filter(
-            (p) => p.operation.toLowerCase() === urlFilters.operacion!.toLowerCase()
-          );
-        }
-        if (urlFilters.categoria) {
-          filtered = filtered.filter(
-            (p) => p.type.toLowerCase() === urlFilters.categoria!.toLowerCase()
-          );
-        }
-        if (urlFilters.region) {
-          filtered = filtered.filter(
-            (p) => p.region.toLowerCase().includes(urlFilters.region!.toLowerCase())
-          );
-        }
-        if (urlFilters.comuna) {
-          filtered = filtered.filter(
-            (p) => p.comuna.toLowerCase().includes(urlFilters.comuna!.toLowerCase())
-          );
-        }
-
-        setFilteredProperties(filtered);
-        setCurrentPage(1);
-        setFiltersApplied(true);
+      if (urlFilters.operacion) {
+        filtered = filtered.filter(
+          (p) => p.operation.toLowerCase() === urlFilters.operacion!.toLowerCase()
+        );
       }
+      if (urlFilters.categoria) {
+        filtered = filtered.filter(
+          (p) => p.type.toLowerCase() === urlFilters.categoria!.toLowerCase()
+        );
+      }
+      if (urlFilters.region) {
+        filtered = filtered.filter(
+          (p) => p.region.toLowerCase().includes(urlFilters.region!.toLowerCase())
+        );
+      }
+      if (urlFilters.comuna) {
+        filtered = filtered.filter(
+          (p) => p.comuna.toLowerCase().includes(urlFilters.comuna!.toLowerCase())
+        );
+      }
+
+      setFilteredProperties(filtered);
+      setCurrentPage(1);
     }
-  }, [allProperties, searchParams, filtersApplied]);
+  }, [allProperties, searchParams]);
 
   const loadPropertiesFromCache = async () => {
     setLoading(true);

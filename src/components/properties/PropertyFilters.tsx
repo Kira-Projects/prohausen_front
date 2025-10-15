@@ -127,8 +127,8 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
               >
                 <option value="">Todas</option>
-                <option value="libertador-b-ohiggins">Libertador B. O&apos;Higgins</option>
-                <option value="los-lagos">Los Lagos</option>
+                <option value="libertador b ohiggins">Libertador B. O&apos;Higgins</option>
+                <option value="los lagos">Los Lagos</option>
                 <option value="metropolitana">Metropolitana</option>
                 <option value="ohiggins">O&apos;Higgins</option>
                 <option value="valparaiso">Valparaíso</option>
