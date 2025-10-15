@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { getCachedProperty } from '@/lib/cache'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -7,27 +8,17 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   
-  // Obtener la propiedad desde la API
+  // Obtener la propiedad directamente desde Upstash Redis
   try {
-    // En Server Components, usar URL absoluta solo en producción
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
+    const propertyId = parseInt(id, 10)
+    const property = await getCachedProperty(propertyId)
 
-    const response = await fetch(`${baseUrl}/api/property/${id}`, {
-      next: { revalidate: 60 },
-      cache: 'no-store'
-    })
-    const data = await response.json()
-
-    if (!data.success || !data.property) {
+    if (!property) {
       return {
         title: 'Propiedad no encontrada',
         description: 'Esta propiedad no está disponible',
       }
     }
-
-    const property = data.property
     const siteUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
