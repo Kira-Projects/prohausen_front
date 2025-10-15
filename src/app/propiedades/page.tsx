@@ -185,17 +185,17 @@ function PropiedadesContent() {
 
         {/* Contador, Ordenamiento y Filtros */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <p className="text-black">
             <span className="font-bold">{filteredProperties.length}</span> resultados
           </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           <div className="flex items-center gap-2">
-                <label className="text-sm text-black">Ordenar por:</label>
+                <label className="text-sm text-black whitespace-nowrap">Ordenar por:</label>
             <select
               value={sortBy}
               onChange={(e) => handleSort(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
+                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500 text-sm"
             >
               <option value="newest">El más nuevo</option>
               <option value="price-asc">Precio más bajo</option>

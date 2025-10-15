@@ -56,7 +56,7 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-900 transition-colors"
+        className="flex items-center gap-2 bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md hover:bg-blue-900 transition-colors text-sm sm:text-base"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -65,8 +65,28 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-md p-6 z-50 w-[800px]">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <>
+          {/* Overlay para cerrar al hacer click fuera */}
+          <div 
+            className="fixed inset-0 z-40 md:hidden" 
+            onClick={() => setIsOpen(false)}
+          ></div>
+          
+          <div className="fixed md:absolute left-0 right-0 md:right-0 md:left-auto top-0 md:top-auto mt-0 md:mt-2 bg-white rounded-none md:rounded-lg shadow-lg p-4 sm:p-6 z-50 w-full md:w-[600px] lg:w-[800px] max-h-screen md:max-h-none overflow-y-auto">
+            {/* Botón de cerrar en móviles */}
+            <div className="flex justify-between items-center mb-4 md:hidden">
+              <h3 className="text-lg font-semibold text-gray-900">Filtros</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Operación */}
             <div>
               <label className="block text-sm font-medium mb-2 text-black">Operación</label>
@@ -128,15 +148,22 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
             </div>
           </div>
 
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={clearFilters}
-              className="text-black hover:text-gray-700 font-medium"
+              className="text-black hover:text-gray-700 font-medium text-sm sm:text-base"
             >
               Limpiar filtros
             </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="md:hidden bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition-colors text-sm"
+            >
+              Aplicar
+            </button>
           </div>
         </div>
+        </>
       )}
     </div>
   );
