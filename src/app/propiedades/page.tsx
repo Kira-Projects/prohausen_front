@@ -170,9 +170,9 @@ function PropiedadesContent() {
   };
 
   return (
-    <main className="min-h-screen pt-24 pb-12 bg-gray-50">
+    <main className="min-h-screen pt-40 pb-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 text-center">
+        <div className="mb-16 text-center">
           <h1 className="text-4xl font-bold text-gray-900">Propiedades</h1>
         </div>
 
