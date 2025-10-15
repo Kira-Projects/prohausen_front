@@ -122,34 +122,18 @@ function formatNumberWithDots(numberStr: string): string {
 }
 
 /**
- * Extrae el precio desde el contenido HTML y mantiene el formato original (UF o $)
- * Busca patrones como "$ 14.890" o "$14890" o "UF 575"
+ * Extrae el precio desde WordPress y agrega el símbolo UF
+ * WordPress envía solo el número sin símbolo de moneda
  */
 function extractPrice(content: string): string {
-  // Patrón para precio en UF - MANTENER formato UF
-  const ufMatch = content.match(/(?:UF|uf)\s*([\d.,]+)/i);
-  if (ufMatch) {
-    // Limpiar el número (remover puntos y comas)
-    const cleanNumber = ufMatch[1].replace(/\./g, "").replace(/,/g, "");
-    // Formatear con puntos de miles y devolver con símbolo UF
-    return `UF ${formatNumberWithDots(cleanNumber)}`;
-  }
+  // Buscar cualquier número en el contenido
+  const numberMatch = content.match(/\b(\d{1,}(?:[.,]\d{3})*)\b/);
 
-  // Patrón para precio en pesos con formato "$ 14.890"
-  const pesosMatch = content.match(/\$\s*([\d.,]+)/);
-  if (pesosMatch) {
-    // Limpiar el número (remover puntos y comas)
-    const cleanNumber = pesosMatch[1].replace(/\./g, "").replace(/,/g, "");
-    // Formatear con puntos de miles y devolver con símbolo $
-    return `$ ${formatNumberWithDots(cleanNumber)}`;
-  }
-
-  // Buscar números grandes que puedan ser precios (más de 3 dígitos)
-  const numberMatch = content.match(/\b(\d{3,}(?:[.,]\d{3})*)\b/);
   if (numberMatch) {
-    const cleanNumber = numberMatch[1].replace(/\./g, "").replace(/,/g, "");
-    // Formatear con puntos de miles y devolver con símbolo $
-    return `$ ${formatNumberWithDots(cleanNumber)}`;
+    // Limpiar el número (remover puntos y comas)
+    const cleanNumber = numberMatch[0].replace(/\./g, "").replace(/,/g, "");
+    // Formatear con puntos de miles y agregar símbolo UF
+    return `UF ${formatNumberWithDots(cleanNumber)}`;
   }
 
   return "0";
