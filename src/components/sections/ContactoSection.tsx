@@ -161,7 +161,7 @@ export default function ContactoSection() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Enviando..." : "Enviar mensaje"}
                 </button>

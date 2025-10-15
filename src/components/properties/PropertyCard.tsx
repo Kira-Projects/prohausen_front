@@ -37,9 +37,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
       {/* Imagen con carrusel */}
-      <div className="relative h-56 bg-gray-300 group">
+      <div className="relative h-56 bg-gray-300 group cursor-pointer">
         {/* Badge destacado */}
         {property.featured && (
           <div className="absolute top-3 left-3 z-20 bg-white text-gray-800 px-3 py-1 rounded-md text-xs font-semibold shadow-md">
@@ -88,7 +88,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+          </svg>
             </button>
           </>
         )}
@@ -123,7 +123,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       </div>
 
       {/* Contenido */}
-      <Link href={`/propiedades/${property.id}`} className="block p-4 hover:bg-gray-50 transition-colors">
+      <Link href={`/propiedades/${property.id}`} className="block p-4 hover:bg-gray-50 transition-colors cursor-pointer">
         {/* Título */}
         <h3 className="font-bold text-base mb-2 text-gray-900 line-clamp-1">{property.title}</h3>
 
@@ -152,7 +152,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           )}
         </div>
       </Link>
-    </div>
+      </div>
   );
 }
 

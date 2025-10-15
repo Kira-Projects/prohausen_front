@@ -17,6 +17,28 @@ Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 1
 - ✅ Diseño responsive y moderno
 - ✅ Componentes reutilizables
 - ✅ Panel de administración para gestión de caché
+- ✅ **Fuente Poppins** integrada con optimización de `next/font`
+- ✅ **Paginación** de 12 propiedades por página
+- ✅ **Filtros avanzados** con dropdown posicionado junto a "Ordenar por"
+
+## ✨ Últimas Mejoras (Octubre 2025)
+
+### UI/UX
+- 🎨 **Títulos centrados**: "Propiedades Destacadas" y "Propiedades" ahora están centrados
+- 🎨 **Botones unificados**: Todos los botones principales usan el mismo azul (`bg-blue-900`)
+- 🖱️ **Cursor mejorado**: `cursor-pointer` en todas las cards de propiedades, incluyendo imágenes del carrusel
+- 📏 **Paginación actualizada**: Ahora se muestran 12 propiedades por página (antes 10)
+
+### Funcionalidad
+- 🔍 **Filtros reubicados**: El botón de filtros se movió al lado de "Ordenar por" con dropdown absoluto
+- 📧 **Formulario de contacto simplificado**: Se eliminaron los campos de renta (Renta Promedio, ¿Complementas renta?, Renta Promedio Codeudor)
+- 💬 **Integración de email**: El formulario envía correos a través de la API externa de Kira Cloud
+- 🏠 **Propiedades destacadas dinámicas**: Sistema automático que muestra todas las propiedades con `featured=true`
+
+### Performance
+- ⚡ **Caché Redis**: Sistema de caché con Upstash Redis para respuestas instantáneas
+- 🔄 **Panel de admin**: Actualización manual del caché desde `/admin/cache`
+- 🗺️ **Google Maps optimizado**: Integración con API Key configurada para producción y desarrollo
 
 ## 📁 Estructura del Proyecto
 

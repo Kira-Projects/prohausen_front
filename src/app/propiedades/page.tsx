@@ -17,7 +17,7 @@ function PropiedadesContent() {
   
   // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
 
   // Obtener parámetros de búsqueda de la URL
   const searchParams = useSearchParams();
@@ -172,7 +172,7 @@ function PropiedadesContent() {
   return (
     <main className="min-h-screen pt-24 pb-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900">Propiedades</h1>
         </div>
 
@@ -183,33 +183,35 @@ function PropiedadesContent() {
           </div>
         )}
 
-        {/* Filtros */}
-        <PropertyFilters 
-          onFilter={handleFilter} 
-          initialFilters={{
-            operacion: searchParams.get('operacion') || '',
-            categoria: searchParams.get('categoria') || '',
-            region: searchParams.get('region') || '',
-            comuna: searchParams.get('comuna') || ''
-          }}
-        />
-
-        {/* Contador y ordenamiento */}
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-black">
+        {/* Contador, Ordenamiento y Filtros */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-black">
             <span className="font-bold">{filteredProperties.length}</span> resultados
           </p>
+            <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm text-black">Ordenar por:</label>
+                <label className="text-sm text-black">Ordenar por:</label>
             <select
               value={sortBy}
               onChange={(e) => handleSort(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
+                  className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
             >
               <option value="newest">El más nuevo</option>
               <option value="price-asc">Precio más bajo</option>
               <option value="price-desc">Precio más alto</option>
             </select>
+              </div>
+              <PropertyFilters 
+                onFilter={handleFilter} 
+                initialFilters={{
+                  operacion: searchParams.get('operacion') || '',
+                  categoria: searchParams.get('categoria') || '',
+                  region: searchParams.get('region') || '',
+                  comuna: searchParams.get('comuna') || ''
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -258,7 +260,7 @@ function PropiedadesContent() {
                   onClick={() => handlePageChange(page)}
                   className={`px-2 sm:px-4 py-2 text-xs sm:text-sm rounded-md min-w-[32px] sm:min-w-[40px] ${
                     currentPage === page
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-blue-900 text-white'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
