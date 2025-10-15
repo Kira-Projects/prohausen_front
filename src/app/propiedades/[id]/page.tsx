@@ -1,44 +1,29 @@
 import Link from "next/link";
 import { Property } from "@/types/property";
 import PropertyDetailClient from "@/components/properties/PropertyDetailClient";
+import { getCachedProperty } from "@/lib/cache";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-// Server Component - obtiene los datos del servidor
+// Server Component - obtiene los datos directamente desde Upstash Redis
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const propertyId = parseInt(id);
+  const propertyId = parseInt(id, 10);
 
-  // Obtener la propiedad desde la API del servidor
+  // Obtener la propiedad directamente desde Upstash Redis
   let property: Property | null = null;
   let error: string | null = null;
 
   try {
-    // En Server Components, usar URL absoluta solo en producción
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    property = await getCachedProperty(propertyId);
 
-    const response = await fetch(`${baseUrl}/api/property/${propertyId}`, {
-      cache: "no-store", // Redis ya maneja el caché
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        error = "Propiedad no encontrada";
-      } else {
-        error = "Error al cargar la propiedad desde caché";
-      }
-    } else {
-      const data = await response.json();
-
-      if (!data.success || !data.property) {
-        error = "No se pudo cargar la propiedad desde caché";
-      } else {
-        property = data.property;
-      }
+    if (!property) {
+      error = "Propiedad no encontrada";
     }
-  } catch {
+  } catch (err) {
+    console.error("Error al cargar la propiedad desde Upstash:", err);
     error = "Error al cargar la propiedad";
   }
 

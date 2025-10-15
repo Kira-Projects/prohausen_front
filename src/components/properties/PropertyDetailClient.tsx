@@ -184,14 +184,14 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                   <button
                     onClick={prevThumbnails}
                     disabled={!canGoPrev}
-                    className={`flex-shrink-0 p-2 rounded ${
+                    className={`flex-shrink-0 p-3 md:p-2 rounded transition-all ${
                       canGoPrev 
-                        ? 'bg-gray-200 hover:bg-gray-300 cursor-pointer' 
-                        : 'bg-gray-100 opacity-50 cursor-not-allowed'
+                        ? 'bg-gray-800 hover:bg-gray-900 text-white cursor-pointer shadow-md' 
+                        : 'bg-gray-300 opacity-50 cursor-not-allowed text-gray-500'
                     }`}
                     aria-label="Miniaturas anteriores"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
@@ -225,14 +225,14 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                   <button
                     onClick={nextThumbnails}
                     disabled={!canGoNext}
-                    className={`flex-shrink-0 p-2 rounded ${
+                    className={`flex-shrink-0 p-3 md:p-2 rounded transition-all ${
                       canGoNext 
-                        ? 'bg-gray-200 hover:bg-gray-300 cursor-pointer' 
-                        : 'bg-gray-100 opacity-50 cursor-not-allowed'
+                        ? 'bg-gray-800 hover:bg-gray-900 text-white cursor-pointer shadow-md' 
+                        : 'bg-gray-300 opacity-50 cursor-not-allowed text-gray-500'
                     }`}
                     aria-label="Miniaturas siguientes"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
@@ -400,13 +400,13 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                       <button
                         onClick={prevThumbnails}
                         disabled={!canGoPrev}
-                        className={`flex-shrink-0 p-2 rounded ${
+                        className={`flex-shrink-0 p-3 md:p-2 rounded transition-all ${
                           canGoPrev 
-                            ? 'bg-white/20 hover:bg-white/30 cursor-pointer' 
+                            ? 'bg-white/30 hover:bg-white/40 cursor-pointer shadow-lg' 
                             : 'bg-white/10 opacity-50 cursor-not-allowed'
                         } text-white`}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                       </button>
@@ -440,13 +440,13 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                       <button
                         onClick={nextThumbnails}
                         disabled={!canGoNext}
-                        className={`flex-shrink-0 p-2 rounded ${
+                        className={`flex-shrink-0 p-3 md:p-2 rounded transition-all ${
                           canGoNext 
-                            ? 'bg-white/20 hover:bg-white/30 cursor-pointer' 
+                            ? 'bg-white/30 hover:bg-white/40 cursor-pointer shadow-lg' 
                             : 'bg-white/10 opacity-50 cursor-not-allowed'
                         } text-white`}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
