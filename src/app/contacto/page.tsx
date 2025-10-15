@@ -7,36 +7,55 @@ export default function ContactoPage() {
     nombre: "",
     telefono: "",
     email: "",
-    rentaPromedio: "",
-    complementaRenta: "no",
-    rentaCodeudor: "",
     comentario: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitMessage("");
+    setSubmitError("");
     
-    // Aquí se implementará la integración con el backend
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/send-contact-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al enviar el mensaje");
+      }
+
+      // Éxito
       setSubmitMessage("¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.");
-      setIsSubmitting(false);
       setFormData({
         nombre: "",
         telefono: "",
         email: "",
-        rentaPromedio: "",
-        complementaRenta: "no",
-        rentaCodeudor: "",
         comentario: "",
       });
-    }, 1000);
+    } catch (error) {
+      console.error("Error al enviar formulario:", error);
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Hubo un error al enviar tu mensaje. Por favor intenta nuevamente."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -63,6 +82,12 @@ export default function ContactoPage() {
               {submitMessage && (
                 <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md">
                   {submitMessage}
+                </div>
+              )}
+
+              {submitError && (
+                <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-md">
+                  {submitError}
                 </div>
               )}
 
@@ -114,54 +139,6 @@ export default function ContactoPage() {
                     placeholder="tu@email.com"
                   />
                 </div>
-
-                <div>
-                  <label htmlFor="rentaPromedio" className="block text-sm font-medium mb-2 text-gray-700">
-                    Renta Promedio
-                  </label>
-                  <input
-                    type="text"
-                    id="rentaPromedio"
-                    name="rentaPromedio"
-                    value={formData.rentaPromedio}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="$1.000.000"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="complementaRenta" className="block text-sm font-medium mb-2 text-gray-700">
-                    ¿Complementas renta?
-                  </label>
-                  <select
-                    id="complementaRenta"
-                    name="complementaRenta"
-                    value={formData.complementaRenta}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="no">No</option>
-                    <option value="si">Sí</option>
-                  </select>
-                </div>
-
-                {formData.complementaRenta === "si" && (
-                  <div>
-                    <label htmlFor="rentaCodeudor" className="block text-sm font-medium mb-2 text-gray-700">
-                      Renta Promedio Codeudor
-                    </label>
-                    <input
-                      type="text"
-                      id="rentaCodeudor"
-                      name="rentaCodeudor"
-                      value={formData.rentaCodeudor}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="$500.000"
-                    />
-                  </div>
-                )}
 
                 <div>
                   <label htmlFor="comentario" className="block text-sm font-medium mb-2 text-gray-700">

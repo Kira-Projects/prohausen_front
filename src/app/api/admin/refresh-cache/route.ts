@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Obtener propiedades destacadas de WordPress
     const featuredResponse = await fetch(
-      `${WORDPRESS_API_URL}/properties?per_page=4&_embed=wp:featuredmedia,wp:attachment&es_featured=true`,
+      `${WORDPRESS_API_URL}/properties?per_page=100&_embed=wp:featuredmedia,wp:attachment&es_featured=true`,
       { cache: "no-store" }
     );
 

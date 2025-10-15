@@ -7,88 +7,59 @@ export default function ContactoSection() {
     nombre: "",
     telefono: "",
     email: "",
-    rentaPromedio: "",
-    complementaRenta: "no",
-    rentaCodeudor: "",
     comentario: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
-  // Función para formatear números con separador de miles (formato chileno)
-  const formatNumber = (value: string) => {
-    // Remover caracteres no numéricos
-    const numericValue = value.replace(/[^\d]/g, '');
-    if (!numericValue) return '';
-    
-    // Formatear con puntos como separadores de miles
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  };
-
-  // Función para remover el formato y obtener solo números
-  const unformatNumber = (value: string) => {
-    return value.replace(/[^\d]/g, '');
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+    setSubmitError("");
     
-    // Preparar datos para envío (remover formato de los números)
-    const submitData = {
-      ...formData,
-      rentaPromedio: unformatNumber(formData.rentaPromedio),
-      rentaCodeudor: unformatNumber(formData.rentaCodeudor),
-    };
-    
-    // Crear el asunto del email
-    const subject = `Nuevo mensaje de contacto - ${submitData.nombre}`;
-    
-    // Crear el cuerpo del email
-    const body = `
-Hola,
+    try {
+      const response = await fetch("/api/send-contact-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-He recibido información de contacto a través del sitio web de Prohausen.
+      const data = await response.json();
 
-DATOS DEL CONTACTO:
-• Nombre: ${submitData.nombre}
-• Teléfono: ${submitData.telefono}
-• Email: ${submitData.email}
-• Renta Promedio: ${submitData.rentaPromedio ? '$' + submitData.rentaPromedio : 'No especificada'}
-• Complementa Renta: ${submitData.complementaRenta === 'si' ? 'Sí' : 'No'}
-${submitData.complementaRenta === 'si' && submitData.rentaCodeudor ? `• Renta Codeudor: $${submitData.rentaCodeudor}` : ''}
+      if (!response.ok) {
+        throw new Error(data.error || "Error al enviar el mensaje");
+      }
 
-MENSAJE:
-${submitData.comentario}
-
----
-Este mensaje fue enviado desde el formulario de contacto de prohausen.cl
-    `.trim();
-    
-    // Crear el enlace mailto
-    const mailtoLink = `mailto:contacto@prohausen.cl?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Abrir el cliente de email del usuario
-    window.location.href = mailtoLink;
-    
-    // Mostrar mensaje de confirmación
-    setSubmitMessage("Se abrió tu cliente de email. Por favor, envía el mensaje para completar el contacto.");
+      // Éxito
+      setSubmitMessage("¡Mensaje enviado con éxito! Nos pondremos en contacto contigo pronto.");
+      setFormData({
+        nombre: "",
+        telefono: "",
+        email: "",
+        comentario: "",
+      });
+    } catch (error) {
+      console.error("Error al enviar formulario:", error);
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Hubo un error al enviar tu mensaje. Por favor intenta nuevamente."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    // Aplicar formato de miles a los campos de renta
-    if (name === 'rentaPromedio' || name === 'rentaCodeudor') {
-      setFormData({
-        ...formData,
-        [name]: formatNumber(value),
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -115,6 +86,12 @@ Este mensaje fue enviado desde el formulario de contacto de prohausen.cl
             {submitMessage && (
               <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md">
                 {submitMessage}
+              </div>
+            )}
+
+            {submitError && (
+              <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-md">
+                {submitError}
               </div>
             )}
 
@@ -161,53 +138,6 @@ Este mensaje fue enviado desde el formulario de contacto de prohausen.cl
                 </div>
               </div>
 
-              {/* Segunda fila: Renta Promedio, ¿Complementas renta?, Renta Codeudor */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <input
-                    type="text"
-                    id="rentaPromedio"
-                    name="rentaPromedio"
-                    value={formData.rentaPromedio}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                    placeholder="Renta Promedio"
-                  />
-                </div>
-
-                <div className="relative">
-                  <select
-                    id="complementaRenta"
-                    name="complementaRenta"
-                    value={formData.complementaRenta}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer text-gray-900"
-                  >
-                    <option value="no">¿Complementas renta?</option>
-                    <option value="si">Sí</option>
-                    <option value="no">No</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    id="rentaCodeudor"
-                    name="rentaCodeudor"
-                    value={formData.rentaCodeudor}
-                    onChange={handleChange}
-                    disabled={formData.complementaRenta !== "si"}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-900"
-                    placeholder="Renta Promedio Codeudor"
-                  />
-                </div>
-              </div>
-
               {/* Comentario */}
               <div>
                 <textarea
@@ -230,9 +160,10 @@ Este mensaje fue enviado desde el formulario de contacto de prohausen.cl
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md transition-colors font-medium"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Enviar mensaje
+                  {isSubmitting ? "Enviando..." : "Enviar mensaje"}
                 </button>
               </div>
             </form>

@@ -27,9 +27,15 @@ export default function FeaturedProperties() {
           throw new Error('No se pudieron cargar las propiedades desde caché');
         }
 
-        const mapped: Property[] = data.properties;
+        // ✅ FILTRAR SOLO LAS PROPIEDADES CON featured: true
+        const featuredOnly: Property[] = data.properties.filter(
+          (prop: Property) => prop.featured === true
+        );
 
-        setFeaturedProperties(mapped);
+        console.log('🏠 Total propiedades recibidas:', data.properties.length);
+        console.log('⭐ Propiedades destacadas filtradas:', featuredOnly.length);
+
+        setFeaturedProperties(featuredOnly);
       } catch (error) {
         console.error("Error loading featured properties:", error);
         setFeaturedProperties([]);
@@ -74,11 +80,17 @@ export default function FeaturedProperties() {
           <h2 className="text-3xl font-bold text-gray-900">Propiedades Destacadas</h2>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {featuredProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
+        {featuredProperties.length === 0 ? (
+          <div className="text-center text-gray-600 py-12">
+            No hay propiedades destacadas disponibles en este momento.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {featuredProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <Link
