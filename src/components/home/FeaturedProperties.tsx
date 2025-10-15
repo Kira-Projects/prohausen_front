@@ -51,7 +51,7 @@ export default function FeaturedProperties() {
     return (
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+          <h2 className="text-4xl font-poppins text-center mb-12 text-gray-900">
             Propiedades Destacadas
           </h2>
           {/* Loading Skeleton - Mejor UX durante carga */}
@@ -77,11 +77,11 @@ export default function FeaturedProperties() {
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Propiedades Destacadas</h2>
+          <h2 className="text-4xl font-poppins text-gray-900">Propiedades Destacadas</h2>
         </div>
         
         {featuredProperties.length === 0 ? (
-          <div className="text-center text-gray-600 py-12">
+          <div className="text-center text-gray-900 py-12">
             No hay propiedades destacadas disponibles en este momento.
           </div>
         ) : (
