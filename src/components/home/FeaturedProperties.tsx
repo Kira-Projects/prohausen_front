@@ -95,7 +95,8 @@ export default function FeaturedProperties() {
         <div className="text-center mt-12">
           <Link
             href="/propiedades"
-            className="inline-block bg-blue-900 text-white px-8 py-3 rounded-md hover:bg-blue-800 transition-colors font-medium"
+            className="inline-block bg-blue-700 text-white px-8 py-3 rounded-md hover:bg-blue-900 transition-colors font-medium"
+            //bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16
           >
             Ver todas las propiedades
           </Link>
