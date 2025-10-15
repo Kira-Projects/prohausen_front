@@ -122,24 +122,24 @@ function formatNumberWithDots(numberStr: string): string {
 }
 
 /**
- * Extrae el precio desde el contenido HTML y lo formatea con símbolo $ (peso chileno)
+ * Extrae el precio desde el contenido HTML y mantiene el formato original (UF o $)
  * Busca patrones como "$ 14.890" o "$14890" o "UF 575"
  */
 function extractPrice(content: string): string {
+  // Patrón para precio en UF - MANTENER formato UF
+  const ufMatch = content.match(/(?:UF|uf)\s*([\d.,]+)/i);
+  if (ufMatch) {
+    // Limpiar el número (remover puntos y comas)
+    const cleanNumber = ufMatch[1].replace(/\./g, "").replace(/,/g, "");
+    // Formatear con puntos de miles y devolver con símbolo UF
+    return `UF ${formatNumberWithDots(cleanNumber)}`;
+  }
+
   // Patrón para precio en pesos con formato "$ 14.890"
   const pesosMatch = content.match(/\$\s*([\d.,]+)/);
   if (pesosMatch) {
     // Limpiar el número (remover puntos y comas)
     const cleanNumber = pesosMatch[1].replace(/\./g, "").replace(/,/g, "");
-    // Formatear con puntos de miles y devolver con símbolo $
-    return `$ ${formatNumberWithDots(cleanNumber)}`;
-  }
-
-  // Patrón para precio en UF - convertir a pesos chilenos
-  const ufMatch = content.match(/(?:UF|uf)\s*([\d.,]+)/i);
-  if (ufMatch) {
-    // Limpiar el número (remover puntos y comas)
-    const cleanNumber = ufMatch[1].replace(/\./g, "").replace(/,/g, "");
     // Formatear con puntos de miles y devolver con símbolo $
     return `$ ${formatNumberWithDots(cleanNumber)}`;
   }
