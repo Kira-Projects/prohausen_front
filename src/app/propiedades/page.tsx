@@ -21,6 +21,16 @@ function PropiedadesContent() {
   // Obtener parámetros de búsqueda de la URL
   const searchParams = useSearchParams();
 
+  // Función para normalizar texto (elimina tildes, convierte a minúsculas, normaliza espacios)
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD') // Descompone caracteres con tildes
+      .replace(/[\u0300-\u036f]/g, '') // Elimina las tildes
+      .replace(/\s+/g, ' ') // Normaliza espacios múltiples a uno solo
+      .trim();
+  };
+
   // Cargar propiedades desde Upstash al montar el componente
   useEffect(() => {
     loadPropertiesFromCache();
@@ -41,22 +51,22 @@ function PropiedadesContent() {
 
       if (urlFilters.operacion) {
         filtered = filtered.filter(
-          (p) => p.operation.toLowerCase() === urlFilters.operacion!.toLowerCase()
+          (p) => normalizeText(p.operation) === normalizeText(urlFilters.operacion!)
         );
       }
       if (urlFilters.categoria) {
         filtered = filtered.filter(
-          (p) => p.type.toLowerCase() === urlFilters.categoria!.toLowerCase()
+          (p) => normalizeText(p.type) === normalizeText(urlFilters.categoria!)
         );
       }
       if (urlFilters.region) {
         filtered = filtered.filter(
-          (p) => p.region.toLowerCase().includes(urlFilters.region!.toLowerCase())
+          (p) => normalizeText(p.region).includes(normalizeText(urlFilters.region!))
         );
       }
       if (urlFilters.comuna) {
         filtered = filtered.filter(
-          (p) => p.comuna.toLowerCase().includes(urlFilters.comuna!.toLowerCase())
+          (p) => normalizeText(p.comuna).includes(normalizeText(urlFilters.comuna!))
         );
       }
 
@@ -104,22 +114,22 @@ function PropiedadesContent() {
 
     if (filters.operacion) {
       filtered = filtered.filter(
-        (p) => p.operation.toLowerCase() === filters.operacion!.toLowerCase()
+        (p) => normalizeText(p.operation) === normalizeText(filters.operacion!)
       );
     }
     if (filters.categoria) {
       filtered = filtered.filter(
-        (p) => p.type.toLowerCase() === filters.categoria!.toLowerCase()
+        (p) => normalizeText(p.type) === normalizeText(filters.categoria!)
       );
     }
     if (filters.region) {
       filtered = filtered.filter(
-        (p) => p.region.toLowerCase().includes(filters.region!.toLowerCase())
+        (p) => normalizeText(p.region).includes(normalizeText(filters.region!))
       );
     }
     if (filters.comuna) {
       filtered = filtered.filter(
-        (p) => p.comuna.toLowerCase().includes(filters.comuna!.toLowerCase())
+        (p) => normalizeText(p.comuna).includes(normalizeText(filters.comuna!))
       );
     }
 

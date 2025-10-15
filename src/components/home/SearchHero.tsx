@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SearchHero() {
@@ -11,6 +11,37 @@ export default function SearchHero() {
     region: "",
     comuna: "",
   });
+
+  // Estados para opciones dinámicas
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+  const [availableComunas, setAvailableComunas] = useState<string[]>([]);
+
+  // Cargar regiones y comunas dinámicamente desde la API
+  useEffect(() => {
+    fetch('/api/all-properties')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.properties) {
+          // Extraer regiones únicas y filtrar vacías/nulas
+          const regions = [...new Set(
+            data.properties
+              .map((p: { region: string }) => p.region)
+              .filter((r: string) => r && r.trim() !== '')
+          )].sort() as string[];
+          
+          // Extraer comunas únicas y filtrar vacías/nulas
+          const comunas = [...new Set(
+            data.properties
+              .map((p: { comuna: string }) => p.comuna)
+              .filter((c: string) => c && c.trim() !== '')
+          )].sort() as string[];
+          
+          setAvailableRegions(regions);
+          setAvailableComunas(comunas);
+        }
+      })
+      .catch(err => console.error('Error cargando filtros:', err));
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,23 +108,28 @@ export default function SearchHero() {
                 className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
               >
                 <option value="">Región</option>
-                <option value="libertador b ohiggins">Libertador B. O&apos;Higgins</option>
-                <option value="los lagos">Los Lagos</option>
-                <option value="metropolitana">Metropolitana</option>
-                <option value="ohiggins">O&apos;Higgins</option>
-                <option value="valparaiso">Valparaíso</option>
+                {availableRegions.map(region => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* Comuna */}
             <div>
-              <input
-                type="text"
+              <select
                 value={filters.comuna}
                 onChange={(e) => setFilters({ ...filters, comuna: e.target.value })}
-                placeholder="Comuna"
-                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
-              />
+                className="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none cursor-pointer text-gray-900"
+              >
+                <option value="">Comuna</option>
+                {availableComunas.map(comuna => (
+                  <option key={comuna} value={comuna}>
+                    {comuna}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Botón de búsqueda */}

@@ -23,6 +23,37 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
     comuna: initialFilters?.comuna || "",
   });
 
+  // Estados para opciones dinámicas
+  const [availableRegions, setAvailableRegions] = useState<string[]>([]);
+  const [availableComunas, setAvailableComunas] = useState<string[]>([]);
+
+  // Cargar regiones y comunas dinámicamente desde la API
+  useEffect(() => {
+    fetch('/api/all-properties')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.properties) {
+          // Extraer regiones únicas y filtrar vacías/nulas
+          const regions = [...new Set(
+            data.properties
+              .map((p: { region: string }) => p.region)
+              .filter((r: string) => r && r.trim() !== '')
+          )].sort() as string[];
+          
+          // Extraer comunas únicas y filtrar vacías/nulas
+          const comunas = [...new Set(
+            data.properties
+              .map((p: { comuna: string }) => p.comuna)
+              .filter((c: string) => c && c.trim() !== '')
+          )].sort() as string[];
+          
+          setAvailableRegions(regions);
+          setAvailableComunas(comunas);
+        }
+      })
+      .catch(err => console.error('Error cargando filtros:', err));
+  }, []);
+
   // Actualizar filtros cuando cambien los initialFilters
   useEffect(() => {
     if (initialFilters) {
@@ -127,24 +158,29 @@ export default function PropertyFilters({ onFilter, initialFilters }: PropertyFi
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
               >
                 <option value="">Todas</option>
-                <option value="libertador b ohiggins">Libertador B. O&apos;Higgins</option>
-                <option value="los lagos">Los Lagos</option>
-                <option value="metropolitana">Metropolitana</option>
-                <option value="ohiggins">O&apos;Higgins</option>
-                <option value="valparaiso">Valparaíso</option>
+                {availableRegions.map(region => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* Comuna */}
             <div>
               <label className="block text-sm font-medium mb-2 text-black">Comuna</label>
-              <input
-                type="text"
+              <select
                 value={filters.comuna}
                 onChange={(e) => handleFilterChange("comuna", e.target.value)}
-                placeholder="Buscar comuna"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-placeholder-black placeholder-black"
-              />
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500"
+              >
+                <option value="">Todas</option>
+                {availableComunas.map(comuna => (
+                  <option key={comuna} value={comuna}>
+                    {comuna}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
