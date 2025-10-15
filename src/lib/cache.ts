@@ -93,8 +93,10 @@ export async function setCachedAllProperties(
 
 export async function getCachedProperty(id: number): Promise<Property | null> {
   try {
-    const cached = await redis.get<Property>(CACHE_KEYS.PROPERTY_DETAIL(id));
-    return cached;
+    // Buscar en todas las propiedades en lugar de clave individual
+    const allProperties = await getCachedAllProperties();
+    if (!allProperties) return null;
+    return allProperties.find((p) => p.id === id) || null;
   } catch (error) {
     console.error(`Error obteniendo cache de propiedad ${id}:`, error);
     return null;
