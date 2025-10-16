@@ -10,7 +10,6 @@ function PropiedadesContent() {
   // Estados sin datos hardcodeados - solo datos reales desde Upstash
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
-  const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -25,9 +24,9 @@ function PropiedadesContent() {
   const normalizeText = (text: string): string => {
     return text
       .toLowerCase()
-      .normalize('NFD') // Descompone caracteres con tildes
-      .replace(/[\u0300-\u036f]/g, '') // Elimina las tildes
-      .replace(/\s+/g, ' ') // Normaliza espacios múltiples a uno solo
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
       .trim();
   };
 
@@ -137,32 +136,6 @@ function PropiedadesContent() {
     setCurrentPage(1); // Reiniciar a la primera página al filtrar
   };
 
-  const handleSort = (value: string) => {
-    setSortBy(value);
-
-    switch (value) {
-      case "price-asc":
-        const sortedAsc = [...filteredProperties].sort((a, b) => {
-          const priceA = parseFloat(a.price.replace(/\./g, ""));
-          const priceB = parseFloat(b.price.replace(/\./g, ""));
-          return priceA - priceB;
-        });
-        setFilteredProperties(sortedAsc);
-        break;
-      case "price-desc":
-        const sortedDesc = [...filteredProperties].sort((a, b) => {
-          const priceA = parseFloat(a.price.replace(/\./g, ""));
-          const priceB = parseFloat(b.price.replace(/\./g, ""));
-          return priceB - priceA;
-        });
-        setFilteredProperties(sortedDesc);
-        break;
-      default:
-        // newest - mantener orden original
-        break;
-    }
-  };
-
   // Calcular propiedades paginadas
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -188,35 +161,21 @@ function PropiedadesContent() {
           </div>
         )}
 
-        {/* Contador, Ordenamiento y Filtros */}
+        {/* Contador y Filtros */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <p className="text-black">
-            <span className="font-bold">{filteredProperties.length}</span> resultados
-          </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-          <div className="flex items-center gap-2">
-                <label className="text-sm text-black whitespace-nowrap">Ordenar por:</label>
-            <select
-              value={sortBy}
-              onChange={(e) => handleSort(e.target.value)}
-                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500 text-sm"
-            >
-              <option value="newest">El más nuevo</option>
-              <option value="price-asc">Precio más bajo</option>
-              <option value="price-desc">Precio más alto</option>
-            </select>
-              </div>
-              <PropertyFilters 
-                onFilter={handleFilter} 
-                initialFilters={{
-                  operacion: searchParams.get('operacion') || '',
-                  categoria: searchParams.get('categoria') || '',
-                  region: searchParams.get('region') || '',
-                  comuna: searchParams.get('comuna') || ''
-                }}
-              />
-            </div>
+              <span className="font-bold">{filteredProperties.length}</span> resultados
+            </p>
+            <PropertyFilters 
+              onFilter={handleFilter} 
+              initialFilters={{
+                operacion: searchParams.get('operacion') || '',
+                categoria: searchParams.get('categoria') || '',
+                region: searchParams.get('region') || '',
+                comuna: searchParams.get('comuna') || ''
+              }}
+            />
           </div>
         </div>
 
