@@ -125,15 +125,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       {/* Contenido */}
       <Link href={`/propiedades/${property.id}`} className="block p-4 hover:bg-gray-50 transition-colors cursor-pointer">
         {/* Título */}
-        <h3 className="font-bold text-base mb-2 text-gray-900 line-clamp-1">{property.title}</h3>
+        <h3 className="font-bold text-base mb-2 text-gray-900 line-clamp-1 text-center">{property.title}</h3>
 
         {/* Precio */}
-        <div className="mb-3">
+        <div className="mb-3 text-center">
           <p className="text-xl font-bold text-gray-900">{property.price}</p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 text-xs">
+        <div className="flex flex-wrap gap-1.5 text-xs justify-center">
           <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded font-medium">
             {property.operation}
           </span>

@@ -54,7 +54,7 @@ export default function SearchHero() {
 
   return (
     <div 
-      className="relative text-white pt-32 sm:pt-40 lg:pt-48 pb-16 sm:pb-24 lg:pb-32 bg-cover bg-center bg-no-repeat min-h-[600px] sm:min-h-[650px] lg:min-h-[700px] overflow-hidden"
+      className="relative text-white pt-32 sm:pt-40 lg:pt-48 pb-16 sm:pb-24 lg:pb-32 bg-cover bg-center bg-no-repeat min-h-[80vh] sm:min-h-[85vh] lg:min-h-[90vh] overflow-hidden"
       style={{
         backgroundImage: "url('/backgroun img.jpg')",
       }}
@@ -64,7 +64,7 @@ export default function SearchHero() {
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-poppins mb-4 sm:mb-6 px-4">Bienvenidos a Prohausen</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-poppins font-bold mb-4 sm:mb-6 px-4">Bienvenidos a Prohausen</h1>
           <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl px-4 font-poppins">Encuentra tu propiedad aquí</p>
         </div>
 
