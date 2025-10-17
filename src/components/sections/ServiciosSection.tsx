@@ -99,7 +99,7 @@ export default function ServiciosSection() {
                   <h3 className="text-2xl font-bold mb-3 text-gray-900">
                     {service.title}
                   </h3>
-                  <p className="text-gray-600 text-base text-justify">
+                  <p className="text-gray-600 text-base text-center">
                     {service.description}
                   </p>
                 </div>
@@ -122,7 +122,7 @@ export default function ServiciosSection() {
                             d="M5 13l4 4L19 7"
                           />
                         </svg>
-                        <span className="text-gray-700 text-sm text-justify block">{feature}</span>
+                        <span className="text-gray-700 text-sm text-center block">{feature}</span>
                       </li>
                     ))}
                   </ul>
