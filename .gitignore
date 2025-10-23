@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# scripts/data - Ignorar archivos JSON de datos reales
+scripts/data/properties.json
+
+# Mantener el archivo de ejemplo
+!scripts/data/properties.example.json

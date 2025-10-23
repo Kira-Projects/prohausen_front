@@ -1,6 +1,6 @@
 # Prohausen Propiedades - Frontend
 
-Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 19 y Tailwind CSS, integrada con WordPress + Estatik Plugin.
+Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 19 y Tailwind CSS, con MongoDB Atlas y AWS S3.
 
 ## 🚀 Características
 
@@ -248,8 +248,13 @@ npm run lint
 ### Flujo de Datos
 
 ```
-MongoDB Atlas (datos) + AWS S3 (imágenes) → Next.js Frontend
+MongoDB Atlas (metadatos) + AWS S3 (imágenes) → Next.js Frontend
 ```
+
+**Arquitectura actual (Octubre 2025):**
+- **MongoDB Atlas:** Base de datos principal para metadatos de propiedades
+- **AWS S3:** Almacenamiento de imágenes y multimedia
+- **Next.js 15:** Frontend con App Router y Server Components
 
 ### Gestión de Propiedades
 
@@ -358,7 +363,100 @@ Las imágenes de las propiedades se almacenan en un bucket de S3:
 - URLs públicas para las imágenes
 - Eliminación automática al borrar propiedad
 
-## 📄 Licencia
+## � Scripts de MongoDB
+
+El proyecto incluye scripts útiles para gestionar la base de datos MongoDB en `scripts/`:
+
+### Scripts Disponibles
+
+```bash
+# Configurar índices en MongoDB (optimizar performance)
+npm run setup:mongodb
+
+# Migrar propiedades desde JSON (restaurar backup)
+npm run migrate:properties
+
+# Probar conexión a MongoDB (debugging)
+npm run test:mongodb
+```
+
+### Estructura de Datos
+
+Coloca tus datos en `scripts/data/properties.json` con este formato:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Casa en Las Condes",
+    "slug": "casa-en-las-condes",
+    "location": "Las Condes, Santiago",
+    "description": "Hermosa casa...",
+    "price": "$150.000.000",
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "area": "180 m²",
+    "type": "Casa",
+    "operation": "Venta",
+    "region": "Metropolitana",
+    "comuna": "Las Condes",
+    "featured": true,
+    "active": true,
+    "image": "https://bucket.s3.amazonaws.com/image.jpg",
+    "images": ["https://..."],
+    "address": "Av. Kennedy 5600",
+    "latitude": "-33.4110",
+    "longitude": "-70.5750"
+  }
+]
+```
+
+### Índices Creados
+
+El script `setup:mongodb` crea los siguientes índices:
+- `id` (único) - Búsquedas por ID numérico
+- `slug` (único) - URLs amigables
+- `featured` - Propiedades destacadas
+- `active` - Filtrar activas/inactivas
+- `operation` - Filtrar venta/arriendo
+- `type` - Filtrar tipo de propiedad
+- `region + comuna` (compuesto) - Búsquedas por ubicación
+- `title + description` (texto completo) - Búsqueda de texto
+
+**⚠️ IMPORTANTE:** El script de migración elimina todos los datos existentes antes de importar.
+
+## � Historial de Migración
+
+### Migración WordPress → MongoDB + S3 (Octubre 2025)
+
+El proyecto migró exitosamente desde WordPress + Upstash Redis a MongoDB Atlas + AWS S3:
+
+**Arquitectura Anterior:**
+```
+WordPress → Upstash Redis (cache) → Frontend
+```
+
+**Arquitectura Actual:**
+```
+MongoDB Atlas (metadatos + URLs) → Frontend
+AWS S3 (archivos multimedia) ↗
+```
+
+**Resultados:**
+- ✅ 43 propiedades migradas
+- ✅ ~600+ archivos .webp en S3
+- ✅ Performance mejorado (consultas directas a BD)
+- ✅ Separación de responsabilidades (texto en MongoDB, imágenes en S3)
+- ✅ Costos optimizados (S3 pay-as-you-go + MongoDB Atlas tier gratuito)
+
+**Beneficios:**
+- Consultas directas a MongoDB con índices optimizados
+- Sin latencia de caché intermedio
+- Escalabilidad mejorada
+- Fuente única de verdad
+- Fácil hacer backups
+
+## �📄 Licencia
 
 © 2025 Prohausen Propiedades. Todos los derechos reservados.
 

@@ -118,7 +118,7 @@ export default function ImageUploader({
 
   return (
     <div className="space-y-4">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-gray-900">
         {label} {images.length > 0 && `(${images.length}/${maxImages})`}
       </label>
 
@@ -161,10 +161,10 @@ export default function ImageUploader({
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          <p className="text-sm font-medium text-gray-700">
+          <p className="text-sm font-medium text-gray-900">
             Arrastra imágenes aquí o haz clic para seleccionar
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-700">
             PNG, JPG, WebP hasta 10MB cada una
           </p>
         </div>
@@ -203,7 +203,7 @@ export default function ImageUploader({
                     title="Mover arriba"
                   >
                     <svg
-                      className="w-4 h-4 text-gray-700"
+                      className="w-4 h-4 text-gray-800"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -227,7 +227,7 @@ export default function ImageUploader({
                     title="Mover abajo"
                   >
                     <svg
-                      className="w-4 h-4 text-gray-700"
+                      className="w-4 h-4 text-gray-800"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

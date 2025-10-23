@@ -9,11 +9,7 @@
     "lint": "eslint",
     "migrate:properties": "tsx scripts/migrate-data.ts",
     "setup:mongodb": "tsx scripts/setup-mongodb-indexes.ts",
-    "migrate:images": "tsx scripts/migrate-images-to-s3.ts",
-    "migrate:metadata": "tsx scripts/migrate-metadata-to-mongodb.ts",
-    "update:s3-urls": "tsx scripts/update-mongodb-with-s3-urls.ts",
-    "s3:make-public": "tsx scripts/make-s3-bucket-public.ts",
-    "migrate:all": "npm run migrate:images && npm run migrate:metadata"
+    "test:mongodb": "tsx scripts/test-mongodb-connection.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.914.0",

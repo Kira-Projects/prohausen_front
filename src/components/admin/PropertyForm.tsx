@@ -129,7 +129,7 @@ export default function PropertyForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Título */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Título <span className="text-red-500">*</span>
             </label>
             <input
@@ -144,7 +144,7 @@ export default function PropertyForm({
 
           {/* Slug */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Slug (URL amigable)
             </label>
             <input
@@ -154,14 +154,14 @@ export default function PropertyForm({
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Se genera automáticamente desde el título"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-700 mt-1">
               Se generará automáticamente si se deja vacío
             </p>
           </div>
 
           {/* Tipo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Tipo <span className="text-red-500">*</span>
             </label>
             <select
@@ -181,7 +181,7 @@ export default function PropertyForm({
 
           {/* Operación */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Operación <span className="text-red-500">*</span>
             </label>
             <select
@@ -201,7 +201,7 @@ export default function PropertyForm({
 
           {/* Precio */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Precio <span className="text-red-500">*</span>
             </label>
             <input
@@ -216,7 +216,7 @@ export default function PropertyForm({
 
           {/* Área */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Área Total <span className="text-red-500">*</span>
             </label>
             <input
@@ -237,7 +237,7 @@ export default function PropertyForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Región */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Región <span className="text-red-500">*</span>
             </label>
             <select
@@ -257,7 +257,7 @@ export default function PropertyForm({
 
           {/* Comuna */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Comuna <span className="text-red-500">*</span>
             </label>
             <input
@@ -272,7 +272,7 @@ export default function PropertyForm({
 
           {/* Location (descripción) */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Ubicación Descriptiva <span className="text-red-500">*</span>
             </label>
             <input
@@ -287,7 +287,7 @@ export default function PropertyForm({
 
           {/* Dirección */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Dirección
             </label>
             <input
@@ -301,7 +301,7 @@ export default function PropertyForm({
 
           {/* País */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               País
             </label>
             <input
@@ -314,7 +314,7 @@ export default function PropertyForm({
 
           {/* Latitud */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Latitud
             </label>
             <input
@@ -328,7 +328,7 @@ export default function PropertyForm({
 
           {/* Longitud */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Longitud
             </label>
             <input
@@ -344,7 +344,7 @@ export default function PropertyForm({
 
       {/* Descripción */}
       <div className="border-b pb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Descripción</h2>
+  <h2 className="text-xl font-bold text-gray-900 mb-4">Descripción</h2>
         <textarea
           name="description"
           defaultValue={initialData?.description}
@@ -357,11 +357,11 @@ export default function PropertyForm({
 
       {/* Características Numéricas */}
       <div className="border-b pb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Características</h2>
+  <h2 className="text-xl font-bold text-gray-900 mb-4">Características</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Dormitorios */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Dormitorios
             </label>
             <input
@@ -375,7 +375,7 @@ export default function PropertyForm({
 
           {/* Baños */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Baños
             </label>
             <input
@@ -389,7 +389,7 @@ export default function PropertyForm({
 
           {/* Medio Baños */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Medio Baños
             </label>
             <input
@@ -403,7 +403,7 @@ export default function PropertyForm({
 
           {/* Total Habitaciones */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Total Habitaciones
             </label>
             <input
@@ -417,7 +417,7 @@ export default function PropertyForm({
 
           {/* Área Útil */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Área Útil
             </label>
             <input
@@ -431,7 +431,7 @@ export default function PropertyForm({
 
           {/* Área Terreno */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Área Terreno
             </label>
             <input
@@ -445,7 +445,7 @@ export default function PropertyForm({
 
           {/* Pisos */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Número de Pisos
             </label>
             <input
@@ -459,7 +459,7 @@ export default function PropertyForm({
 
           {/* Número de Piso */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Piso Ubicación
             </label>
             <input
@@ -473,7 +473,7 @@ export default function PropertyForm({
 
           {/* Año Construcción */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Año de Construcción
             </label>
             <input
@@ -505,7 +505,7 @@ export default function PropertyForm({
                 onChange={() => handleFeatureToggle(feature)}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{feature}</span>
+              <span className="text-sm text-gray-900">{feature}</span>
             </label>
           ))}
         </div>
@@ -515,7 +515,7 @@ export default function PropertyForm({
       <div className="border-b pb-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Multimedia</h2>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             URL de Video (YouTube, Vimeo, etc.)
           </label>
           <input
@@ -566,7 +566,7 @@ export default function PropertyForm({
               defaultChecked={initialData?.featured ?? false}
               className="w-5 h-5 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
             />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-900">
               Propiedad Destacada
             </span>
           </label>
