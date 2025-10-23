@@ -1,0 +1,5 @@
+# Ignorar archivos JSON de datos reales
+properties.json
+
+# Mantener el archivo de ejemplo
+!properties.example.json

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCachedAllProperties } from "@/lib/cache";
+import { getPropertyById } from "@/lib/db/properties";
 
 // Forzar dynamic rendering para evitar errores en build
 export const dynamic = "force-dynamic";
@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 /**
  * GET /api/property/[id]
- * Obtiene una propiedad específica desde Upstash Redis cache por ID
+ * Obtiene una propiedad específica desde MongoDB Atlas por ID
  */
 export async function GET(
   request: NextRequest,
@@ -31,23 +31,8 @@ export async function GET(
 
     const startTime = performance.now();
 
-    // Obtener todas las propiedades del cache
-    const allProperties = await getCachedAllProperties();
-
-    if (!allProperties || allProperties.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "No hay propiedades en caché. Por favor, actualice el caché desde el panel de administración.",
-          property: null,
-        },
-        { status: 404 }
-      );
-    }
-
-    // Buscar la propiedad por ID
-    const property = allProperties.find((p) => p.id === propertyId);
+    // Obtener propiedad directamente de MongoDB
+    const property = await getPropertyById(propertyId);
 
     const endTime = performance.now();
     const loadTime = Math.round(endTime - startTime);
@@ -58,6 +43,7 @@ export async function GET(
           success: false,
           error: "Propiedad no encontrada",
           property: null,
+          source: "mongodb",
         },
         { status: 404 }
       );
@@ -66,17 +52,18 @@ export async function GET(
     return NextResponse.json({
       success: true,
       property: property,
-      cached: true,
+      source: "mongodb",
       loadTime: `${loadTime}ms`,
     });
   } catch (error) {
-    console.error("Error al obtener propiedad desde caché:", error);
+    console.error("Error al obtener propiedad desde MongoDB:", error);
 
     return NextResponse.json(
       {
         success: false,
-        error: "Error al obtener propiedad desde caché",
+        error: "Error al obtener propiedad desde MongoDB",
         property: null,
+        source: "mongodb",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

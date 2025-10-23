@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "Propiedad de Ejemplo",
+    "slug": "propiedad-de-ejemplo",
+    "location": "Santiago, Chile",
+    "description": "Esta es una propiedad de ejemplo. Reemplazar con tus datos reales.",
+    "price": "$100.000.000",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "area": "120 m²",
+    "type": "Casa",
+    "operation": "Venta",
+    "region": "Metropolitana",
+    "comuna": "Las Condes",
+    "featured": true,
+    "active": true,
+    "image": "https://example.com/image.jpg",
+    "images": [
+      "https://example.com/image1.jpg",
+      "https://example.com/image2.jpg"
+    ],
+    "address": "Ejemplo 123",
+    "latitude": "-33.4372",
+    "longitude": "-70.6506"
+  }
+]

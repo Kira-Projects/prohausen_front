@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { getCachedProperty } from '@/lib/cache'
+import { getPropertyById } from '@/lib/db/properties'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -8,10 +8,10 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   
-  // Obtener la propiedad directamente desde Upstash Redis
+  // Obtener la propiedad directamente desde MongoDB Atlas
   try {
     const propertyId = parseInt(id, 10)
-    const property = await getCachedProperty(propertyId)
+    const property = await getPropertyById(propertyId);
 
     if (!property) {
       return {

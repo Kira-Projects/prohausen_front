@@ -1,29 +1,29 @@
 import Link from "next/link";
 import { Property } from "@/types/property";
 import PropertyDetailClient from "@/components/properties/PropertyDetailClient";
-import { getCachedProperty } from "@/lib/cache";
+import { getPropertyById } from "@/lib/db/properties";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-// Server Component - obtiene los datos directamente desde Upstash Redis
+// Server Component - obtiene los datos directamente desde MongoDB Atlas
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { id } = await params;
   const propertyId = parseInt(id, 10);
 
-  // Obtener la propiedad directamente desde Upstash Redis
+  // Obtener la propiedad directamente desde MongoDB Atlas
   let property: Property | null = null;
   let error: string | null = null;
 
   try {
-    property = await getCachedProperty(propertyId);
+    property = await getPropertyById(propertyId);
 
     if (!property) {
       error = "Propiedad no encontrada";
     }
   } catch (err) {
-    console.error("Error al cargar la propiedad desde Upstash:", err);
+    console.error("Error al cargar la propiedad desde MongoDB:", err);
     error = "Error al cargar la propiedad";
   }
 

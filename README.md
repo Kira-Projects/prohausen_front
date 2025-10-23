@@ -10,13 +10,13 @@ Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 1
 - ✅ **Tailwind CSS v4** para estilos
 - ✅ **ESLint** configurado
 - ✅ **Turbopack** para desarrollo rápido
-- ✅ **Upstash Redis** para caché de propiedades
-- ✅ **WordPress REST API** integración con Estatik
+- ✅ **MongoDB Atlas** para almacenamiento de datos
+- ✅ **AWS S3** para almacenamiento de imágenes
 - ✅ **Google Maps** integración
 - ✅ **Sistema de envío de emails** con API externa
 - ✅ Diseño responsive y moderno
 - ✅ Componentes reutilizables
-- ✅ Panel de administración para gestión de caché
+- ✅ Panel de administración con CRUD completo
 - ✅ **Fuente Poppins** integrada con optimización de `next/font`
 - ✅ **Paginación** de 12 propiedades por página
 - ✅ **Filtros avanzados** con dropdown posicionado junto a "Ordenar por"
@@ -36,8 +36,9 @@ Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 1
 - 🏠 **Propiedades destacadas dinámicas**: Sistema automático que muestra todas las propiedades con `featured=true`
 
 ### Performance
-- ⚡ **Caché Redis**: Sistema de caché con Upstash Redis para respuestas instantáneas
-- 🔄 **Panel de admin**: Actualización manual del caché desde `/admin/cache`
+- ⚡ **MongoDB Atlas**: Base de datos en la nube para gestión de propiedades
+- 🖼️ **AWS S3**: Almacenamiento de imágenes optimizado
+- 🔄 **Panel de admin**: CRUD completo desde `/admin/properties`
 - 🗺️ **Google Maps optimizado**: Integración con API Key configurada para producción y desarrollo
 
 ## 📁 Estructura del Proyecto
@@ -111,8 +112,8 @@ prohausen_front/
 
 - Node.js 20+ instalado
 - npm o yarn
-- Cuenta en Upstash Redis (para caché)
-- WordPress con plugin Estatik configurado
+- Cuenta en MongoDB Atlas
+- Bucket de AWS S3 configurado
 
 ### Variables de Entorno
 
@@ -120,21 +121,19 @@ Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variabl
 
 \`\`\`bash
 
-# WordPress API
+# MongoDB Atlas
+MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/prohausen?retryWrites=true&w=majority
 
-NEXT_PUBLIC_WORDPRESS_API_URL=https://prohausen.cl/wp-json/wp/v2
-
-# Upstash Redis (para caché de propiedades)
-
-UPSTASH_REDIS_REST_URL=https://tu-redis-url.upstash.io
-UPSTASH_REDIS_REST_TOKEN=tu_token_de_upstash
+# AWS S3
+AWS_ACCESS_KEY_ID=tu_access_key_id
+AWS_SECRET_ACCESS_KEY=tu_secret_access_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET_NAME=prohausen-properties
 
 # Google Maps API Key
-
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=tu_google_maps_api_key
 
 # Panel de Administración
-
 ADMIN_PASSWORD=admin2024
 NEXT_PUBLIC_ADMIN_PASSWORD=admin2024
 \`\`\`
@@ -189,27 +188,31 @@ npm run lint
 
 ### Acceso Local (Desarrollo)
 
-- **URL**: [http://localhost:3000/admin/cache](http://localhost:3000/admin/cache)
+- **URL**: [http://localhost:3000/admin/properties](http://localhost:3000/admin/properties)
 - **Contraseña**: `admin2024` (por defecto)
 
 ### Acceso en Producción
 
--Url de producción: `https://prohausen-front.vercel.app/`
-
-- Admin para actualizar cache de Redis: `https://prohausen-front.vercel.app/admin/cache`
+- URL de producción: `https://prohausen-front.vercel.app/`
+- Admin CRUD de propiedades: `https://prohausen-front.vercel.app/admin/properties`
 
 ### Funcionalidades del Panel
 
-- ✅ Refrescar caché manualmente desde WordPress
-- ✅ Ver información del caché (última actualización, cantidad de propiedades)
+- ✅ Crear nuevas propiedades con formulario completo
+- ✅ Editar propiedades existentes
+- ✅ Eliminar propiedades (con confirmación)
+- ✅ Gestión de imágenes (upload múltiple a S3)
+- ✅ Listado con búsqueda y filtros
 - ✅ Acceso protegido con contraseña
-- ✅ Sincronización de propiedades destacadas
+- ✅ Vista previa de propiedades
 
 ### ⚠️ Importante para Producción
 
 - Cambia la contraseña usando las variables de entorno `ADMIN_PASSWORD` y `NEXT_PUBLIC_ADMIN_PASSWORD`
-- Mantén seguras tus credenciales de Upstash Redis
+- Mantén seguras tus credenciales de MongoDB Atlas
+- Mantén seguras tus credenciales de AWS S3
 - Configura restricciones de dominio en Google Maps API Key
+- Configura CORS en el bucket de S3 si es necesario
 
 ## 📧 Sistema de Contacto
 
@@ -240,31 +243,36 @@ npm run lint
 - **Archivo**: `src/components/maps/GoogleMapComponent.tsx`
 - **Uso**: Detalle de propiedades con marcador de ubicación
 
-## 🔄 Arquitectura de Caché
+## 🔄 Arquitectura de Datos
 
 ### Flujo de Datos
 
 ```
-WordPress (Estatik) → API REST → Upstash Redis → Next.js Frontend
+MongoDB Atlas (datos) + AWS S3 (imágenes) → Next.js Frontend
 ```
 
-### Actualización del Caché
+### Gestión de Propiedades
 
-1. Ve al panel de admin: `/admin/cache`
+1. Ve al panel de admin: `/admin/properties`
 2. Ingresa la contraseña
-3. Presiona "Refrescar Caché"
-4. Las propiedades se sincronizan desde WordPress a Redis
+3. Usa el CRUD para:
+   - Crear nuevas propiedades
+   - Editar existentes
+   - Subir imágenes a S3
+   - Eliminar propiedades
 
 ### APIs Principales
 
 | Endpoint                   | Método | Descripción                                |
 | -------------------------- | ------ | ------------------------------------------ |
-| `/api/featured-properties` | GET    | Obtiene propiedades destacadas desde Redis |
-| `/api/all-properties`      | GET    | Obtiene todas las propiedades              |
-| `/api/property/[id]`       | GET    | Obtiene una propiedad específica           |
-| `/api/admin/refresh-cache` | POST   | Actualiza el caché desde WordPress         |
-| `/api/admin/cache-info`    | GET    | Información del caché                      |
-| `/api/send-contact-email`  | POST   | Envía formulario de contacto               |
+| `/api/featured-properties` | GET    | Obtiene propiedades destacadas desde MongoDB |
+| `/api/all-properties`      | GET    | Obtiene todas las propiedades desde MongoDB |
+| `/api/property/[id]`       | GET    | Obtiene una propiedad específica |
+| `/api/admin/properties` | GET, POST | Lista o crea propiedades |
+| `/api/admin/properties/[id]` | GET, PUT, DELETE | Obtiene, actualiza o elimina una propiedad |
+| `/api/admin/upload-image` | POST | Sube imágenes a S3 |
+| `/api/admin/delete-image` | POST | Elimina imágenes de S3 |
+| `/api/send-contact-email`  | POST   | Envía formulario de contacto |
 
 ## 🎨 Paleta de Colores
 
@@ -312,54 +320,43 @@ Este es un proyecto privado para Prohausen Propiedades.
 
 No olvides configurar todas las variables de entorno en tu plataforma de deployment:
 
-- `NEXT_PUBLIC_WORDPRESS_API_URL`
-- `UPSTASH_REDIS_REST_URL`
-- `UPSTASH_REDIS_REST_TOKEN`
+- `MONGODB_URI`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_S3_BUCKET_NAME`
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
 - `ADMIN_PASSWORD`
 - `NEXT_PUBLIC_ADMIN_PASSWORD`
 
-## 🔧 Configuración de WordPress
+## �️ Base de Datos y Almacenamiento
 
-### Plugin Estatik
+### MongoDB Atlas
 
-El proyecto está integrado con el plugin **Estatik** de WordPress para gestión de propiedades.
+El proyecto utiliza MongoDB Atlas como base de datos principal para almacenar toda la información de las propiedades.
 
-### Meta Keys Necesarios en WordPress
+#### Colección: properties
 
-Asegúrate de que WordPress exponga estos meta_keys en el REST API (editar `functions.php`):
+Estructura del documento:
+- `_id`: ObjectId de MongoDB
+- `id`: ID numérico para compatibilidad
+- `title`, `slug`, `description`: Información básica
+- `price`, `operation`, `type`: Detalles de venta/arriendo
+- `region`, `comuna`, `address`: Ubicación
+- `bedrooms`, `bathrooms`, `area`: Características
+- `images`: Array de URLs de S3
+- `featured`: Boolean para destacar
+- `active`: Boolean para activar/desactivar
+- `latitude`, `longitude`: Coordenadas GPS
+- `createdAt`, `updatedAt`: Timestamps
 
-- `es_property_area` (Área útil)
-- `es_property_lot_size` (Área del terreno)
-- `es_property_total_rooms` (Total de habitaciones)
-- `es_property_n-de-piso` (Número de piso)
-- `es_property_bathrooms` (Baños)
-- `es_property_bedrooms` (Dormitorios)
-- `es_property_video` (URL del video)
-- `es_property_gallery` (Galería de imágenes)
-- `latitude` y `longitude` (Coordenadas GPS)
+### AWS S3
 
-## 📊 Propiedades Destacadas
-
-### ¿Cómo se Muestran?
-
-- El sistema filtra automáticamente las propiedades con `featured: true`
-- No hay límite de propiedades destacadas (hasta 100 por defecto)
-- Se muestran en un grid responsive (1-4 columnas según el tamaño de pantalla)
-
-### ¿Cómo Agregar Más Destacadas?
-
-1. En WordPress, marca la propiedad como "Destacada" en Estatik
-2. Ve al panel de admin: `/admin/cache`
-3. Presiona "Refrescar Caché"
-4. Las nuevas propiedades destacadas aparecerán automáticamente
-
-### Límite Configurable
-
-Si necesitas más de 100 propiedades destacadas, edita:
-
-- **Archivo**: `src/app/api/admin/refresh-cache/route.ts`
-- **Línea 69**: Cambia `per_page=100` al número deseado
+Las imágenes de las propiedades se almacenan en un bucket de S3:
+- Bucket público con acceso directo
+- Organización por carpetas: `properties/{id}/`
+- URLs públicas para las imágenes
+- Eliminación automática al borrar propiedad
 
 ## 📄 Licencia
 

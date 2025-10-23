@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCachedAllProperties } from "@/lib/cache";
+import { getAllProperties } from "@/lib/db/properties";
 
 // Forzar dynamic rendering para evitar errores en build
 export const dynamic = "force-dynamic";
@@ -7,22 +7,21 @@ export const revalidate = 0;
 
 /**
  * GET /api/all-properties
- * Obtiene todas las propiedades desde Upstash Redis cache
+ * Obtiene todas las propiedades desde MongoDB Atlas
  */
 export async function GET() {
   try {
     const startTime = performance.now();
-    const cachedProperties = await getCachedAllProperties();
+    const properties = await getAllProperties(); // Sin filtro de active
     const endTime = performance.now();
 
-    if (!cachedProperties || cachedProperties.length === 0) {
+    if (!properties || properties.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          error:
-            "No hay propiedades en caché. Por favor, actualice el caché desde el panel de administración.",
+          error: "No hay propiedades disponibles.",
           properties: [],
-          cached: false,
+          source: "mongodb",
         },
         { status: 404 }
       );
@@ -32,20 +31,20 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      properties: cachedProperties,
-      cached: true,
-      count: cachedProperties.length,
+      properties: properties,
+      source: "mongodb",
+      count: properties.length,
       loadTime: `${loadTime}ms`,
     });
   } catch (error) {
-    console.error("Error al obtener propiedades desde caché:", error);
+    console.error("Error al obtener propiedades desde MongoDB:", error);
 
     return NextResponse.json(
       {
         success: false,
-        error: "Error al obtener propiedades desde caché",
+        error: "Error al obtener propiedades desde MongoDB",
         properties: [],
-        cached: false,
+        source: "mongodb",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

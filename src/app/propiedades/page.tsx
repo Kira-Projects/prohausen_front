@@ -85,13 +85,13 @@ function PropiedadesContent() {
       });
 
       if (!response.ok) {
-        throw new Error('Error al cargar propiedades desde caché');
+        throw new Error('Error al cargar propiedades desde MongoDB');
       }
 
       const data = await response.json();
       
       if (!data.success || !data.properties) {
-        throw new Error('No se pudieron cargar las propiedades desde caché');
+        throw new Error('No se pudieron cargar las propiedades desde MongoDB');
       }
 
       const properties: Property[] = data.properties;
@@ -100,7 +100,7 @@ function PropiedadesContent() {
       setFilteredProperties(properties);
     } catch (err) {
       console.error("Error al cargar propiedades:", err);
-      setError(err instanceof Error ? err.message : "Error al conectar con el caché. Por favor, verifica tu conexión.");
+      setError(err instanceof Error ? err.message : "Error al conectar con la base de datos. Por favor, verifica tu conexión.");
       setAllProperties([]);
       setFilteredProperties([]);
     } finally {
@@ -183,7 +183,7 @@ function PropiedadesContent() {
         {loading && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Cargando propiedades desde caché...</p>
+            <p className="mt-4 text-gray-600">Cargando propiedades desde MongoDB...</p>
           </div>
         )}
 

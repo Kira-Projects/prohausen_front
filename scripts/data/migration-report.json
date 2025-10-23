@@ -1,0 +1,1296 @@
+{
+  "success": 43,
+  "failed": 0,
+  "details": [
+    {
+      "success": true,
+      "slug": "casa-1-norte",
+      "metadata": {
+        "propertySlug": "casa-1-norte",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp",
+          "img-24.webp",
+          "img-25.webp",
+          "img-26.webp",
+          "img-27.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/fyn5nAkcxWk?feature=shared",
+        "migratedAt": "2025-10-23T15:10:30.318Z",
+        "originalWordPressId": 2269,
+        "failedUrls": [
+          "https://youtu.be/fyn5nAkcxWk?feature=shared"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "departamento-halimeda",
+      "metadata": {
+        "propertySlug": "departamento-halimeda",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:11:23.728Z",
+        "originalWordPressId": 2268
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcelas-san-isidro",
+      "metadata": {
+        "propertySlug": "parcelas-san-isidro",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg",
+          "img-2.jpeg",
+          "img-3.jpeg",
+          "img-4.jpeg",
+          "img-5.jpeg",
+          "img-6.jpeg",
+          "img-7.jpeg",
+          "img-8.jpeg",
+          "img-9.jpeg",
+          "img-10.jpeg",
+          "img-11.jpeg",
+          "img-12.jpeg",
+          "img-13.jpeg",
+          "img-14.jpeg",
+          "img-15.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/fyn5nAkcxWk?si=90nzxCrd-24fzMS3",
+        "migratedAt": "2025-10-23T15:12:21.108Z",
+        "originalWordPressId": 2243,
+        "failedUrls": [
+          "https://youtu.be/fyn5nAkcxWk?si=90nzxCrd-24fzMS3"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "proyecto-don-rafael-i-dpto-studio",
+      "metadata": {
+        "propertySlug": "proyecto-don-rafael-i-dpto-studio",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:12:54.373Z",
+        "originalWordPressId": 2167
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-nuevo-i-proyecto-don-rafael",
+      "metadata": {
+        "propertySlug": "dpto-nuevo-i-proyecto-don-rafael",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp",
+          "img-24.webp",
+          "img-25.webp",
+          "img-26.webp",
+          "img-27.webp",
+          "img-28.webp",
+          "img-29.webp",
+          "img-30.webp",
+          "img-31.webp",
+          "img-32.webp",
+          "img-33.webp",
+          "img-34.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:14:13.418Z",
+        "originalWordPressId": 2132
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-studio-i-proyecto-parque-mackenna",
+      "metadata": {
+        "propertySlug": "dpto-studio-i-proyecto-parque-mackenna",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:14:55.161Z",
+        "originalWordPressId": 2112
+      }
+    },
+    {
+      "success": true,
+      "slug": "dtpto-i-proyecto-parque-mackenna",
+      "metadata": {
+        "propertySlug": "dtpto-i-proyecto-parque-mackenna",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:15:20.710Z",
+        "originalWordPressId": 2057
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-parque-mackenna",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-parque-mackenna",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:15:45.321Z",
+        "originalWordPressId": 2056
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-nuevo-i-proyecto-alto-maranon",
+      "metadata": {
+        "propertySlug": "dpto-nuevo-i-proyecto-alto-maranon",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:16:36.575Z",
+        "originalWordPressId": 2015
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-alto-maranon",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-alto-maranon",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:17:20.801Z",
+        "originalWordPressId": 2037
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyceto-smart-montemar",
+      "metadata": {
+        "propertySlug": "dpto-i-proyceto-smart-montemar",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:18:11.716Z",
+        "originalWordPressId": 1993
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-nuevo-i-proyecto-smart-montemar",
+      "metadata": {
+        "propertySlug": "dpto-nuevo-i-proyecto-smart-montemar",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp",
+          "img-24.webp",
+          "img-25.webp",
+          "img-26.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:19:23.444Z",
+        "originalWordPressId": 1962
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcela-huilo-huilo",
+      "metadata": {
+        "propertySlug": "parcela-huilo-huilo",
+        "mainImage": "main.jpg",
+        "images": [
+          "img-1.jpg",
+          "img-2.jpg",
+          "img-3.jpg",
+          "img-4.jpg",
+          "img-5.jpg",
+          "img-6.jpg",
+          "img-7.jpg",
+          "img-8.jpg",
+          "img-9.jpg",
+          "img-10.jpg",
+          "img-11.jpg",
+          "img-12.jpg"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:19:46.933Z",
+        "originalWordPressId": 1910
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-don-rafael",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-don-rafael",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/RtYYLt1zUz4",
+        "migratedAt": "2025-10-23T15:20:38.892Z",
+        "originalWordPressId": 1874,
+        "failedUrls": [
+          "https://youtu.be/RtYYLt1zUz4"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-vista-san-martin",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-vista-san-martin",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/tVo7q3JbjA0",
+        "migratedAt": "2025-10-23T15:21:31.458Z",
+        "originalWordPressId": 1873,
+        "failedUrls": [
+          "https://youtu.be/tVo7q3JbjA0"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-los-leones",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-los-leones",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/4mgcx1ZNeCg",
+        "migratedAt": "2025-10-23T15:22:14.206Z",
+        "originalWordPressId": 1854,
+        "failedUrls": [
+          "https://youtu.be/4mgcx1ZNeCg"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-i-proyecto-pocuro",
+      "metadata": {
+        "propertySlug": "dpto-i-proyecto-pocuro",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp",
+          "img-24.webp",
+          "img-25.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/NbBPfC_huS0",
+        "migratedAt": "2025-10-23T15:23:28.461Z",
+        "originalWordPressId": 1802,
+        "failedUrls": [
+          "https://youtu.be/NbBPfC_huS0"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-nuevo-i-proyecto-viva-zanartu",
+      "metadata": {
+        "propertySlug": "dpto-nuevo-i-proyecto-viva-zanartu",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:24:05.545Z",
+        "originalWordPressId": 1779
+      }
+    },
+    {
+      "success": true,
+      "slug": "penthouse-pedro-fontova",
+      "metadata": {
+        "propertySlug": "penthouse-pedro-fontova",
+        "mainImage": "main.jpg",
+        "images": [
+          "img-1.jpg",
+          "img-2.jpg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/wbM_hT_RPm4",
+        "migratedAt": "2025-10-23T15:24:28.477Z",
+        "originalWordPressId": 1758,
+        "failedUrls": [
+          "https://youtu.be/wbM_hT_RPm4"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "clinica-dermagen",
+      "metadata": {
+        "propertySlug": "clinica-dermagen",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/GqbVcL2QGcM",
+        "migratedAt": "2025-10-23T15:25:17.016Z",
+        "originalWordPressId": 1709,
+        "failedUrls": [
+          "https://youtu.be/GqbVcL2QGcM"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcela-ranquilco",
+      "metadata": {
+        "propertySlug": "parcela-ranquilco",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg",
+          "img-2.jpeg",
+          "img-3.jpeg",
+          "img-4.jpeg",
+          "img-5.jpeg",
+          "img-6.jpeg",
+          "img-7.jpeg",
+          "img-8.jpeg",
+          "img-9.jpeg",
+          "img-10.jpeg",
+          "img-11.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/9FZpiGeBDiY",
+        "migratedAt": "2025-10-23T15:25:59.092Z",
+        "originalWordPressId": 1697,
+        "failedUrls": [
+          "https://youtu.be/9FZpiGeBDiY"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-puerto-varas",
+      "metadata": {
+        "propertySlug": "dpto-puerto-varas",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/oGUl1m32YSc",
+        "migratedAt": "2025-10-23T15:26:19.558Z",
+        "originalWordPressId": 1676,
+        "failedUrls": [
+          "https://youtu.be/oGUl1m32YSc"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-carlos-alvarado",
+      "metadata": {
+        "propertySlug": "dpto-carlos-alvarado",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/_Yi059hFTFc",
+        "migratedAt": "2025-10-23T15:26:39.527Z",
+        "originalWordPressId": 1654,
+        "failedUrls": [
+          "https://youtu.be/_Yi059hFTFc"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-manquehue-norte",
+      "metadata": {
+        "propertySlug": "dpto-manquehue-norte",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/0MD5lWEMZQo",
+        "migratedAt": "2025-10-23T15:27:49.464Z",
+        "originalWordPressId": 1652,
+        "failedUrls": [
+          "https://youtu.be/0MD5lWEMZQo"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-gamero",
+      "metadata": {
+        "propertySlug": "dpto-gamero",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/8-dPbtt5hhk",
+        "migratedAt": "2025-10-23T15:28:39.623Z",
+        "originalWordPressId": 1601,
+        "failedUrls": [
+          "https://youtu.be/8-dPbtt5hhk"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-san-eugenio",
+      "metadata": {
+        "propertySlug": "dpto-san-eugenio",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/DxGXkYyHo1w",
+        "migratedAt": "2025-10-23T15:29:00.146Z",
+        "originalWordPressId": 1580,
+        "failedUrls": [
+          "https://youtu.be/DxGXkYyHo1w"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-lo-ovalle-lc",
+      "metadata": {
+        "propertySlug": "dpto-lo-ovalle-lc",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/9FZpiGeBDiY",
+        "migratedAt": "2025-10-23T15:29:44.832Z",
+        "originalWordPressId": 1564,
+        "failedUrls": [
+          "https://youtu.be/9FZpiGeBDiY"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-7-de-pajaritos",
+      "metadata": {
+        "propertySlug": "dpto-7-de-pajaritos",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/Wp25vklSVX0",
+        "migratedAt": "2025-10-23T15:30:45.603Z",
+        "originalWordPressId": 1544,
+        "failedUrls": [
+          "https://youtu.be/Wp25vklSVX0"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcela-koselig-ensenada",
+      "metadata": {
+        "propertySlug": "parcela-koselig-ensenada",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:31:28.815Z",
+        "originalWordPressId": 1504
+      }
+    },
+    {
+      "success": true,
+      "slug": "casa-mirador",
+      "metadata": {
+        "propertySlug": "casa-mirador",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/WYHF8D4Zj80",
+        "migratedAt": "2025-10-23T15:31:49.360Z",
+        "originalWordPressId": 1258,
+        "failedUrls": [
+          "https://youtu.be/WYHF8D4Zj80"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcelas-punta-pupuya-matanzas",
+      "metadata": {
+        "propertySlug": "parcelas-punta-pupuya-matanzas",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/d4GMaVC0te8",
+        "migratedAt": "2025-10-23T15:32:38.135Z",
+        "originalWordPressId": 1242,
+        "failedUrls": [
+          "https://youtu.be/d4GMaVC0te8"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-belisario-prats",
+      "metadata": {
+        "propertySlug": "dpto-belisario-prats",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=bCPjf9S-VA8",
+        "migratedAt": "2025-10-23T15:33:26.495Z",
+        "originalWordPressId": 1221
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcelas-bajo-el-azul-pupuya-matanzas",
+      "metadata": {
+        "propertySlug": "parcelas-bajo-el-azul-pupuya-matanzas",
+        "mainImage": "main.jpg",
+        "images": [
+          "img-1.jpg",
+          "img-2.jpg",
+          "img-3.jpg",
+          "img-4.jpg",
+          "img-5.jpg",
+          "img-6.jpg",
+          "img-7.jpg",
+          "img-8.jpg",
+          "img-9.jpg",
+          "img-10.jpg",
+          "img-11.jpg",
+          "img-12.jpg",
+          "img-13.jpg",
+          "img-14.jpg",
+          "img-15.jpg"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=U45051CO_5E",
+        "migratedAt": "2025-10-23T15:34:09.819Z",
+        "originalWordPressId": 1204
+      }
+    },
+    {
+      "success": true,
+      "slug": "casa-virginia",
+      "metadata": {
+        "propertySlug": "casa-virginia",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=kgZZhzOzHVs",
+        "migratedAt": "2025-10-23T15:34:56.539Z",
+        "originalWordPressId": 1154
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-camino-a-la-joc",
+      "metadata": {
+        "propertySlug": "dpto-camino-a-la-joc",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.jpg",
+          "img-21.jpg"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=dtZYKQgNtS8",
+        "migratedAt": "2025-10-23T15:35:51.767Z",
+        "originalWordPressId": 1103
+      }
+    },
+    {
+      "success": true,
+      "slug": "parcelas-valle-negro-pupuya",
+      "metadata": {
+        "propertySlug": "parcelas-valle-negro-pupuya",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg",
+          "img-2.jpg"
+        ],
+        "video": null,
+        "videoUrl": "https://youtu.be/Rn6EzHzBP_g",
+        "migratedAt": "2025-10-23T15:36:14.596Z",
+        "originalWordPressId": 1083,
+        "failedUrls": [
+          "https://youtu.be/Rn6EzHzBP_g"
+        ]
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-lo-ovalle-sm",
+      "metadata": {
+        "propertySlug": "dpto-lo-ovalle-sm",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=H1eROeGD5oI",
+        "migratedAt": "2025-10-23T15:36:57.911Z",
+        "originalWordPressId": 1065
+      }
+    },
+    {
+      "success": true,
+      "slug": "casa-del-inca",
+      "metadata": {
+        "propertySlug": "casa-del-inca",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=-LwExwTguAk",
+        "migratedAt": "2025-10-23T15:37:32.685Z",
+        "originalWordPressId": 1051
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-nueva-hannover",
+      "metadata": {
+        "propertySlug": "dpto-nueva-hannover",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=N-PdUVHjxuE",
+        "migratedAt": "2025-10-23T15:37:40.021Z",
+        "originalWordPressId": 1030
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-pontevedra",
+      "metadata": {
+        "propertySlug": "dpto-pontevedra",
+        "mainImage": "main.jpeg",
+        "images": [
+          "img-1.jpeg"
+        ],
+        "video": null,
+        "videoUrl": null,
+        "migratedAt": "2025-10-23T15:37:44.949Z",
+        "originalWordPressId": 1011
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-costas-de-montemar",
+      "metadata": {
+        "propertySlug": "dpto-costas-de-montemar",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp",
+          "img-23.webp",
+          "img-24.webp",
+          "img-25.webp",
+          "img-26.webp",
+          "img-27.jpg"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=56dS2opDaDw",
+        "migratedAt": "2025-10-23T15:38:52.686Z",
+        "originalWordPressId": 983
+      }
+    },
+    {
+      "success": true,
+      "slug": "penthouse-malaga",
+      "metadata": {
+        "propertySlug": "penthouse-malaga",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp",
+          "img-14.webp",
+          "img-15.webp",
+          "img-16.webp",
+          "img-17.webp",
+          "img-18.webp",
+          "img-19.webp",
+          "img-20.webp",
+          "img-21.webp",
+          "img-22.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=mQfqcbmUl8I",
+        "migratedAt": "2025-10-23T15:39:46.101Z",
+        "originalWordPressId": 960
+      }
+    },
+    {
+      "success": true,
+      "slug": "dpto-hernando-de-aguirre",
+      "metadata": {
+        "propertySlug": "dpto-hernando-de-aguirre",
+        "mainImage": "main.webp",
+        "images": [
+          "img-1.webp",
+          "img-2.webp",
+          "img-3.webp",
+          "img-4.webp",
+          "img-5.webp",
+          "img-6.webp",
+          "img-7.webp",
+          "img-8.webp",
+          "img-9.webp",
+          "img-10.webp",
+          "img-11.webp",
+          "img-12.webp",
+          "img-13.webp"
+        ],
+        "video": "video.webp",
+        "videoUrl": "https://www.youtube.com/watch?v=eJZel_TcfNA",
+        "migratedAt": "2025-10-23T15:40:20.165Z",
+        "originalWordPressId": 924
+      }
+    }
+  ]
+}

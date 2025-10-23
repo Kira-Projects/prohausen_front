@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { getCachedProperty } from '@/lib/cache'
  
 export const runtime = 'edge'
 export const alt = 'Propiedad - Prohausen'
@@ -10,11 +9,25 @@ export const size = {
 export const contentType = 'image/png'
  
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
-  // Obtener la propiedad directamente desde Upstash Redis
+  // Obtener la propiedad desde la API (compatible con edge runtime)
   try {
     const { id } = await params
     const propertyId = parseInt(id, 10)
-    const property = await getCachedProperty(propertyId)
+    
+    // Llamar a la API para obtener la propiedad
+    const siteUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000'
+    
+    const response = await fetch(`${siteUrl}/api/property/${propertyId}`, {
+      cache: 'no-store'
+    })
+    
+    if (!response.ok) {
+      throw new Error('Property not found')
+    }
+    
+    const { property } = await response.json();
     
     if (!property) {
       return new ImageResponse(

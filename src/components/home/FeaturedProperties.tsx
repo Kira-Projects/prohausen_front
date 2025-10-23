@@ -24,16 +24,13 @@ export default function FeaturedProperties() {
         const data = await response.json();
         
         if (!data.success || !data.properties) {
-          throw new Error('No se pudieron cargar las propiedades desde caché');
+          throw new Error('No se pudieron cargar las propiedades destacadas');
         }
 
-        // ✅ FILTRAR SOLO LAS PROPIEDADES CON featured: true
-        const featuredOnly: Property[] = data.properties.filter(
-          (prop: Property) => prop.featured === true
-        );
+        // ✅ MongoDB ya devuelve solo las destacadas, no necesitamos filtrar
+        const featuredOnly: Property[] = data.properties;
 
-        console.log('🏠 Total propiedades recibidas:', data.properties.length);
-        console.log('⭐ Propiedades destacadas filtradas:', featuredOnly.length);
+        console.log('🏠 Propiedades destacadas cargadas desde MongoDB:', featuredOnly.length);
 
         setFeaturedProperties(featuredOnly);
       } catch (error) {
