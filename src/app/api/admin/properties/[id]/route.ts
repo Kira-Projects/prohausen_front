@@ -14,9 +14,10 @@ import { deleteFromS3, extractS3KeyFromUrl } from "@/lib/s3";
  * Requiere autenticación
  */
 export const GET = withAdminAuth(
-  async (req: NextRequest, { params }: { params: { id: string } }) => {
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     try {
-      const id = parseInt(params.id, 10);
+      const { id: idParam } = await params;
+      const id = parseInt(idParam, 10);
 
       if (isNaN(id)) {
         return NextResponse.json({ error: "ID inválido" }, { status: 400 });
@@ -51,9 +52,10 @@ export const GET = withAdminAuth(
  * Requiere autenticación
  */
 export const PUT = withAdminAuth(
-  async (req: NextRequest, { params }: { params: { id: string } }) => {
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     try {
-      const id = parseInt(params.id, 10);
+      const { id: idParam } = await params;
+      const id = parseInt(idParam, 10);
 
       if (isNaN(id)) {
         return NextResponse.json({ error: "ID inválido" }, { status: 400 });
@@ -140,9 +142,10 @@ export const PUT = withAdminAuth(
  * Requiere autenticación
  */
 export const DELETE = withAdminAuth(
-  async (req: NextRequest, { params }: { params: { id: string } }) => {
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     try {
-      const id = parseInt(params.id, 10);
+      const { id: idParam } = await params;
+      const id = parseInt(idParam, 10);
 
       if (isNaN(id)) {
         return NextResponse.json({ error: "ID inválido" }, { status: 400 });
