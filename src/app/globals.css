@@ -33,6 +33,7 @@ body {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
 }
 
 .line-clamp-2 {
@@ -40,4 +41,32 @@ body {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* Estilos para placeholders en formularios */
+input::placeholder,
+textarea::placeholder,
+select option[value=""] {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Color del texto ingresado en inputs y textareas */
+input,
+textarea,
+select {
+  color: #111827;
 }
