@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getPropertyUrl } from "@/utils/propertyUrl";
 
 interface PropertyListCardProps {
   property: {
@@ -17,12 +18,13 @@ interface PropertyListCardProps {
     comuna: string;
     featured?: boolean;
     image: string;
+    slug?: string;
   };
 }
 
 export default function PropertyListCard({ property }: PropertyListCardProps) {
   return (
-    <Link href={`/propiedades/${property.id}`} className="block">
+    <Link href={getPropertyUrl(property.id, property.slug)} className="block">
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
       <div className="flex flex-col md:flex-row">
         {/* Imagen */}

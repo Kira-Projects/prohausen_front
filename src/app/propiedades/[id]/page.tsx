@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Property } from "@/types/property";
 import PropertyDetailClient from "@/components/properties/PropertyDetailClient";
 import { getPropertyById } from "@/lib/db/properties";
+import { extractPropertyId } from "@/utils/propertyUrl";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -9,8 +10,10 @@ interface PageProps {
 
 // Server Component - obtiene los datos directamente desde MongoDB Atlas
 export default async function PropertyDetailPage({ params }: PageProps) {
-  const { id } = await params;
-  const propertyId = parseInt(id, 10);
+  const { id: idParam } = await params;
+  
+  // Extraer el ID numérico del parámetro (soporta "1051" y "1051-casa-del-inca")
+  const propertyId = extractPropertyId(idParam);
 
   // Obtener la propiedad directamente desde MongoDB Atlas
   let property: Property | null = null;

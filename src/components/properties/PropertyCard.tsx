@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { getPropertyUrl } from "@/utils/propertyUrl";
 
 interface PropertyCardProps {
   property: {
@@ -19,6 +20,7 @@ interface PropertyCardProps {
     featured?: boolean;
     image: string;
     images?: string[];
+    slug?: string;
   };
 }
 
@@ -123,7 +125,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       </div>
 
       {/* Contenido */}
-      <Link href={`/propiedades/${property.id}`} className="block p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+      <Link href={getPropertyUrl(property.id, property.slug)} className="block p-4 hover:bg-gray-50 transition-colors cursor-pointer">
         {/* Título */}
         <h3 className="font-bold text-base mb-2 text-gray-900 line-clamp-1 text-center">{property.title}</h3>
 

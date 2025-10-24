@@ -347,6 +347,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
 
         {/* Formulario */}
         <PropertyForm
+          key={property.id}
           initialData={property}
           onSubmit={handleSubmit}
           submitLabel="Actualizar Propiedad"

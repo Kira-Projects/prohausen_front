@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getPropertyById } from '@/lib/db/properties'
+import { extractPropertyId, getPropertyUrl } from '@/utils/propertyUrl'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -10,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   // Obtener la propiedad directamente desde MongoDB Atlas
   try {
-    const propertyId = parseInt(id, 10)
+    const propertyId = extractPropertyId(id)
     const property = await getPropertyById(propertyId);
 
     if (!property) {
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (imageUrl && !imageUrl.startsWith('http')) {
       imageUrl = `${siteUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
     }
-    const currentUrl = `${siteUrl}/propiedades/${id}`;
+    const currentUrl = `${siteUrl}${getPropertyUrl(property.id, property.slug)}`;
 
     return {
       title: `${property.title} - Prohausen Propiedades`,

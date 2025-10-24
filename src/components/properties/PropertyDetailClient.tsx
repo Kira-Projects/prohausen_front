@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Property } from "@/types/property";
+import { getPropertyUrl } from "@/utils/propertyUrl";
 
 interface PropertyDetailClientProps {
   initialProperty: Property;
@@ -16,10 +17,12 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
   const [showShareModal, setShowShareModal] = useState(false);
   const [propertyUrl, setPropertyUrl] = useState('');
 
-  // Establecer la URL de la propiedad en el cliente
+  // Establecer la URL de la propiedad en el cliente con slug
   useEffect(() => {
-    setPropertyUrl(`${window.location.origin}/propiedades/${property.id}`);
-  }, [property.id]);
+    const baseUrl = window.location.origin;
+    const path = getPropertyUrl(property.id, property.slug);
+    setPropertyUrl(`${baseUrl}${path}`);
+  }, [property.id, property.slug]);
 
   // Manejar teclado para el modal
   useEffect(() => {
@@ -117,7 +120,7 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
         
         {/* Galería Principal */}
         <div className="mb-4">
-          <div className="relative w-full cursor-pointer" style={{ height: '500px' }} onClick={openModal}>
+          <div className="relative w-full cursor-pointer" style={{ height: '650px' }} onClick={openModal}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={currentImage}
@@ -480,7 +483,15 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
 
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{property.title}</h1>
 
-              <p className="text-gray-800 mb-6 font-medium">{property.address || `${property.location}, ${property.region}, Chile`}</p>
+              {property.address && (
+                <p className="text-gray-800 mb-2 font-medium">{property.address}</p>
+              )}
+              {property.location && (
+                <p className="text-gray-600 text-sm mb-6">{property.location}</p>
+              )}
+              {!property.address && !property.location && (
+                <p className="text-gray-800 mb-6 font-medium">{property.region}, Chile</p>
+              )}
               
               <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
                 {property.bedrooms && (
