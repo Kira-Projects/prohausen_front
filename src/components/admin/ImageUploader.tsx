@@ -3,15 +3,14 @@
 import { useState, useRef, DragEvent } from "react";
 import Image from "next/image";
 
-interface ImageFile {
-  file: File;
-  preview: string;
-  id: string;
-}
+// Tipo unificado para manejar tanto imágenes existentes como nuevas
+export type ImageItem =
+  | { type: 'existing'; url: string; id: string }
+  | { type: 'new'; file: File; preview: string; id: string };
 
 interface ImageUploaderProps {
-  images: ImageFile[];
-  onImagesChange: (images: ImageFile[]) => void;
+  images: ImageItem[];
+  onImagesChange: (images: ImageItem[]) => void;
   maxImages?: number;
   label?: string;
 }
@@ -23,6 +22,8 @@ export default function ImageUploader({
   label = "Imágenes",
 }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
@@ -79,11 +80,12 @@ export default function ImageUploader({
       return;
     }
 
-    // Crear previews
-    const newImages: ImageFile[] = validFiles.map((file) => ({
+    // Crear previews para archivos nuevos
+    const newImages: ImageItem[] = validFiles.map((file) => ({
+      type: 'new' as const,
       file,
       preview: URL.createObjectURL(file),
-      id: `${Date.now()}-${Math.random()}`,
+      id: `new-${Date.now()}-${Math.random()}`,
     }));
 
     onImagesChange([...images, ...newImages]);
@@ -91,7 +93,7 @@ export default function ImageUploader({
 
   const handleRemoveImage = (id: string) => {
     const imageToRemove = images.find((img) => img.id === id);
-    if (imageToRemove) {
+    if (imageToRemove && imageToRemove.type === 'new') {
       URL.revokeObjectURL(imageToRemove.preview);
     }
     onImagesChange(images.filter((img) => img.id !== id));
@@ -104,16 +106,37 @@ export default function ImageUploader({
     onImagesChange(newImages);
   };
 
-  const moveUp = (index: number) => {
-    if (index > 0) {
-      handleReorder(index, index - 1);
+  // Funciones para drag-and-drop de reordenamiento
+  const handleImageDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleImageDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleImageDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (draggedIndex !== index) {
+      setDragOverIndex(index);
     }
   };
 
-  const moveDown = (index: number) => {
-    if (index < images.length - 1) {
-      handleReorder(index, index + 1);
+  const handleImageDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleImageDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (draggedIndex !== null && draggedIndex !== dropIndex) {
+      handleReorder(draggedIndex, dropIndex);
     }
+    setDragOverIndex(null);
   };
 
   return (
@@ -176,11 +199,23 @@ export default function ImageUploader({
           {images.map((image, index) => (
             <div
               key={image.id}
-              className="relative group bg-gray-100 rounded-lg overflow-hidden aspect-square"
+              draggable
+              onDragStart={(e) => handleImageDragStart(e, index)}
+              onDragEnd={handleImageDragEnd}
+              onDragOver={(e) => handleImageDragOver(e, index)}
+              onDragLeave={handleImageDragLeave}
+              onDrop={(e) => handleImageDrop(e, index)}
+              className={`
+                relative group bg-gray-100 rounded-lg overflow-hidden aspect-square
+                transition-all duration-200
+                ${dragOverIndex === index && draggedIndex !== index ? 'ring-4 ring-blue-500 scale-105' : ''}
+                ${draggedIndex === index ? 'opacity-50 cursor-grabbing' : 'opacity-100 cursor-grab'}
+              `}
+              title="Arrastra para reordenar"
             >
               {/* Imagen */}
               <Image
-                src={image.preview}
+                src={image.type === 'existing' ? image.url : image.preview}
                 alt={`Preview ${index + 1}`}
                 fill
                 className="object-cover"
@@ -192,65 +227,29 @@ export default function ImageUploader({
                 #{index + 1}
               </div>
 
+              {/* Icono de arrastrar */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-gray-800/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </div>
+
+              {/* Badge de tipo */}
+              <div className="absolute top-2 right-2 bg-blue-600/80 text-white text-xs px-2 py-1 rounded">
+                {image.type === 'existing' ? '✓ Guardada' : '🆕 Nueva'}
+              </div>
+
               {/* Controles */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {/* Mover arriba */}
-                {index > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => moveUp(index)}
-                    className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
-                    title="Mover arriba"
-                  >
-                    <svg
-                      className="w-4 h-4 text-gray-800"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 15l7-7 7 7"
-                      />
-                    </svg>
-                  </button>
-                )}
-
-                {/* Mover abajo */}
-                {index < images.length - 1 && (
-                  <button
-                    type="button"
-                    onClick={() => moveDown(index)}
-                    className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
-                    title="Mover abajo"
-                  >
-                    <svg
-                      className="w-4 h-4 text-gray-800"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-                )}
-
                 {/* Eliminar */}
                 <button
                   type="button"
                   onClick={() => handleRemoveImage(image.id)}
-                  className="p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
-                  title="Eliminar"
+                  className="p-3 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
+                  title="Eliminar imagen"
                 >
                   <svg
-                    className="w-4 h-4 text-white"
+                    className="w-5 h-5 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -259,16 +258,18 @@ export default function ImageUploader({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
                 </button>
               </div>
 
-              {/* Tamaño del archivo */}
-              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                {(image.file.size / 1024 / 1024).toFixed(2)} MB
-              </div>
+              {/* Tamaño del archivo (solo para nuevas) */}
+              {image.type === 'new' && (
+                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                  {(image.file.size / 1024 / 1024).toFixed(2)} MB
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -276,8 +277,9 @@ export default function ImageUploader({
 
       {images.length > 0 && (
         <p className="text-xs text-gray-500 italic">
-          💡 La primera imagen será la imagen principal de la propiedad. Usa
-          las flechas para reordenar.
+          💡 La primera imagen será la imagen principal de la propiedad. 
+          <strong> Arrastra las imágenes</strong> para reordenarlas. 
+          Las imágenes con &quot;✓ Guardada&quot; ya están en el servidor, las marcadas con &quot;🆕 Nueva&quot; se subirán al guardar.
         </p>
       )}
     </div>

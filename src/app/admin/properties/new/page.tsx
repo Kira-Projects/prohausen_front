@@ -5,12 +5,7 @@ import { useRouter } from "next/navigation";
 import PropertyForm from "@/components/admin/PropertyForm";
 import { generatePropertyFolderId } from "@/lib/uuid";
 import { useAuth } from "@/contexts/AuthContext";
-
-interface ImageFile {
-  file: File;
-  preview: string;
-  id: string;
-}
+import { ImageItem } from "@/components/admin/ImageUploader";
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -30,10 +25,18 @@ export default function NewPropertyPage() {
     text: string;
   } | null>(null);
 
-  const handleSubmit = async (formData: FormData, images: ImageFile[]) => {
+  const handleSubmit = async (formData: FormData, images: ImageItem[]) => {
     try {
+      // Filtrar solo las imágenes nuevas (en este caso, todas son nuevas)
+      const newImages = images.filter((img) => img.type === 'new') as Array<{
+        type: 'new';
+        file: File;
+        preview: string;
+        id: string;
+      }>;
+
       // Validar que haya al menos una imagen
-      if (images.length === 0) {
+      if (newImages.length === 0) {
         setMessage({
           type: "error",
           text: "Debes subir al menos una imagen",
@@ -46,8 +49,8 @@ export default function NewPropertyPage() {
       // 1. Subir todas las imágenes a S3 primero
       const uploadedUrls: string[] = [];
 
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
+      for (let i = 0; i < newImages.length; i++) {
+        const image = newImages[i];
         const imageFormData = new FormData();
         imageFormData.append("file", image.file);
         imageFormData.append("propertyId", propertyFolderId); // Usar UUID generado

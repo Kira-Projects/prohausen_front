@@ -1,18 +1,12 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import ImageUploader from "./ImageUploader";
+import { useState, FormEvent, useEffect } from "react";
+import ImageUploader, { ImageItem } from "./ImageUploader";
 import { Property } from "@/types/property";
-
-interface ImageFile {
-  file: File;
-  preview: string;
-  id: string;
-}
 
 interface PropertyFormProps {
   initialData?: Property;
-  onSubmit: (formData: FormData, images: ImageFile[]) => Promise<void>;
+  onSubmit: (formData: FormData, images: ImageItem[]) => Promise<void>;
   submitLabel?: string;
 }
 
@@ -72,10 +66,22 @@ export default function PropertyForm({
   submitLabel = "Guardar Propiedad",
 }: PropertyFormProps) {
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<ImageFile[]>([]);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
     initialData?.features || []
   );
+
+  // Inicializar imágenes existentes cuando hay initialData
+  useEffect(() => {
+    if (initialData?.images && initialData.images.length > 0) {
+      const existingImages: ImageItem[] = initialData.images.map((url, index) => ({
+        type: 'existing' as const,
+        url,
+        id: `existing-${index}-${url}`,
+      }));
+      setImages(existingImages);
+    }
+  }, [initialData]);
 
   const handleFeatureToggle = (feature: string) => {
     setSelectedFeatures((prev) =>
@@ -523,9 +529,9 @@ export default function PropertyForm({
           Imágenes <span className="text-red-500">*</span>
         </h2>
         <ImageUploader images={images} onImagesChange={setImages} />
-        {!initialData && images.length === 0 && (
+        {images.length === 0 && (
           <p className="text-sm text-red-500 mt-2">
-            Debes subir al menos una imagen
+            Debes tener al menos una imagen
           </p>
         )}
       </div>
@@ -566,7 +572,7 @@ export default function PropertyForm({
       <div className="flex gap-4 pt-4">
         <button
           type="submit"
-          disabled={loading || (!initialData && images.length === 0)}
+          disabled={loading || images.length === 0}
           className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
         >
           {loading ? (

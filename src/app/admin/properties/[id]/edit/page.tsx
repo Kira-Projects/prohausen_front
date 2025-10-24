@@ -6,12 +6,7 @@ import PropertyForm from "@/components/admin/PropertyForm";
 import { Property } from "@/types/property";
 import { generatePropertyFolderId } from "@/lib/uuid";
 import { useAuth } from "@/contexts/AuthContext";
-
-interface ImageFile {
-  file: File;
-  preview: string;
-  id: string;
-}
+import { ImageItem } from "@/components/admin/ImageUploader";
 
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -70,23 +65,39 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     fetchProperty();
   }, [propertyId, password, isAuthenticated]);
 
-  const handleSubmit = async (formData: FormData, images: ImageFile[]) => {
+  const handleSubmit = async (formData: FormData, images: ImageItem[]) => {
     try {
+      // Separar imágenes existentes de las nuevas
+      const existingImages = images
+        .filter((img) => img.type === 'existing')
+        .map((img) => (img as { type: 'existing'; url: string; id: string }).url);
+      
+      const newImages = images.filter((img) => img.type === 'new') as Array<{
+        type: 'new';
+        file: File;
+        preview: string;
+        id: string;
+      }>;
+
+      // Detectar imágenes eliminadas (las que estaban en property.images pero ya no están en images)
+      const deletedImages = property?.images?.filter(
+        (url) => !existingImages.includes(url)
+      ) || [];
+
       // Obtener o generar el folderId para las imágenes
-      // Si la propiedad ya tiene un folderId, usarlo; si no, generar uno nuevo
       const propertyFolderId = property?.folderId || generatePropertyFolderId();
 
-      // Si hay nuevas imágenes, subirlas a S3
+      // Subir solo las imágenes nuevas a S3
       const uploadedUrls: string[] = [];
 
-      if (images.length > 0) {
-        setMessage({ type: "success", text: "Subiendo nuevas imágenes..." });
+      if (newImages.length > 0) {
+        setMessage({ type: "success", text: `Subiendo ${newImages.length} imagen(es) nueva(s)...` });
 
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
+        for (let i = 0; i < newImages.length; i++) {
+          const image = newImages[i];
           const imageFormData = new FormData();
           imageFormData.append("file", image.file);
-          imageFormData.append("propertyId", propertyFolderId); // Usar el folderId UUID
+          imageFormData.append("propertyId", propertyFolderId);
 
           const uploadResponse = await fetch("/api/admin/upload-image", {
             method: "POST",
@@ -105,10 +116,34 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         }
       }
 
+      // Eliminar imágenes de S3 que el admin quitó
+      if (deletedImages.length > 0) {
+        setMessage({ type: "success", text: `Eliminando ${deletedImages.length} imagen(es)...` });
+        
+        for (const imageUrl of deletedImages) {
+          try {
+            await fetch("/api/admin/delete-image", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-admin-password": password,
+              },
+              body: JSON.stringify({ imageUrl }),
+            });
+          } catch (error) {
+            console.error(`Error al eliminar imagen ${imageUrl}:`, error);
+            // Continuar aunque falle la eliminación de una imagen
+          }
+        }
+      }
+
       setMessage({
         type: "success",
         text: "Actualizando propiedad...",
       });
+
+      // Combinar URLs: existentes + nuevas subidas
+      const allImageUrls = [...existingImages, ...uploadedUrls];
 
       // Preparar datos de actualización
       const updateData: Record<string, unknown> = {
@@ -126,10 +161,10 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         featured: formData.get("featured") === "on",
       };
 
-      // Si se subieron nuevas imágenes, actualizar image e images
-      if (uploadedUrls.length > 0) {
-        updateData.image = uploadedUrls[0];
-        updateData.images = uploadedUrls;
+      // Actualizar imágenes solo si hay cambios
+      if (allImageUrls.length > 0) {
+        updateData.image = allImageUrls[0]; // Primera imagen como principal
+        updateData.images = allImageUrls;
       }
 
       // Campos opcionales numéricos
@@ -339,9 +374,8 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         {/* Info: Imágenes */}
         <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>💡 Nota sobre imágenes:</strong> Si subes nuevas imágenes,
-            reemplazarán completamente las actuales. Si no subes ninguna, se
-            mantendrán las imágenes existentes.
+            <strong>💡 Nota sobre imágenes:</strong> Puedes agregar nuevas imágenes sin perder las existentes, 
+            eliminar individualmente las que no quieras, y reordenarlas arrastrándolas. Los cambios se guardarán al actualizar la propiedad.
           </p>
         </div>
 
