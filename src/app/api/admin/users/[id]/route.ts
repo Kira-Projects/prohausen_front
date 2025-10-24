@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * Obtiene un usuario por ID (solo administradores)
  */
 async function getHandler(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
   _userId: string
 ) {

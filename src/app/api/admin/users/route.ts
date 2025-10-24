@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
  * GET /api/admin/users
  * Obtiene todos los usuarios (solo administradores)
  */
-async function getHandler(request: NextRequest, context: unknown, userId: string) {
+async function getHandler(_request: NextRequest, _context: unknown, _userId: string) {
   try {
     const users = await getAllUsers();
 
@@ -32,7 +32,7 @@ async function getHandler(request: NextRequest, context: unknown, userId: string
  * POST /api/admin/users
  * Crea un nuevo usuario (solo administradores)
  */
-async function postHandler(request: NextRequest, context: unknown, userId: string) {
+async function postHandler(request: NextRequest, _context: unknown, _userId: string) {
   try {
     const body = await request.json();
     const { nombre, email, password } = body;

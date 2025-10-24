@@ -8,19 +8,20 @@ function AdminHeader() {
   const { isAuthenticated, user, logout } = useAuth();
   const pathname = usePathname();
 
-  if (!isAuthenticated) return null;
+  // No mostrar header en la página de login
+  if (!isAuthenticated || pathname === '/admin') return null;
 
   return (
     <header className="bg-white shadow-md border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo y título */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">P</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">P</span>
               </div>
-              <h1 className="text-xl font-bold text-gray-900">Prohausen Admin</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Prohausen Admin</h1>
             </div>
           </div>
 
