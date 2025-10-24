@@ -14,6 +14,12 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [propertyUrl, setPropertyUrl] = useState('');
+
+  // Establecer la URL de la propiedad en el cliente
+  useEffect(() => {
+    setPropertyUrl(`${window.location.origin}/propiedades/${property.id}`);
+  }, [property.id]);
 
   // Manejar teclado para el modal
   useEffect(() => {
@@ -67,12 +73,11 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
   };
 
   const copyToClipboard = () => {
-    const url = typeof window !== 'undefined' ? window.location.href : '';
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(propertyUrl);
     alert('URL copiada al portapapeles');
   };
 
-  const shareUrl = typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : '';
+  const shareUrl = encodeURIComponent(propertyUrl);
   const shareTitle = encodeURIComponent(property?.title || '');
 
   const currentImage = property.images && property.images.length > 0 
@@ -268,7 +273,7 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
-                    value={typeof window !== 'undefined' ? window.location.href : ''}
+                    value={propertyUrl}
                     readOnly
                     className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm bg-gray-50 min-w-0"
                   />
@@ -654,7 +659,7 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
                 <p className="text-sm text-gray-600 mb-3">¿Te interesa esta propiedad?</p>
                 <a
                   href={`https://wa.me/56940454965?text=${encodeURIComponent(
-                    `Hola, tengo algunas preguntas sobre ${property.title}. ${typeof window !== 'undefined' ? `${window.location.origin}/propiedades/${property.id}` : ''}`
+                    `Hola, tengo algunas preguntas sobre ${property.title}. ${propertyUrl}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
