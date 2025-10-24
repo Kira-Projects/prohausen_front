@@ -352,10 +352,10 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             </svg>
             Volver al Panel
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-gray-900">
             Editar Propiedad #{property.id}
           </h1>
-          <p className="text-gray-600 mt-2">{property.title}</p>
+          <p className="text-gray-900 mt-3">{property.title}</p>
         </div>
 
         {/* Mensajes */}
@@ -372,12 +372,12 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         )}
 
         {/* Info: Imágenes */}
-        <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+        {/* <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
             <strong>💡 Nota sobre imágenes:</strong> Puedes agregar nuevas imágenes sin perder las existentes, 
             eliminar individualmente las que no quieras, y reordenarlas arrastrándolas. Los cambios se guardarán al actualizar la propiedad.
           </p>
-        </div>
+        </div> */}
 
         {/* Formulario */}
         <PropertyForm

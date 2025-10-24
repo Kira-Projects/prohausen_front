@@ -617,10 +617,10 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             {property.mapIframe && (
               <div className="bg-white rounded border p-4">
                 <h3 className="text-xl font-bold mb-4 text-gray-900">Ubicación</h3>
-                <div className="w-full h-96 bg-gray-200 rounded overflow-hidden">
+                <div className="w-full aspect-video bg-gray-200 rounded overflow-hidden relative">
                   <div 
                     dangerouslySetInnerHTML={{ __html: property.mapIframe }}
-                    className="w-full h-full"
+                    className="absolute inset-0 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
                   />
                 </div>
               </div>
