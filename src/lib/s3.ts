@@ -7,6 +7,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 
+// Re-exportar funciones UUID (no requieren AWS credentials)
+export { generateUniqueFileName, generatePropertyFolderId } from "./uuid";
+
 // Validar variables de entorno
 if (!process.env.AWS_ACCESS_KEY_ID) {
   throw new Error('Missing environment variable: "AWS_ACCESS_KEY_ID"');
@@ -52,7 +55,7 @@ export async function uploadToS3(
     Key: key,
     Body: file,
     ContentType: contentType,
-    ACL: "public-read", // Hacer el archivo público
+    // No usar ACL - el bucket tiene política pública configurada
   };
 
   const command = new PutObjectCommand(params);
@@ -82,7 +85,7 @@ export async function uploadLargeFileToS3(
       Key: key,
       Body: file,
       ContentType: contentType,
-      ACL: "public-read",
+      // No usar ACL - el bucket tiene política pública configurada
     },
   });
 
@@ -121,18 +124,6 @@ export function extractS3KeyFromUrl(url: string): string {
     throw new Error("Invalid S3 URL");
   }
   return match[1];
-}
-
-/**
- * Genera un nombre único para el archivo
- * @param originalName Nombre original del archivo
- * @returns Nombre único con timestamp
- */
-export function generateUniqueFileName(originalName: string): string {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 9);
-  const extension = originalName.split(".").pop();
-  return `${timestamp}-${random}.${extension}`;
 }
 
 export default s3Client;

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PropertyForm from "@/components/admin/PropertyForm";
 import { Property } from "@/types/property";
+import { generatePropertyFolderId } from "@/lib/uuid";
 
 interface ImageFile {
   file: File;
@@ -68,6 +69,10 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
 
   const handleSubmit = async (formData: FormData, images: ImageFile[]) => {
     try {
+      // Obtener o generar el folderId para las imágenes
+      // Si la propiedad ya tiene un folderId, usarlo; si no, generar uno nuevo
+      const propertyFolderId = property?.folderId || generatePropertyFolderId();
+
       // Si hay nuevas imágenes, subirlas a S3
       const uploadedUrls: string[] = [];
 
@@ -78,7 +83,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
           const image = images[i];
           const imageFormData = new FormData();
           imageFormData.append("file", image.file);
-          imageFormData.append("propertyId", propertyId);
+          imageFormData.append("propertyId", propertyFolderId); // Usar el folderId UUID
 
           const uploadResponse = await fetch("/api/admin/upload-image", {
             method: "POST",
@@ -160,11 +165,11 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
       const country = formData.get("country");
       if (country) updateData.country = country;
 
-      const latitude = formData.get("latitude");
-      if (latitude) updateData.latitude = latitude;
+      const mapIframe = formData.get("mapIframe");
+      if (mapIframe) updateData.mapIframe = mapIframe;
 
-      const longitude = formData.get("longitude");
-      if (longitude) updateData.longitude = longitude;
+      // Guardar el folderId (existente o nuevo)
+      updateData.folderId = propertyFolderId;
 
       const videoUrl = formData.get("videoUrl");
       if (videoUrl) updateData.videoUrl = videoUrl;

@@ -34,8 +34,8 @@ export interface Property {
   country?: string;
   halfBathrooms?: number;
   totalRooms?: number;
-  latitude?: string;
-  longitude?: string;
+  mapIframe?: string; // Iframe de mapa embebido (Google Maps, etc.)
+  folderId?: string; // UUID de la carpeta en S3 (ej: uuid-550e8400-e29b-41d4-a716-446655440000)
   // Timestamps
   createdAt?: Date;
   updatedAt?: Date;
@@ -73,8 +73,8 @@ export interface PropertyCreateInput {
   country?: string;
   halfBathrooms?: number;
   totalRooms?: number;
-  latitude?: string;
-  longitude?: string;
+  mapIframe?: string; // Iframe de mapa embebido
+  folderId?: string; // UUID de la carpeta en S3 (ej: uuid-550e8400-e29b-41d4-a716-446655440000)
 }
 
 // Tipo para actualizar una propiedad (todos los campos opcionales)
@@ -108,8 +108,8 @@ export interface PropertyUpdateInput {
   country?: string;
   halfBathrooms?: number;
   totalRooms?: number;
-  latitude?: string;
-  longitude?: string;
+  mapIframe?: string; // Iframe de mapa embebido
+  folderId?: string; // UUID de la carpeta en S3
 }
 
 export type PropertyType =

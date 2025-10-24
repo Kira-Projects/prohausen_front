@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PropertyForm from "@/components/admin/PropertyForm";
+import { generatePropertyFolderId } from "@/lib/uuid";
 
 interface ImageFile {
   file: File;
@@ -12,6 +13,10 @@ interface ImageFile {
 
 export default function NewPropertyPage() {
   const router = useRouter();
+  
+  // Generar UUID único para la carpeta de esta propiedad
+  const [propertyFolderId] = useState(() => generatePropertyFolderId());
+  
   const [password] = useState(() => {
     if (typeof window !== "undefined") {
       return sessionStorage.getItem("adminPassword") || "";
@@ -43,7 +48,7 @@ export default function NewPropertyPage() {
         const image = images[i];
         const imageFormData = new FormData();
         imageFormData.append("file", image.file);
-        imageFormData.append("propertyId", "temp"); // Temporal hasta tener el ID
+        imageFormData.append("propertyId", propertyFolderId); // Usar UUID generado
 
         const uploadResponse = await fetch("/api/admin/upload-image", {
           method: "POST",
@@ -128,6 +133,12 @@ export default function NewPropertyPage() {
 
       const videoUrl = formData.get("videoUrl");
       if (videoUrl) propertyData.videoUrl = videoUrl;
+
+      const mapIframe = formData.get("mapIframe");
+      if (mapIframe) propertyData.mapIframe = mapIframe;
+
+      // Guardar el folderId (UUID de la carpeta en S3)
+      propertyData.folderId = propertyFolderId;
 
       // Features
       const featuresJson = formData.get("features");

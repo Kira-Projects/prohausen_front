@@ -312,32 +312,21 @@ export default function PropertyForm({
             />
           </div>
 
-          {/* Latitud */}
-          <div>
+          {/* Mapa (Iframe embebido) */}
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-900 mb-2">
-              Latitud
+              Mapa (Iframe de Google Maps)
             </label>
-            <input
-              type="text"
-              name="latitude"
-              defaultValue={initialData?.latitude}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ej: -33.4167"
+            <textarea
+              name="mapIframe"
+              defaultValue={initialData?.mapIframe}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              placeholder='Pega aquí el iframe de Google Maps. Ej: <iframe src="https://www.google.com/maps/embed?..." width="600" height="450" ...></iframe>'
             />
-          </div>
-
-          {/* Longitud */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Longitud
-            </label>
-            <input
-              type="text"
-              name="longitude"
-              defaultValue={initialData?.longitude}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ej: -70.5667"
-            />
+            <p className="text-xs text-gray-600 mt-1">
+              💡 <strong>Cómo obtener el iframe:</strong> Ve a Google Maps → Busca la dirección → Clic en &quot;Compartir&quot; → Clic en &quot;Insertar un mapa&quot; → Copia el código
+            </p>
           </div>
         </div>
       </div>

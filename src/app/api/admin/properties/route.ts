@@ -117,8 +117,8 @@ export const POST = withAdminAuth(async (req: NextRequest, _context: unknown) =>
       country: body.country,
       halfBathrooms: body.halfBathrooms,
       totalRooms: body.totalRooms,
-      latitude: body.latitude,
-      longitude: body.longitude,
+      mapIframe: body.mapIframe,
+      folderId: body.folderId,
     };
 
     const newProperty = await createProperty(propertyData);

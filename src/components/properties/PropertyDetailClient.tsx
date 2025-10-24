@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Property } from "@/types/property";
-import GoogleMapComponent from "@/components/maps/GoogleMapComponent";
 
 interface PropertyDetailClientProps {
   initialProperty: Property;
@@ -599,14 +598,13 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             )}
 
             {/* Mapa */}
-            {property.latitude && property.longitude && (
+            {property.mapIframe && (
               <div className="bg-white rounded border p-4">
                 <h3 className="text-xl font-bold mb-4 text-gray-900">Ubicación</h3>
                 <div className="w-full h-96 bg-gray-200 rounded overflow-hidden">
-                  <GoogleMapComponent
-                    latitude={property.latitude}
-                    longitude={property.longitude}
-                    title={property.title}
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: property.mapIframe }}
+                    className="w-full h-full"
                   />
                 </div>
               </div>

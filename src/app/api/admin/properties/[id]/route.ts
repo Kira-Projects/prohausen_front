@@ -100,8 +100,8 @@ export const PUT = withAdminAuth(
         updateData.halfBathrooms = body.halfBathrooms;
       if (body.totalRooms !== undefined)
         updateData.totalRooms = body.totalRooms;
-      if (body.latitude !== undefined) updateData.latitude = body.latitude;
-      if (body.longitude !== undefined) updateData.longitude = body.longitude;
+      if (body.mapIframe !== undefined) updateData.mapIframe = body.mapIframe;
+      if (body.folderId !== undefined) updateData.folderId = body.folderId;
 
       const updatedProperty = await updatePropertyById(id, updateData);
 
