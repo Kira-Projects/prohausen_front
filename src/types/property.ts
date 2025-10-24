@@ -5,7 +5,7 @@ export interface Property {
   _id?: string; // ObjectId de MongoDB (opcional para creación)
   id: number; // ID numérico para compatibilidad
   title: string;
-  slug: string;
+  slug?: string; // Opcional - se genera automáticamente si no existe
   location: string;
   description: string;
   price: string;
@@ -45,7 +45,7 @@ export interface Property {
 export interface PropertyCreateInput {
   id: number;
   title: string;
-  slug: string;
+  slug?: string; // Opcional - se genera automáticamente si no existe
   location: string;
   description: string;
   price: string;

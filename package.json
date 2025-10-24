@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "migrate:properties": "tsx scripts/migrate-data.ts",
+    "migrate:images:s3": "tsx scripts/migrate-images-to-s3-uuid.ts",
+    "migrate:metadata": "tsx scripts/migrate-metadata-to-mongodb.ts",
+    "clean:mongodb": "tsx scripts/clean-mongodb.ts",
     "setup:mongodb": "tsx scripts/setup-mongodb-indexes.ts",
     "test:mongodb": "tsx scripts/test-mongodb-connection.ts"
   },

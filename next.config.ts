@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "prohausen.s3.us-east-2.amazonaws.com",
         pathname: "/properties/**",
       },
+      {
+        protocol: "https",
+        hostname: "prohausen-prod.s3.us-east-2.amazonaws.com",
+        pathname: "/properties/**",
+      },
     ],
   },
 };
