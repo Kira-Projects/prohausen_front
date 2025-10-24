@@ -1,12 +1,6 @@
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Panel de Administración - Prohausen",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export default function AdminLayout({
   children,
@@ -14,8 +8,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {children}
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        {children}
+      </div>
+    </AuthProvider>
   );
 }

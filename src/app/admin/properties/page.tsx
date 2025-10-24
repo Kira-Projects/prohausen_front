@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Property } from "@/types/property";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminPropertiesPage() {
-  const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, password, login, logout } = useAuth();
+  const [loginPassword, setLoginPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [message, setMessage] = useState<{
@@ -62,12 +63,8 @@ export default function AdminPropertiesPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin2024";
     
-    if (password === adminPassword) {
-      setIsAuthenticated(true);
-      // Guardar password en sessionStorage para usarlo en otras páginas
-      sessionStorage.setItem("adminPassword", password);
+    if (login(loginPassword)) {
       setMessage({ type: "success", text: "Acceso autorizado" });
     } else {
       setMessage({ type: "error", text: "Contraseña incorrecta" });
@@ -154,8 +151,8 @@ export default function AdminPropertiesPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
                   className="w-full px-4 py-3 sm:py-3.5 pr-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
                   placeholder="Ingresa tu contraseña"
                   required
@@ -245,12 +242,7 @@ export default function AdminPropertiesPage() {
               </p>
             </div>
             <button
-              onClick={() => {
-                setIsAuthenticated(false);
-                setPassword("");
-                sessionStorage.removeItem("adminPassword");
-                setMessage(null);
-              }}
+              onClick={logout}
               className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-md hover:shadow-lg"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

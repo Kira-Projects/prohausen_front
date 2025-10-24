@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import PropertyForm from "@/components/admin/PropertyForm";
 import { Property } from "@/types/property";
 import { generatePropertyFolderId } from "@/lib/uuid";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ImageFile {
   file: File;
@@ -14,19 +15,21 @@ interface ImageFile {
 
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { isAuthenticated, password, loading: authLoading } = useAuth();
   const [propertyId, setPropertyId] = useState<string>("");
-  const [password] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("adminPassword") || "";
-    }
-    return "";
-  });
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  // Redirigir si no está autenticado
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/admin/properties");
+    }
+  }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
     const initParams = async () => {
@@ -37,7 +40,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   }, [params]);
 
   useEffect(() => {
-    if (!propertyId) return;
+    if (!propertyId || !isAuthenticated) return;
 
     const fetchProperty = async () => {
       try {
@@ -65,7 +68,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     };
 
     fetchProperty();
-  }, [propertyId, password]);
+  }, [propertyId, password, isAuthenticated]);
 
   const handleSubmit = async (formData: FormData, images: ImageFile[]) => {
     try {
@@ -214,6 +217,36 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
       });
     }
   };
+
+  // Mostrar loading mientras verifica autenticación
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <svg
+            className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          <p className="text-gray-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

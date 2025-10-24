@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PropertyForm from "@/components/admin/PropertyForm";
 import { generatePropertyFolderId } from "@/lib/uuid";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ImageFile {
   file: File;
@@ -13,16 +14,17 @@ interface ImageFile {
 
 export default function NewPropertyPage() {
   const router = useRouter();
+  const { isAuthenticated, password, loading } = useAuth();
   
   // Generar UUID único para la carpeta de esta propiedad
   const [propertyFolderId] = useState(() => generatePropertyFolderId());
   
-  const [password] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("adminPassword") || "";
+  // Redirigir si no está autenticado
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/admin/properties");
     }
-    return "";
-  });
+  }, [isAuthenticated, loading, router]);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -180,6 +182,40 @@ export default function NewPropertyPage() {
       });
     }
   };
+
+  // Mostrar loading mientras verifica autenticación
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <svg
+            className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          <p className="text-gray-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // El useEffect se encargará de redirigir
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 pt-32">
