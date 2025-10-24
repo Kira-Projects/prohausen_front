@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToS3, generateUniqueFileName } from "@/lib/s3";
-import { withAdminAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth";
 
 /**
  * POST /api/admin/upload-image
  * Sube una imagen a S3 y retorna la URL pública
  * Requiere autenticación
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const POST = withAdminAuth(async (req: NextRequest, _context: unknown) => {
+export const POST = withAuth(async (req: NextRequest, _context: unknown, _userId: string) => {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;

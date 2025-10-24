@@ -17,11 +17,20 @@ Aplicación web de corredora de propiedades desarrollada con Next.js 15, React 1
 - ✅ Diseño responsive y moderno
 - ✅ Componentes reutilizables
 - ✅ Panel de administración con CRUD completo
+- ✅ **Sistema de autenticación** con roles (admin/user)
+- ✅ **Gestión de usuarios** protegida (solo administradores)
 - ✅ **Fuente Poppins** integrada con optimización de `next/font`
 - ✅ **Paginación** de 12 propiedades por página
 - ✅ **Filtros avanzados** con dropdown posicionado junto a "Ordenar por"
 
 ## ✨ Últimas Mejoras (Octubre 2025)
+
+### Sistema de Autenticación y Roles
+- 🔐 **Autenticación completa**: Sistema de login con JWT y MongoDB
+- 👥 **Roles de usuario**: Administrador y Usuario con permisos diferenciados
+- 🛡️ **Middleware de protección**: Rutas API protegidas con `withAuth` y `withAdminRole`
+- 👑 **Panel de usuarios**: Gestión completa de usuarios (solo para administradores)
+- 🔧 **Script de setup**: `create-first-admin.ts` para crear el primer administrador
 
 ### UI/UX
 - 🎨 **Títulos centrados**: "Propiedades Destacadas" y "Propiedades" ahora están centrados
@@ -123,6 +132,7 @@ Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variabl
 
 # MongoDB Atlas
 MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/prohausen?retryWrites=true&w=majority
+MONGODB_DB_NAME=prohausen_db
 
 # AWS S3
 AWS_ACCESS_KEY_ID=tu_access_key_id
@@ -133,9 +143,8 @@ AWS_S3_BUCKET_NAME=prohausen-properties
 # Google Maps API Key
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=tu_google_maps_api_key
 
-# Panel de Administración
-ADMIN_PASSWORD=admin2024
-NEXT_PUBLIC_ADMIN_PASSWORD=admin2024
+# JWT Secret (generar uno aleatorio para producción)
+JWT_SECRET=tu_secret_key_muy_seguro_aqui
 \`\`\`
 
 ### Instalación
@@ -143,6 +152,21 @@ NEXT_PUBLIC_ADMIN_PASSWORD=admin2024
 \`\`\`bash
 npm install
 \`\`\`
+
+### Crear primer administrador
+
+Antes de iniciar la aplicación por primera vez, crea el usuario administrador:
+
+\`\`\`bash
+npm run create-admin
+\`\`\`
+
+Esto creará el usuario **Alice** con:
+- Email: `contacto@prohausen.cl`
+- Contraseña: `admin123`
+- Rol: `admin`
+
+⚠️ **Importante**: Cambia la contraseña después del primer login desde el perfil.
 
 ### Desarrollo
 
@@ -186,15 +210,37 @@ npm run lint
 
 ## 🔐 Panel de Administración
 
-### Acceso Local (Desarrollo)
+### Sistema de Autenticación
 
-- **URL**: [http://localhost:3000/admin/properties](http://localhost:3000/admin/properties)
-- **Contraseña**: `admin2024` (por defecto)
+El panel de administración ahora utiliza un sistema completo de autenticación con:
+- **Login seguro** con contraseñas hasheadas (bcrypt)
+- **Roles diferenciados**: Admin y User
+- **JWT tokens** para sesiones
+- **Middleware de protección** en todas las rutas API
 
-### Acceso en Producción
+### Acceso al Panel
 
-- URL de producción: `https://prohausen-front.vercel.app/`
-- Admin CRUD de propiedades: `https://prohausen-front.vercel.app/admin/properties`
+- **URL Local**: [http://localhost:3000/admin](http://localhost:3000/admin)
+- **URL Producción**: `https://tu-dominio.com/admin`
+
+**Credenciales iniciales** (creadas con `npm run create-admin`):
+- Email: `contacto@prohausen.cl`
+- Contraseña: `admin123`
+- Rol: Administrador
+
+### Funcionalidades por Rol
+
+#### 👑 Administrador
+- ✅ CRUD completo de propiedades
+- ✅ Gestión de usuarios (crear, editar, eliminar)
+- ✅ Acceso a todas las funcionalidades
+- ✅ Ver lista de todos los usuarios
+
+#### 👤 Usuario
+- ✅ CRUD de propiedades
+- ✅ Ver su propio perfil
+- ✅ Cambiar su contraseña
+- ❌ No puede gestionar otros usuarios
 
 ### Funcionalidades del Panel
 
@@ -203,12 +249,16 @@ npm run lint
 - ✅ Eliminar propiedades (con confirmación)
 - ✅ Gestión de imágenes (upload múltiple a S3)
 - ✅ Listado con búsqueda y filtros
-- ✅ Acceso protegido con contraseña
+- ✅ Gestión de usuarios (solo administradores)
+- ✅ Sistema de roles y permisos
+- ✅ Perfil de usuario con cambio de contraseña
 - ✅ Vista previa de propiedades
 
 ### ⚠️ Importante para Producción
 
-- Cambia la contraseña usando las variables de entorno `ADMIN_PASSWORD` y `NEXT_PUBLIC_ADMIN_PASSWORD`
+- Crea el primer admin con `npm run create-admin`
+- Cambia la contraseña del admin después del primer login
+- Usa un `JWT_SECRET` fuerte y aleatorio en producción
 - Mantén seguras tus credenciales de MongoDB Atlas
 - Mantén seguras tus credenciales de AWS S3
 - Configura restricciones de dominio en Google Maps API Key
@@ -268,16 +318,25 @@ MongoDB Atlas (metadatos) + AWS S3 (imágenes) → Next.js Frontend
 
 ### APIs Principales
 
-| Endpoint                   | Método | Descripción                                |
-| -------------------------- | ------ | ------------------------------------------ |
-| `/api/featured-properties` | GET    | Obtiene propiedades destacadas desde MongoDB |
-| `/api/all-properties`      | GET    | Obtiene todas las propiedades desde MongoDB |
-| `/api/property/[id]`       | GET    | Obtiene una propiedad específica |
-| `/api/admin/properties` | GET, POST | Lista o crea propiedades |
-| `/api/admin/properties/[id]` | GET, PUT, DELETE | Obtiene, actualiza o elimina una propiedad |
-| `/api/admin/upload-image` | POST | Sube imágenes a S3 |
-| `/api/admin/delete-image` | POST | Elimina imágenes de S3 |
-| `/api/send-contact-email`  | POST   | Envía formulario de contacto |
+| Endpoint                   | Método | Descripción                                | Protección |
+| -------------------------- | ------ | ------------------------------------------ | ---------- |
+| `/api/featured-properties` | GET    | Obtiene propiedades destacadas desde MongoDB | Pública |
+| `/api/all-properties`      | GET    | Obtiene todas las propiedades desde MongoDB | Pública |
+| `/api/property/[id]`       | GET    | Obtiene una propiedad específica | Pública |
+| `/api/admin/auth/login`    | POST   | Login de usuario | Pública |
+| `/api/admin/auth/me`       | GET    | Obtiene usuario actual | Auth |
+| `/api/admin/properties` | GET, POST | Lista o crea propiedades | Auth |
+| `/api/admin/properties/[id]` | GET, PUT, DELETE | Obtiene, actualiza o elimina una propiedad | Auth |
+| `/api/admin/users` | GET, POST | Lista o crea usuarios | Admin |
+| `/api/admin/users/[id]` | GET, PUT, DELETE | Gestiona un usuario específico | Admin |
+| `/api/admin/upload-image` | POST | Sube imágenes a S3 | Auth |
+| `/api/admin/delete-image` | POST | Elimina imágenes de S3 | Auth |
+| `/api/send-contact-email`  | POST   | Envía formulario de contacto | Pública |
+
+**Leyenda:**
+- **Pública**: Sin autenticación
+- **Auth**: Requiere token de autenticación
+- **Admin**: Requiere token + rol de administrador
 
 ## 🎨 Paleta de Colores
 
@@ -325,20 +384,20 @@ Este es un proyecto privado para Prohausen Propiedades.
 
 No olvides configurar todas las variables de entorno en tu plataforma de deployment:
 
-- `MONGODB_URI`
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-- `AWS_S3_BUCKET_NAME`
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
-- `ADMIN_PASSWORD`
-- `NEXT_PUBLIC_ADMIN_PASSWORD`
+- `MONGODB_URI` - Conexión a MongoDB Atlas
+- `MONGODB_DB_NAME` - Nombre de la base de datos
+- `AWS_ACCESS_KEY_ID` - Credenciales de AWS
+- `AWS_SECRET_ACCESS_KEY` - Credenciales de AWS
+- `AWS_REGION` - Región del bucket S3
+- `AWS_S3_BUCKET_NAME` - Nombre del bucket
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - API Key de Google Maps
+- `JWT_SECRET` - Secret para tokens JWT (genera uno aleatorio y seguro)
 
-## �️ Base de Datos y Almacenamiento
+## 🗄️ Base de Datos y Almacenamiento
 
 ### MongoDB Atlas
 
-El proyecto utiliza MongoDB Atlas como base de datos principal para almacenar toda la información de las propiedades.
+El proyecto utiliza MongoDB Atlas como base de datos principal para almacenar la información de propiedades y usuarios.
 
 #### Colección: properties
 
@@ -355,6 +414,16 @@ Estructura del documento:
 - `latitude`, `longitude`: Coordenadas GPS
 - `createdAt`, `updatedAt`: Timestamps
 
+#### Colección: users
+
+Estructura del documento:
+- `_id`: ObjectId de MongoDB
+- `nombre`: Nombre del usuario
+- `email`: Email único
+- `password`: Contraseña hasheada con bcrypt
+- `role`: Rol del usuario ("admin" o "user")
+- `createdAt`, `updatedAt`: Timestamps
+
 ### AWS S3
 
 Las imágenes de las propiedades se almacenan en un bucket de S3:
@@ -363,13 +432,16 @@ Las imágenes de las propiedades se almacenan en un bucket de S3:
 - URLs públicas para las imágenes
 - Eliminación automática al borrar propiedad
 
-## � Scripts de MongoDB
+## 🔧 Scripts de MongoDB
 
 El proyecto incluye scripts útiles para gestionar la base de datos MongoDB en `scripts/`:
 
 ### Scripts Disponibles
 
 ```bash
+# Crear primer usuario administrador
+npm run create-admin
+
 # Configurar índices en MongoDB (optimizar performance)
 npm run setup:mongodb
 

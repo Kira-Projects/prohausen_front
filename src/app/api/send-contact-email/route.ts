@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          to: "victorhernandezvivanco75@gmail.com",
+          to: "contacto@prohausen.cl",
           subject: `[Prohausen] Nuevo mensaje de contacto - ${nombre}`,
           content: htmlContent,
           from: "no-reply",

@@ -10,7 +10,7 @@ import { ImageItem } from "@/components/admin/ImageUploader";
 
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { isAuthenticated, password, loading: authLoading } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
   const [propertyId, setPropertyId] = useState<string>("");
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,13 +35,15 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   }, [params]);
 
   useEffect(() => {
-    if (!propertyId || !isAuthenticated) return;
+    if (!propertyId || !isAuthenticated || !user) return;
 
     const fetchProperty = async () => {
       try {
+        const token = localStorage.getItem("authToken");
         const response = await fetch(`/api/admin/properties/${propertyId}`, {
           headers: {
-            "x-admin-password": password,
+            "x-auth-token": token || "",
+            "x-user-id": user.id,
           },
         });
 
@@ -63,10 +65,14 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     };
 
     fetchProperty();
-  }, [propertyId, password, isAuthenticated]);
+  }, [propertyId, user, isAuthenticated]);
 
   const handleSubmit = async (formData: FormData, images: ImageItem[]) => {
+    if (!property || !user) return;
+    
     try {
+      const token = localStorage.getItem("authToken");
+      
       // Separar imágenes existentes de las nuevas
       const existingImages = images
         .filter((img) => img.type === 'existing')
@@ -102,7 +108,8 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
           const uploadResponse = await fetch("/api/admin/upload-image", {
             method: "POST",
             headers: {
-              "x-admin-password": password,
+              "x-auth-token": token || "",
+              "x-user-id": user.id,
             },
             body: imageFormData,
           });
@@ -126,7 +133,8 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "x-admin-password": password,
+                "x-auth-token": token || "",
+                "x-user-id": user.id,
               },
               body: JSON.stringify({ imageUrl }),
             });
@@ -223,7 +231,8 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-password": password,
+          "x-auth-token": token || "",
+          "x-user-id": user.id,
         },
         body: JSON.stringify(updateData),
       });

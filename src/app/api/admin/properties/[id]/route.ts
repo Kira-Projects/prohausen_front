@@ -5,7 +5,7 @@ import {
   deletePropertyById,
 } from "@/lib/db/properties";
 import { PropertyUpdateInput } from "@/types/property";
-import { withAdminAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth";
 import { deleteFromS3, extractS3KeyFromUrl } from "@/lib/s3";
 
 /**
@@ -13,8 +13,8 @@ import { deleteFromS3, extractS3KeyFromUrl } from "@/lib/s3";
  * Obtiene una propiedad específica por su ID
  * Requiere autenticación
  */
-export const GET = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+export const GET = withAuth(
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, _userId: string) => {
     try {
       const { id: idParam } = await params;
       const id = parseInt(idParam, 10);
@@ -51,8 +51,8 @@ export const GET = withAdminAuth(
  * Actualiza una propiedad existente
  * Requiere autenticación
  */
-export const PUT = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+export const PUT = withAuth(
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, _userId: string) => {
     try {
       const { id: idParam } = await params;
       const id = parseInt(idParam, 10);
@@ -141,8 +141,8 @@ export const PUT = withAdminAuth(
  * Elimina una propiedad y sus imágenes de S3
  * Requiere autenticación
  */
-export const DELETE = withAdminAuth(
-  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+export const DELETE = withAuth(
+  async (req: NextRequest, { params }: { params: Promise<{ id: string }> }, _userId: string) => {
     try {
       const { id: idParam } = await params;
       const id = parseInt(idParam, 10);

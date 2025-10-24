@@ -7,7 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getPropertyUrl } from "@/utils/propertyUrl";
 
 export default function AdminPropertiesPage() {
-  const { isAuthenticated, password, login, logout } = useAuth();
+  const { isAuthenticated, user, login } = useAuth();
+  const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -29,15 +30,19 @@ export default function AdminPropertiesPage() {
   }, [message]);
 
   const fetchProperties = useCallback(async () => {
+    if (!isAuthenticated || !user) return;
+    
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filterActive !== "all") params.append("active", String(filterActive));
       if (filterFeatured !== "all") params.append("featured", String(filterFeatured));
 
+      const token = localStorage.getItem("authToken");
       const response = await fetch(`/api/admin/properties?${params}`, {
         headers: {
-          "x-admin-password": password,
+          "x-auth-token": token || "",
+          "x-user-id": user.id,
         },
       });
 
@@ -53,7 +58,7 @@ export default function AdminPropertiesPage() {
     } finally {
       setLoading(false);
     }
-  }, [password, filterActive, filterFeatured]);
+  }, [isAuthenticated, user, filterActive, filterFeatured]);
 
   // Cargar propiedades cuando se autentica
   useEffect(() => {
@@ -62,13 +67,25 @@ export default function AdminPropertiesPage() {
     }
   }, [isAuthenticated, fetchProperties]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (login(loginPassword)) {
-      setMessage({ type: "success", text: "Acceso autorizado" });
-    } else {
-      setMessage({ type: "error", text: "Contraseña incorrecta" });
+    try {
+      const success = await login(loginEmail, loginPassword);
+      
+      if (success) {
+        setMessage({ type: "success", text: "¡Bienvenido!" });
+        setLoginEmail("");
+        setLoginPassword("");
+      } else {
+        setMessage({ type: "error", text: "Credenciales incorrectas" });
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+      setMessage({ type: "error", text: "Error al iniciar sesión" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,12 +94,16 @@ export default function AdminPropertiesPage() {
       return;
     }
 
+    if (!user) return;
+
     setLoading(true);
     try {
+      const token = localStorage.getItem("authToken");
       const response = await fetch(`/api/admin/properties/${id}`, {
         method: "DELETE",
         headers: {
-          "x-admin-password": password,
+          "x-auth-token": token || "",
+          "x-user-id": user.id,
         },
       });
 
@@ -141,12 +162,33 @@ export default function AdminPropertiesPage() {
 
           {/* Formulario */}
           <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full px-4 py-3 sm:py-3.5 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
+                placeholder="correo@ejemplo.com"
+                required
+                autoFocus
+              />
+            </div>
+
+            {/* Contraseña */}
             <div>
               <label
                 htmlFor="password"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
-                Contraseña de Acceso
+                Contraseña
               </label>
               <div className="relative">
                 <input
@@ -157,7 +199,6 @@ export default function AdminPropertiesPage() {
                   className="w-full px-4 py-3 sm:py-3.5 pr-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400"
                   placeholder="Ingresa tu contraseña"
                   required
-                  autoFocus
                 />
                 <button
                   type="button"
@@ -204,13 +245,26 @@ export default function AdminPropertiesPage() {
             {/* Botón de submit */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 sm:py-3.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 sm:py-3.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                </svg>
-                Ingresar al Panel
+                {loading ? (
+                  <>
+                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verificando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    Iniciar Sesión
+                  </>
+                )}
               </span>
             </button>
           </form>
@@ -230,27 +284,16 @@ export default function AdminPropertiesPage() {
   return (
     <>
       {/* Contenido principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pt-32 sm:pt-45">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header de la página */}
-        <div className="mb-18">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-12">
-            <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-                Gestión de Propiedades
-              </h1>
-              <p className="text-base sm:text-lg text-gray-600">
-                Panel de administración - CRUD completo
-              </p>
-            </div>
-            <button
-              onClick={logout}
-              className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-md hover:shadow-lg"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Cerrar sesión
-            </button>
+        <div className="mb-8">
+          <div className="mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+              Gestión de Propiedades
+            </h1>
+            <p className="text-base text-gray-600">
+              Panel de administración - CRUD completo
+            </p>
           </div>
           <div className="h-1 w-32 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
         </div>

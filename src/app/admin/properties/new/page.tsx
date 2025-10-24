@@ -9,7 +9,7 @@ import { ImageItem } from "@/components/admin/ImageUploader";
 
 export default function NewPropertyPage() {
   const router = useRouter();
-  const { isAuthenticated, password, loading } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   
   // Generar UUID único para la carpeta de esta propiedad
   const [propertyFolderId] = useState(() => generatePropertyFolderId());
@@ -26,6 +26,8 @@ export default function NewPropertyPage() {
   } | null>(null);
 
   const handleSubmit = async (formData: FormData, images: ImageItem[]) => {
+    if (!user) return;
+    
     try {
       // Filtrar solo las imágenes nuevas (en este caso, todas son nuevas)
       const newImages = images.filter((img) => img.type === 'new') as Array<{
@@ -48,6 +50,7 @@ export default function NewPropertyPage() {
 
       // 1. Subir todas las imágenes a S3 primero
       const uploadedUrls: string[] = [];
+      const token = localStorage.getItem("authToken");
 
       for (let i = 0; i < newImages.length; i++) {
         const image = newImages[i];
@@ -58,7 +61,8 @@ export default function NewPropertyPage() {
         const uploadResponse = await fetch("/api/admin/upload-image", {
           method: "POST",
           headers: {
-            "x-admin-password": password,
+            "x-auth-token": token || "",
+            "x-user-id": user.id,
           },
           body: imageFormData,
         });
@@ -156,7 +160,8 @@ export default function NewPropertyPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-password": password,
+          "x-auth-token": token || "",
+          "x-user-id": user.id,
         },
         body: JSON.stringify(propertyData),
       });

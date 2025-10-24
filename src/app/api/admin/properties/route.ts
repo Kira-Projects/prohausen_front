@@ -5,7 +5,7 @@ import {
   getNextPropertyId,
 } from "@/lib/db/properties";
 import { PropertyCreateInput } from "@/types/property";
-import { withAdminAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth";
 
 /**
  * GET /api/admin/properties
@@ -13,7 +13,7 @@ import { withAdminAuth } from "@/lib/auth";
  * Requiere autenticación
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const GET = withAdminAuth(async (req: NextRequest, _context: unknown) => {
+export const GET = withAuth(async (req: NextRequest, _context: unknown, userId: string) => {
   try {
     const { searchParams } = new URL(req.url);
 
@@ -55,7 +55,7 @@ export const GET = withAdminAuth(async (req: NextRequest, _context: unknown) => 
  * Requiere autenticación
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const POST = withAdminAuth(async (req: NextRequest, _context: unknown) => {
+export const POST = withAuth(async (req: NextRequest, _context: unknown, userId: string) => {
   try {
     const body = await req.json();
 

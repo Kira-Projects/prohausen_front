@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteFromS3, extractS3KeyFromUrl } from "@/lib/s3";
-import { withAdminAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth";
 
 /**
  * POST /api/admin/delete-image
  * Elimina una imagen de S3
  * Requiere autenticación
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const POST = withAdminAuth(async (req: NextRequest, _context: unknown) => {
+export const POST = withAuth(async (req: NextRequest, _context: unknown, _userId: string) => {
   try {
     const body = await req.json();
     const imageUrl = body.imageUrl as string;

@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { usePathname } from "next/navigation";
 
 // Configuración de la fuente Poppins
 const poppins = Poppins({
@@ -12,22 +14,20 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-export const metadata: Metadata = {
-  title: "Prohausen Propiedades",
-  description: "Encuentra tu propiedad ideal - Corredora de propiedades con +10 años de experiencia",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith('/admin');
+
   return (
     <html lang="es">
       <body className={`${poppins.className} antialiased`}>
-        <Navbar />
+        {!isAdminRoute && <Navbar />}
         {children}
-        <Footer />
+        {!isAdminRoute && <Footer />}
       </body>
     </html>
   );
