@@ -461,156 +461,254 @@ export default function AdminPropertiesPage() {
           </button>
         </div>
 
-        {/* Tabla de propiedades */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-          {loading ? (
-            <div className="p-12 text-center">
-              <svg className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <p className="text-gray-600">Cargando propiedades...</p>
-            </div>
-          ) : filteredProperties.length === 0 ? (
-            <div className="p-12 text-center">
-              <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <p className="text-gray-600 mb-2">No hay propiedades para mostrar</p>
-              <p className="text-sm text-gray-500">Crea tu primera propiedad usando el botón de arriba</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Propiedad
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tipo
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Estado
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentProperties.map((property) => (
-                    <tr key={property.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-12 w-12 relative">
-                            <Image
-                              className="rounded-lg object-cover"
-                              src={property.image || "/placeholder.jpg"}
-                              alt={property.title}
-                              fill
-                              sizes="48px"
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {property.title}
+        {/* Vista de propiedades */}
+        {loading ? (
+          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+            <svg className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-gray-600">Cargando propiedades...</p>
+          </div>
+        ) : filteredProperties.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p className="text-gray-600 mb-2">No hay propiedades para mostrar</p>
+            <p className="text-sm text-gray-500">Crea tu primera propiedad usando el botón de arriba</p>
+          </div>
+        ) : (
+          <>
+            {/* Vista de tabla - Desktop */}
+            <div className="hidden md:block bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Propiedad
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Precio
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tipo
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentProperties.map((property) => (
+                      <tr key={property.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-12 w-12 relative">
+                              <Image
+                                className="rounded-lg object-cover"
+                                src={property.image || "/placeholder.jpg"}
+                                alt={property.title}
+                                fill
+                                sizes="48px"
+                              />
                             </div>
-                            <div className="text-sm text-gray-500">
-                              {property.location}
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {property.title}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {property.location}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
-                          {property.price}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {property.operation}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {property.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {property.price}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {property.operation}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {property.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            {property.active ? (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Activa
+                              </span>
+                            ) : (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                Inactiva
+                              </span>
+                            )}
+                            {property.featured && (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                ⭐ Destacada
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => window.open(getPropertyUrl(property.id, property.slug), "_blank")}
+                              className="text-blue-600 hover:text-blue-900"
+                              title="Ver propiedad"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => window.location.href = `/admin/properties/${property.id}/edit`}
+                              className="text-green-600 hover:text-green-900"
+                              title="Editar propiedad"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProperty(property.id)}
+                              className="text-red-600 hover:text-red-900"
+                              title="Eliminar propiedad"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Vista de cards - Mobile */}
+            <div className="md:hidden space-y-4">
+              {currentProperties.map((property) => (
+                <div
+                  key={property.id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100"
+                >
+                  {/* Header con imagen y título */}
+                  <div className="p-4">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-20 h-20 relative rounded-lg overflow-hidden">
+                        <Image
+                          className="object-cover"
+                          src={property.image || "/placeholder.jpg"}
+                          alt={property.title}
+                          fill
+                          sizes="80px"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">
+                          {property.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mb-2 line-clamp-1">
+                          {property.location}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {property.type}
+                          </span>
                           {property.active ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                               Activa
                             </span>
                           ) : (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
                               Inactiva
                             </span>
                           )}
                           {property.featured && (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                               ⭐ Destacada
                             </span>
                           )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => window.open(getPropertyUrl(property.id, property.slug), "_blank")}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Ver propiedad"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => window.location.href = `/admin/properties/${property.id}/edit`}
-                            className="text-green-600 hover:text-green-900"
-                            title="Editar propiedad"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProperty(property.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Eliminar propiedad"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
+                      </div>
+                    </div>
+
+                    {/* Información */}
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="text-lg font-bold text-gray-900">{property.price}</p>
+                          <p className="text-xs text-gray-500">{property.operation}</p>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+
+                      {/* Acciones */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => window.open(getPropertyUrl(property.id, property.slug), "_blank")}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium text-sm hover:bg-blue-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          Ver
+                        </button>
+                        <button
+                          onClick={() => window.location.href = `/admin/properties/${property.id}/edit`}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg font-medium text-sm hover:bg-green-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProperty(property.id)}
+                          className="flex items-center justify-center px-3 py-2 bg-red-50 text-red-700 rounded-lg font-medium text-sm hover:bg-red-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* Paginación */}
         {!loading && filteredProperties.length > itemsPerPage && (
-          <div className="mt-6 flex items-center justify-between bg-white rounded-xl shadow-md p-4 border border-gray-100">
-            <div className="text-sm text-gray-700">
+          <div className="mt-6 bg-white rounded-xl shadow-md p-4 border border-gray-100">
+            {/* Información - Siempre visible */}
+            <div className="text-sm text-gray-700 text-center md:text-left mb-3 md:mb-0">
               Mostrando <span className="font-semibold">{startIndex + 1}</span> a{" "}
               <span className="font-semibold">{Math.min(endIndex, filteredProperties.length)}</span> de{" "}
               <span className="font-semibold">{filteredProperties.length}</span> propiedades
             </div>
             
-            <div className="flex items-center gap-2">
-              {/* Botón Primera página */}
+            {/* Controles de paginación */}
+            <div className="flex items-center justify-center md:justify-between gap-2 mt-3 md:mt-0">
+              {/* Botón Primera página - Solo desktop */}
               <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hidden md:block px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Primera página"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -624,18 +722,22 @@ export default function AdminPropertiesPage() {
                 disabled={currentPage === 1}
                 className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Anterior
+                <span className="hidden sm:inline">Anterior</span>
+                <span className="sm:hidden">←</span>
               </button>
 
               {/* Números de página */}
               <div className="flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // Mostrar solo páginas cercanas a la actual
-                  if (
+                  // En mobile: mostrar solo página actual y primera/última
+                  // En desktop: mostrar páginas cercanas
+                  const showInMobile = page === 1 || page === totalPages || page === currentPage;
+                  const showInDesktop = 
                     page === 1 ||
                     page === totalPages ||
-                    (page >= currentPage - 1 && page <= currentPage + 1)
-                  ) {
+                    (page >= currentPage - 1 && page <= currentPage + 1);
+                  
+                  if (showInDesktop) {
                     return (
                       <button
                         key={page}
@@ -644,7 +746,7 @@ export default function AdminPropertiesPage() {
                           currentPage === page
                             ? "bg-blue-600 text-white"
                             : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
-                        }`}
+                        } ${!showInMobile ? 'hidden md:block' : ''}`}
                       >
                         {page}
                       </button>
@@ -654,13 +756,18 @@ export default function AdminPropertiesPage() {
                     page === currentPage + 2
                   ) {
                     return (
-                      <span key={page} className="px-2 text-gray-500">
+                      <span key={page} className="hidden md:inline px-2 text-gray-500">
                         ...
                       </span>
                     );
                   }
                   return null;
                 })}
+                
+                {/* Puntos suspensivos para mobile */}
+                {totalPages > 3 && currentPage > 1 && currentPage < totalPages && (
+                  <span className="md:hidden px-2 text-gray-500">...</span>
+                )}
               </div>
 
               {/* Botón Siguiente */}
@@ -669,14 +776,15 @@ export default function AdminPropertiesPage() {
                 disabled={currentPage === totalPages}
                 className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Siguiente
+                <span className="hidden sm:inline">Siguiente</span>
+                <span className="sm:inline">→</span>
               </button>
 
-              {/* Botón Última página */}
+              {/* Botón Última página - Solo desktop */}
               <button
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hidden md:block px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Última página"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
