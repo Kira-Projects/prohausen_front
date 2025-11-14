@@ -7,6 +7,9 @@ import { Property } from "@/types/property";
 import { generatePropertyFolderId } from "@/lib/uuid";
 import { useAuth } from "@/contexts/AuthContext";
 import { ImageItem } from "@/components/admin/ImageUploader";
+import UploadProgressBar from "@/components/admin/UploadProgressBar";
+import { compressImages, calculateReduction } from "@/utils/imageCompression";
+import { uploadWithRetry } from "@/utils/uploadWithRetry";
 
 export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -17,6 +20,19 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
+  } | null>(null);
+
+  // Estados para el progreso de carga
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+    fileName?: string;
+    stage: "compressing" | "uploading" | "completed" | "error";
+    compressionStats?: {
+      originalSize: number;
+      compressedSize: number;
+      reduction: number;
+    };
   } | null>(null);
 
   // Redirigir si no está autenticado
@@ -93,34 +109,121 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
       // Obtener o generar el folderId para las imágenes
       const propertyFolderId = property?.folderId || generatePropertyFolderId();
 
-      // Subir solo las imágenes nuevas a S3
+      // Subir solo las imágenes nuevas a S3 con compresión y reintentos
       const uploadedUrls: string[] = [];
 
       if (newImages.length > 0) {
-        setMessage({ type: "success", text: `Subiendo ${newImages.length} imagen(es) nueva(s)...` });
+        const totalNewImages = newImages.length;
 
-        for (let i = 0; i < newImages.length; i++) {
-          const image = newImages[i];
-          const imageFormData = new FormData();
-          imageFormData.append("file", image.file);
-          imageFormData.append("propertyId", propertyFolderId);
+        // PASO 1: COMPRIMIR IMÁGENES NUEVAS
+        setMessage({ type: "success", text: `Comprimiendo ${totalNewImages} imagen(es) nueva(s)...` });
+        setUploadProgress({
+          current: 0,
+          total: totalNewImages,
+          stage: "compressing",
+        });
 
-          const uploadResponse = await fetch("/api/admin/upload-image", {
-            method: "POST",
-            headers: {
-              "x-auth-token": token || "",
-              "x-user-id": user.id,
-            },
-            body: imageFormData,
+        const originalFiles = newImages.map(img => img.file);
+        let totalOriginalSize = 0;
+        let totalCompressedSize = 0;
+
+        originalFiles.forEach(file => {
+          totalOriginalSize += file.size;
+        });
+
+        const compressedFiles = await compressImages(
+          originalFiles,
+          {
+            maxWidth: 1920,
+            maxHeight: 1920,
+            quality: 0.85,
+            maxSizeMB: 10,
+          },
+          (current, total) => {
+            setUploadProgress({
+              current,
+              total,
+              stage: "compressing",
+              fileName: originalFiles[current - 1]?.name,
+            });
+          }
+        );
+
+        compressedFiles.forEach(file => {
+          totalCompressedSize += file.size;
+        });
+
+        const reduction = calculateReduction(totalOriginalSize, totalCompressedSize);
+
+        setMessage({ 
+          type: "success", 
+          text: `Imágenes comprimidas (${reduction}% reducción). Subiendo...` 
+        });
+
+        // PASO 2: SUBIR CON REINTENTOS Y EN PARALELO
+        setUploadProgress({
+          current: 0,
+          total: totalNewImages,
+          stage: "uploading",
+        });
+
+        const PARALLEL_UPLOADS = 5;
+
+        for (let i = 0; i < compressedFiles.length; i += PARALLEL_UPLOADS) {
+          const parallelBatch = compressedFiles.slice(i, i + PARALLEL_UPLOADS);
+          
+          const uploadPromises = parallelBatch.map(async (file, index) => {
+            const actualIndex = i + index;
+            
+            const uploadFn = async () => {
+              const imageFormData = new FormData();
+              imageFormData.append("file", file);
+              imageFormData.append("propertyId", propertyFolderId);
+
+              const uploadResponse = await fetch("/api/admin/upload-image", {
+                method: "POST",
+                headers: {
+                  "x-auth-token": token || "",
+                  "x-user-id": user.id,
+                },
+                body: imageFormData,
+              });
+
+              if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json();
+                throw new Error(errorData.error || `Error al subir imagen ${actualIndex + 1}`);
+              }
+
+              const uploadData = await uploadResponse.json();
+              return uploadData.data.url;
+            };
+
+            return uploadWithRetry(uploadFn, {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt, error) => {
+                console.warn(`Reintento ${attempt}/3 para imagen ${actualIndex + 1}:`, error.message);
+              },
+            });
           });
 
-          if (!uploadResponse.ok) {
-            throw new Error(`Error al subir imagen ${i + 1}`);
-          }
+          const parallelResults = await Promise.all(uploadPromises);
+          uploadedUrls.push(...parallelResults);
 
-          const uploadData = await uploadResponse.json();
-          uploadedUrls.push(uploadData.data.url);
+          const currentProgress = i + parallelBatch.length;
+          setUploadProgress({
+            current: currentProgress,
+            total: totalNewImages,
+            stage: "uploading",
+            fileName: parallelBatch[parallelBatch.length - 1]?.name,
+          });
         }
+
+        setUploadProgress({
+          current: totalNewImages,
+          total: totalNewImages,
+          stage: "completed",
+        });
       }
 
       // Eliminar imágenes de S3 que el admin quitó
@@ -377,6 +480,19 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             }`}
           >
             {message.text}
+          </div>
+        )}
+
+        {/* Barra de Progreso */}
+        {uploadProgress && (
+          <div className="mb-6">
+            <UploadProgressBar
+              current={uploadProgress.current}
+              total={uploadProgress.total}
+              currentFileName={uploadProgress.fileName}
+              stage={uploadProgress.stage}
+              compressionStats={uploadProgress.compressionStats}
+            />
           </div>
         )}
 

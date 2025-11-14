@@ -6,6 +6,9 @@ import PropertyForm from "@/components/admin/PropertyForm";
 import { generatePropertyFolderId } from "@/lib/uuid";
 import { useAuth } from "@/contexts/AuthContext";
 import { ImageItem } from "@/components/admin/ImageUploader";
+import UploadProgressBar from "@/components/admin/UploadProgressBar";
+import { compressImages, formatBytes, calculateReduction } from "@/utils/imageCompression";
+import { uploadWithRetry } from "@/utils/uploadWithRetry";
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -23,6 +26,19 @@ export default function NewPropertyPage() {
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
+  } | null>(null);
+
+  // Estados para el progreso de carga
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+    fileName?: string;
+    stage: "compressing" | "uploading" | "completed" | "error";
+    compressionStats?: {
+      originalSize: number;
+      compressedSize: number;
+      reduction: number;
+    };
   } | null>(null);
 
   const handleSubmit = async (formData: FormData, images: ImageItem[]) => {
@@ -46,38 +62,150 @@ export default function NewPropertyPage() {
         return;
       }
 
-      setMessage({ type: "success", text: "Subiendo imágenes a S3..." });
-
-      // 1. Subir todas las imágenes a S3 primero
-      const uploadedUrls: string[] = [];
+      const totalImages = newImages.length;
       const token = localStorage.getItem("authToken");
 
-      for (let i = 0; i < newImages.length; i++) {
-        const image = newImages[i];
-        const imageFormData = new FormData();
-        imageFormData.append("file", image.file);
-        imageFormData.append("propertyId", propertyFolderId); // Usar UUID generado
+      // PASO 1: COMPRIMIR IMÁGENES
+      setMessage({ type: "success", text: `Comprimiendo ${totalImages} imágenes...` });
+      setUploadProgress({
+        current: 0,
+        total: totalImages,
+        stage: "compressing",
+      });
 
-        const uploadResponse = await fetch("/api/admin/upload-image", {
-          method: "POST",
-          headers: {
-            "x-auth-token": token || "",
-            "x-user-id": user.id,
-          },
-          body: imageFormData,
+      const originalFiles = newImages.map(img => img.file);
+      let totalOriginalSize = 0;
+      let totalCompressedSize = 0;
+
+      originalFiles.forEach(file => {
+        totalOriginalSize += file.size;
+      });
+
+      const compressedFiles = await compressImages(
+        originalFiles,
+        {
+          maxWidth: 1920,
+          maxHeight: 1920,
+          quality: 0.85,
+          maxSizeMB: 10,
+        },
+        (current, total) => {
+          setUploadProgress({
+            current,
+            total,
+            stage: "compressing",
+            fileName: originalFiles[current - 1]?.name,
+          });
+        }
+      );
+
+      compressedFiles.forEach(file => {
+        totalCompressedSize += file.size;
+      });
+
+      const reduction = calculateReduction(totalOriginalSize, totalCompressedSize);
+
+      setMessage({ 
+        type: "success", 
+        text: `Imágenes comprimidas (${reduction}% de reducción: ${formatBytes(totalOriginalSize)} → ${formatBytes(totalCompressedSize)}). Iniciando carga...` 
+      });
+
+      // PASO 2: SUBIR IMÁGENES CON REINTENTOS Y EN LOTES
+      setUploadProgress({
+        current: 0,
+        total: totalImages,
+        stage: "uploading",
+        compressionStats: {
+          originalSize: totalOriginalSize,
+          compressedSize: totalCompressedSize,
+          reduction,
+        },
+      });
+
+      const uploadedUrls: string[] = [];
+      const BATCH_SIZE = 10; // Subir de 10 en 10
+      const PARALLEL_UPLOADS = 5; // 5 uploads simultáneos por lote
+
+      for (let batchStart = 0; batchStart < compressedFiles.length; batchStart += BATCH_SIZE) {
+        const batchEnd = Math.min(batchStart + BATCH_SIZE, compressedFiles.length);
+        const batch = compressedFiles.slice(batchStart, batchEnd);
+        
+        setMessage({ 
+          type: "success", 
+          text: `Subiendo lote ${Math.floor(batchStart / BATCH_SIZE) + 1} de ${Math.ceil(compressedFiles.length / BATCH_SIZE)} (imágenes ${batchStart + 1}-${batchEnd} de ${totalImages})...` 
         });
 
-        if (!uploadResponse.ok) {
-          throw new Error(`Error al subir imagen ${i + 1}`);
+        // Dividir el lote en sub-lotes paralelos
+        const batchUrls: string[] = [];
+        for (let i = 0; i < batch.length; i += PARALLEL_UPLOADS) {
+          const parallelBatch = batch.slice(i, i + PARALLEL_UPLOADS);
+          
+          const uploadPromises = parallelBatch.map(async (file, index) => {
+            const actualIndex = batchStart + i + index;
+            
+            // Función de subida con reintentos
+            const uploadFn = async () => {
+              const imageFormData = new FormData();
+              imageFormData.append("file", file);
+              imageFormData.append("propertyId", propertyFolderId);
+
+              const uploadResponse = await fetch("/api/admin/upload-image", {
+                method: "POST",
+                headers: {
+                  "x-auth-token": token || "",
+                  "x-user-id": user.id,
+                },
+                body: imageFormData,
+              });
+
+              if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json();
+                throw new Error(errorData.error || `Error al subir imagen ${actualIndex + 1}`);
+              }
+
+              const uploadData = await uploadResponse.json();
+              return uploadData.data.url;
+            };
+
+            // Subir con reintentos (hasta 3 intentos)
+            return uploadWithRetry(uploadFn, {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt, error) => {
+                console.warn(`Reintento ${attempt}/3 para imagen ${actualIndex + 1}:`, error.message);
+                setMessage({
+                  type: "error",
+                  text: `⚠️ Reintentando subir imagen ${actualIndex + 1} (intento ${attempt}/3)...`,
+                });
+              },
+            });
+          });
+
+          const parallelResults = await Promise.all(uploadPromises);
+          batchUrls.push(...parallelResults);
+
+          // Actualizar progreso
+          const currentProgress = batchStart + i + parallelBatch.length;
+          setUploadProgress({
+            current: currentProgress,
+            total: totalImages,
+            stage: "uploading",
+            fileName: parallelBatch[parallelBatch.length - 1]?.name,
+          });
         }
 
-        const uploadData = await uploadResponse.json();
-        uploadedUrls.push(uploadData.data.url);
+        uploadedUrls.push(...batchUrls);
       }
+
+      setUploadProgress({
+        current: totalImages,
+        total: totalImages,
+        stage: "completed",
+      });
 
       setMessage({
         type: "success",
-        text: "Imágenes subidas. Creando propiedad...",
+        text: `✓ ${totalImages} imágenes subidas exitosamente. Creando propiedad...`,
       });
 
       // 2. Preparar datos de la propiedad
@@ -267,6 +395,19 @@ export default function NewPropertyPage() {
             }`}
           >
             {message.text}
+          </div>
+        )}
+
+        {/* Barra de Progreso */}
+        {uploadProgress && (
+          <div className="mb-6">
+            <UploadProgressBar
+              current={uploadProgress.current}
+              total={uploadProgress.total}
+              currentFileName={uploadProgress.fileName}
+              stage={uploadProgress.stage}
+              compressionStats={uploadProgress.compressionStats}
+            />
           </div>
         )}
 

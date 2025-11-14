@@ -18,7 +18,7 @@ interface ImageUploaderProps {
 export default function ImageUploader({
   images,
   onImagesChange,
-  maxImages = 20,
+  maxImages = 100,
   label = "Imágenes",
 }: ImageUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -188,7 +188,7 @@ export default function ImageUploader({
             Arrastra imágenes aquí o haz clic para seleccionar
           </p>
           <p className="text-xs text-gray-700">
-            PNG, JPG, WebP hasta 10MB cada una
+            PNG, JPG, WebP hasta 10MB cada una (máximo {maxImages} imágenes)
           </p>
         </div>
       </div>
