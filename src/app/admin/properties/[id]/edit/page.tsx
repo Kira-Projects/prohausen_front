@@ -189,21 +189,24 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                 body: imageFormData,
               });
 
+              // Leer el response como texto primero (solo se puede leer una vez)
+              const responseText = await uploadResponse.text();
+              
               if (!uploadResponse.ok) {
-                // Intentar leer como JSON, si falla usar texto plano
                 let errorMessage = `Error al subir imagen ${actualIndex + 1}`;
                 try {
-                  const errorData = await uploadResponse.json();
+                  // Intentar parsear como JSON
+                  const errorData = JSON.parse(responseText);
                   errorMessage = errorData.error || errorMessage;
                 } catch {
-                  // Si no es JSON, leer como texto
-                  const errorText = await uploadResponse.text();
-                  errorMessage = errorText.substring(0, 200) || `Error ${uploadResponse.status}: ${uploadResponse.statusText}`;
+                  // Si no es JSON válido, usar el texto directamente
+                  errorMessage = responseText.substring(0, 200) || `Error ${uploadResponse.status}: ${uploadResponse.statusText}`;
                 }
                 throw new Error(errorMessage);
               }
 
-              const uploadData = await uploadResponse.json();
+              // Parsear respuesta exitosa como JSON
+              const uploadData = JSON.parse(responseText);
               return uploadData.data.url;
             };
 
