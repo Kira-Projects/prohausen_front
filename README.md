@@ -329,7 +329,7 @@ MongoDB Atlas (metadatos) + AWS S3 (imágenes) → Next.js Frontend
 | `/api/admin/properties/[id]` | GET, PUT, DELETE | Obtiene, actualiza o elimina una propiedad | Auth |
 | `/api/admin/users` | GET, POST | Lista o crea usuarios | Admin |
 | `/api/admin/users/[id]` | GET, PUT, DELETE | Gestiona un usuario específico | Admin |
-| `/api/admin/upload-image` | POST | Sube imágenes a S3 | Auth |
+| `/api/admin/generate-upload-url` | POST | Genera presigned URL para subir a S3 directamente | Auth |
 | `/api/admin/delete-image` | POST | Elimina imágenes de S3 | Auth |
 | `/api/send-contact-email`  | POST   | Envía formulario de contacto | Pública |
 
