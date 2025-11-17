@@ -190,8 +190,17 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
               });
 
               if (!uploadResponse.ok) {
-                const errorData = await uploadResponse.json();
-                throw new Error(errorData.error || `Error al subir imagen ${actualIndex + 1}`);
+                // Intentar leer como JSON, si falla usar texto plano
+                let errorMessage = `Error al subir imagen ${actualIndex + 1}`;
+                try {
+                  const errorData = await uploadResponse.json();
+                  errorMessage = errorData.error || errorMessage;
+                } catch {
+                  // Si no es JSON, leer como texto
+                  const errorText = await uploadResponse.text();
+                  errorMessage = errorText.substring(0, 200) || `Error ${uploadResponse.status}: ${uploadResponse.statusText}`;
+                }
+                throw new Error(errorMessage);
               }
 
               const uploadData = await uploadResponse.json();

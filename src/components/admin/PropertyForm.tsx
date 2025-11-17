@@ -109,6 +109,23 @@ export default function PropertyForm({
       const formElement = e.currentTarget;
       const formData = new FormData(formElement);
       
+      // Combinar moneda y monto en un solo campo "price"
+      const currency = formData.get("priceCurrency") as string;
+      const amount = formData.get("priceAmount") as string;
+      if (currency && amount) {
+        let priceText = "";
+        if (currency === "UF") {
+          priceText = `UF ${amount}`;
+        } else if (currency === "CLP") {
+          priceText = `$${amount}`;
+        } else if (currency === "USD") {
+          priceText = `US$${amount}`;
+        }
+        formData.set("price", priceText);
+        formData.delete("priceCurrency");
+        formData.delete("priceAmount");
+      }
+      
       // Agregar features al FormData
       formData.set("features", JSON.stringify(selectedFeatures));
       
@@ -210,14 +227,25 @@ export default function PropertyForm({
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Precio <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              name="price"
-              defaultValue={initialData?.price}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ej: UF 5.800 o $180.000.000"
-            />
+            <div className="flex gap-2">
+              <select
+                name="priceCurrency"
+                defaultValue={initialData?.price?.includes('$') ? 'CLP' : 'UF'}
+                className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="UF">UF</option>
+                <option value="CLP">$</option>
+                <option value="USD">US$</option>
+              </select>
+              <input
+                type="text"
+                name="priceAmount"
+                defaultValue={initialData?.price?.replace(/[^\d.,]/g, '').trim()}
+                required
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Ej: 5.800"
+              />
+            </div>
           </div>
 
           {/* Área */}
