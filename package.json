@@ -20,6 +20,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.914.0",
     "@aws-sdk/lib-storage": "^3.914.0",
+    "@aws-sdk/s3-request-presigner": "^3.933.0",
     "@react-google-maps/api": "^2.20.7",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",

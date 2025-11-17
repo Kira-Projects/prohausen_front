@@ -176,38 +176,51 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             const actualIndex = i + index;
             
             const uploadFn = async () => {
-              const imageFormData = new FormData();
-              imageFormData.append("file", file);
-              imageFormData.append("propertyId", propertyFolderId);
-
-              const uploadResponse = await fetch("/api/admin/upload-image", {
+              // PASO 1: Obtener presigned URL del backend
+              const urlResponse = await fetch("/api/admin/generate-upload-url", {
                 method: "POST",
                 headers: {
+                  "Content-Type": "application/json",
                   "x-auth-token": token || "",
                   "x-user-id": user.id,
                 },
-                body: imageFormData,
+                body: JSON.stringify({
+                  fileName: file.name,
+                  fileType: file.type,
+                  propertyId: propertyFolderId,
+                }),
               });
 
-              // Leer el response como texto primero (solo se puede leer una vez)
-              const responseText = await uploadResponse.text();
-              
-              if (!uploadResponse.ok) {
-                let errorMessage = `Error al subir imagen ${actualIndex + 1}`;
+              if (!urlResponse.ok) {
+                const errorText = await urlResponse.text();
+                let errorMessage = `Error al generar URL para imagen ${actualIndex + 1}`;
                 try {
-                  // Intentar parsear como JSON
-                  const errorData = JSON.parse(responseText);
+                  const errorData = JSON.parse(errorText);
                   errorMessage = errorData.error || errorMessage;
                 } catch {
-                  // Si no es JSON válido, usar el texto directamente
-                  errorMessage = responseText.substring(0, 200) || `Error ${uploadResponse.status}: ${uploadResponse.statusText}`;
+                  errorMessage = errorText.substring(0, 200) || errorMessage;
                 }
                 throw new Error(errorMessage);
               }
 
-              // Parsear respuesta exitosa como JSON
-              const uploadData = JSON.parse(responseText);
-              return uploadData.data.url;
+              const urlData = await urlResponse.json();
+              const { uploadUrl, publicUrl } = urlData.data;
+
+              // PASO 2: Subir DIRECTAMENTE a S3 usando la URL firmada
+              const uploadResponse = await fetch(uploadUrl, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": file.type,
+                },
+                body: file, // Subir archivo directamente (sin FormData)
+              });
+
+              if (!uploadResponse.ok) {
+                throw new Error(`Error al subir imagen ${actualIndex + 1} a S3: ${uploadResponse.status} ${uploadResponse.statusText}`);
+              }
+
+              // PASO 3: Retornar URL pública para guardar en DB
+              return publicUrl;
             };
 
             return uploadWithRetry(uploadFn, {
