@@ -49,12 +49,11 @@ export const POST = withAuth(async (req: NextRequest, _context: unknown, _userId
       ? `properties/${propertyId}/${uniqueFileName}`
       : `properties/temp/${uniqueFileName}`;
 
-    // Crear comando para S3
+    // Crear comando para S3 (sin ACL, usa política del bucket)
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME!,
       Key: s3Key,
       ContentType: fileType,
-      ACL: "public-read",
     });
 
     // Generar URL firmada (válida por 1 hora)
@@ -64,6 +63,14 @@ export const POST = withAuth(async (req: NextRequest, _context: unknown, _userId
 
     // URL pública final (sin parámetros de firma)
     const publicUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`;
+
+    // Log para debugging (eliminar después)
+    console.log('✅ Presigned URL generada:', {
+      bucket: process.env.AWS_S3_BUCKET_NAME,
+      region: process.env.AWS_REGION,
+      key: s3Key,
+      urlLength: presignedUrl.length,
+    });
 
     return NextResponse.json({
       success: true,

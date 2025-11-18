@@ -1,0 +1,24 @@
+[
+  {
+    "AllowedHeaders": [
+      "*"
+    ],
+    "AllowedMethods": [
+      "PUT",
+      "POST",
+      "GET",
+      "HEAD"
+    ],
+    "AllowedOrigins": [
+      "http://localhost:3000",
+      "https://prohausen.cl",
+      "https://www.prohausen.cl",
+      "https://*.vercel.app"
+    ],
+    "ExposeHeaders": [
+      "ETag",
+      "x-amz-request-id"
+    ],
+    "MaxAgeSeconds": 3600
+  }
+]
