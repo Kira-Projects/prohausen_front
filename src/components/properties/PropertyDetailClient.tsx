@@ -593,7 +593,14 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
               <div className="px-6 py-6">
                 <div 
                   className="text-gray-700 leading-relaxed prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: property.description }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: property.description
+                      .split('\n\n')
+                      .map(para => para.trim())
+                      .filter(para => para.length > 0)
+                      .map(para => `<p class="mb-4">${para.replace(/\n/g, '<br/>')}</p>`)
+                      .join('') 
+                  }}
                 />
               </div>
             </div>
@@ -601,7 +608,7 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             {/* Servicios */}
             {property.features && property.features.length > 0 && (
               <div className="bg-white rounded border p-4">
-                <h3 className="text-xl font-bold mb-4">Servicios y características</h3>
+                <h3 className="text-xl text-gray-900 font-bold mb-4">Servicios y características</h3>
                 <ul className="space-y-2">
                   {property.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start">
